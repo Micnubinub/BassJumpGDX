@@ -1,42 +1,33 @@
 package tbs.bassjump;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.net.Uri;
-import android.provider.MediaStore;
-
-import java.util.Calendar;
-import java.util.Date;
-
-import tbs.jumpsnew.managers.StoreManager;
 
 public class GameController {
 
     private static final ShareButtonClicked share = new ShareButtonClicked() {
         @Override
         public void onShareButtonClicked() {
-            final Date d = Calendar.getInstance().getTime();
-            Game.update();
-            final Bitmap image = Bitmap.createBitmap(ScreenDimen.width, ScreenDimen.height, Bitmap.Config.RGB_565);
-            Canvas canvas = new Canvas(image);
-            GameView.drawGame(canvas);
-            final String path = MediaStore.Images.Media.insertImage(
-                    Game.context.getContentResolver(), image, "screenShotBassJump_" + d
-                            + ".png", null);
-            System.out.println(path + " PATH");
-            final Intent shareIntent = new Intent(Intent.ACTION_SEND);
-            Uri screenshotUri = Uri.parse(path);
-            shareIntent.setType("image/*");
-            shareIntent
-                    .putExtra(
-                            Intent.EXTRA_TEXT,
-                            "Check out my High Score on Bass Jump: \nhttps://play.google.com/store/apps/details?id=tbs.jumpsnew");
-            shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            shareIntent.putExtra(Intent.EXTRA_STREAM, screenshotUri);
-            Game.context.startActivity(Intent.createChooser(shareIntent,
-                    "Share High Score:"));
-            GameView.shareButtonClicked = null;
+            Utility.print("should print");
+//            final Date d = Calendar.getInstance().getTime();
+//            Game.update();
+//            final Bitmap image = Bitmap.createBitmap(ScreenDimen.width, ScreenDimen.height, Bitmap.Config.RGB_565);
+//            Canvas canvas = new Canvas(image);
+//            GameView.drawGame(canvas);
+//            final String path = MediaStore.Images.Media.insertImage(
+//                    Game.context.getContentResolver(), image, "screenShotBassJump_" + d
+//                            + ".png", null);
+//            System.out.println(path + " PATH");
+//            final Intent shareIntent = new Intent(Intent.ACTION_SEND);
+//            Uri screenshotUri = Uri.parse(path);
+//            shareIntent.setType("image/*");
+//            shareIntent
+//                    .putExtra(
+//                            Intent.EXTRA_TEXT,
+//                            "Check out my High Score on Bass Jump: \nhttps://play.google.com/store/apps/details?id=tbs.jumpsnew");
+//            shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            shareIntent.putExtra(Intent.EXTRA_STREAM, screenshotUri);
+//            Game.context.startActivity(Intent.createChooser(shareIntent,
+//                    "Share High Score:"));
+//            GameView.shareButtonClicked = null;
         }
     };
 

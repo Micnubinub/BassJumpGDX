@@ -1,6 +1,7 @@
 package tbs.bassjump.levels;
 
-import tbs.jumpsnew.utility.GameObject;
+
+import tbs.bassjump.utility.GameObject;
 
 public class Platform extends GameObject {
 

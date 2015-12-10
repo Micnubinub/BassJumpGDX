@@ -1,15 +1,5 @@
 package tbs.bassjump.reference;
 
-import com.badlogic.gdx.backends.iosrobovm.IOSApplication;
-import com.badlogic.gdx.backends.iosrobovm.IOSApplicationConfiguration;
-
-import org.robovm.apple.foundation.NSAutoreleasePool;
-import org.robovm.apple.uikit.UIApplication;
-import org.robovm.apple.uikit.UIViewController;
-import org.robovm.pods.google.mobileads.GADInterstitial;
-import org.robovm.pods.google.mobileads.GADInterstitialDelegateAdapter;
-import org.robovm.pods.google.mobileads.GADRequest;
-
 import java.util.Arrays;
 
 public class IOSLauncher extends IOSApplication.Delegate {

@@ -28,6 +28,11 @@ public class Utility {
         return rand.nextFloat() * (maxX - minX) + minX;
     }
 
+    public static int randInt(int minX, int maxX) {
+        //Todo check this
+        return minX + rand.nextInt(maxX - minX);
+    }
+
     public static BitmapFont getFont() {
         if (!isFontInit || font == null) {
             font = new BitmapFont(Gdx.files.internal("font.fnt"));
@@ -99,6 +104,14 @@ public class Utility {
             }
         }
         return true;
+    }
+
+    public static void print(String s) {
+        System.out.println(s);
+    }
+
+    public static void openLink(String link) {
+        Gdx.net.openURI(link);
     }
 
 

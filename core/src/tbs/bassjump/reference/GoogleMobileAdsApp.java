@@ -18,12 +18,6 @@
  */
 package tbs.bassjump.reference;
 
-import org.robovm.apple.foundation.NSAutoreleasePool;
-import org.robovm.apple.foundation.NSErrorException;
-import org.robovm.apple.uikit.UIApplication;
-import org.robovm.apple.uikit.UIApplicationDelegateAdapter;
-import org.robovm.apple.uikit.UIApplicationLaunchOptions;
-import org.robovm.pods.google.GGLContextMobileAds;
 
 public class GoogleMobileAdsApp extends UIApplicationDelegateAdapter {
 

@@ -1,11 +1,7 @@
 package tbs.bassjump.utility;
 
-import android.content.Context;
-import android.util.TypedValue;
 
-import tbs.jumpsnew.MainActivity;
-import tbs.jumpsnew.R;
-import tbs.jumpsnew.ui.CustomDialog;
+import tbs.bassjump.ui.CustomDialog;
 
 /**
  * Created by root on 29/12/14.
@@ -18,7 +14,6 @@ public class ListViewLib {
 
     // private static Drawable listItemBackground;
 //    private static View view;
-    private static Context context;
     private CustomDialog dialog;
 
     //    private int nameTextColor, priceTextColor, itemTextColor, buyTextColor,
@@ -27,12 +22,6 @@ public class ListViewLib {
 //    private Drawable storeItemBackground;
 //    private Typeface storeItemFont;
 //    private Drawable buyButtonBackground;
-
-
-    public ListViewLib(Context context) {
-        this.context = context;
-
-    }
 
 
     public static boolean buyItem(StoreItem item) {
@@ -52,21 +41,13 @@ public class ListViewLib {
 //        this.buyButtonTextSize = buyButtonTextSize;
 //    }
 
-    public static int dpToPixels(int dp) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
-                context.getResources().getDisplayMetrics());
-    }
-
     public void show() {
         if (dialog == null) {
             dialog = new CustomDialog();
-            dialog.setStyle(R.style.CustomDialog, R.style.DialogTheme);
         }
-        dialog.show(MainActivity.getMainActivity().getSupportFragmentManager(), "tag");
-
+//Todo show dialog here
         if (storeListener != null)
             storeListener.onStoreOpened();
-
     }
 
 

@@ -1,31 +1,14 @@
 package tbs.bassjump;
 
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.RelativeLayout;
 
-import com.google.android.gms.games.Games;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import tbs.jumpsnew.fragments.GetCoinsFragment;
-import tbs.jumpsnew.ui.CustomDialog;
-import tbs.jumpsnew.ui.OtherAppsAd;
-import tbs.jumpsnew.utility.AdManager;
-import tbs.jumpsnew.utility.BaseGameActivity;
-import tbs.jumpsnew.utility.GPurchaseManager;
-import tbs.jumpsnew.utility.SecurePreferences;
-import tbs.jumpsnew.utility.Utility;
+import tbs.bassjump.fragments.GetCoinsFragment;
+import tbs.bassjump.ui.OtherAppsAd;
+import tbs.bassjump.utility.AdManager;
 
 public class MainActivity extends BaseGameActivity {
 
     // TAG & ACTIVITY:
     public static final String TAG = "Mini_RPG";
-    public static Context context;
 //    public static View view;
 
     // SAVE DATA:
@@ -46,31 +29,24 @@ public class MainActivity extends BaseGameActivity {
     public static boolean showAds;
 
     //tbs.bassjump.reference.Game container
-    public static RelativeLayout gameContainer;
 
     public static void unlockAchievement(String id) {
-        if (getApiClient().isConnected()) {
-            Games.Achievements.unlock(getApiClient(), id);
-        }
+//        if (getApiClient().isConnected()) {
+//            Games.Achievements.unlock(getApiClient(), id);
+//        }
     }
 
     public static MainActivity getMainActivity() {
         return mainActivity;
     }
 
-    public static View getView() {
-        return gameContainer;
-    }
-
     private static void log(String step) {
-        Log.e("msg", step);
+        Utility.print("msg > "+ step);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.game);
-        gameContainer = (RelativeLayout) findViewById(R.id.game);
         adManager = new AdManager(this);
 
         mainActivity = this;
@@ -78,16 +54,15 @@ public class MainActivity extends BaseGameActivity {
         unlockAchievement("CgkIvYbi1pMMEAIQDA");
 
         // SETUP:
-        context = this;
         Utility.setupRandom();
-        ScreenDimen.setup(context);
-        Game.init(context);
+        ScreenDimen.setup();
+        Game.init();
         Game.setup();
         // LOAD AD:
         Game.adManager.loadFullscreenAd();
 
         // LOAD DATA:
-        preferences = new SecurePreferences(context, "prefs_tbs_n",
+        preferences = new SecurePreferences("prefs_tbs_n",
                 "X5TBSSDVSHYGF", true);
         if (preferences.getString("nerUds") != null) {
             showAds = false;

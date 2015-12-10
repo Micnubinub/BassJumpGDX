@@ -1,22 +1,5 @@
 package tbs.bassjump.ui;
 
-import android.content.Context;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import java.util.ArrayList;
-
-import tbs.jumpsnew.Game;
-import tbs.jumpsnew.MainActivity;
-import tbs.jumpsnew.R;
-import tbs.jumpsnew.utility.ListViewLib;
-import tbs.jumpsnew.utility.StoreItem;
-import tbs.jumpsnew.utility.Utility;
 
 /**
  * Created by root on 4/01/15.

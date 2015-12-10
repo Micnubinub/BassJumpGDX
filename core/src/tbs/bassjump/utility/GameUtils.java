@@ -1,36 +1,20 @@
 package tbs.bassjump.utility;
 
-import android.content.Context;
-import android.content.res.AssetManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.media.MediaMetadataRetriever;
-import android.net.Uri;
-import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.Toast;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import com.badlogic.gdx.math.Matrix4;
+
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 
-import tbs.jumpsnew.Game;
-import tbs.jumpsnew.MainActivity;
-import tbs.jumpsnew.R;
-import tbs.jumpsnew.fragments.MusicFragment;
-import tbs.jumpsnew.managers.FileManager;
-import tbs.jumpsnew.objects.Player;
-import tbs.jumpsnew.ui.ColorView;
-import tbs.jumpsnew.ui.ShapeView;
+import tbs.bassjump.Game;
+import tbs.bassjump.MainActivity;
+import tbs.bassjump.Utility;
+import tbs.bassjump.objects.Player;
+import tbs.bassjump.ui.ShapeView;
 
-public class Utility {
+
+public class GameUtils {
     public static final String EQUIPPED_SONG = "EQUIPPED_SONG";
     public static final String EQUIPPED_SHAPE = "EQUIPPED_SHAPE";
     public static final String EQUIPPED_COLORS = "EQUIPPED_COLORS";
@@ -84,48 +68,12 @@ public class Utility {
     public static final String SHAPE_SHURIKEN_STAR = "SHAPE_SHURIKEN_STAR";
     public static final String SHAPE_PENTAGON_STAR = "SHAPE_PENTAGON_STAR";
     public static final String CHECKOUT_OUR_OTHER_APPS = "CHECKOUT_OUR_OTHER_APPS";
-    private static final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-            ViewGroup.LayoutParams.FILL_PARENT,
-            ViewGroup.LayoutParams.FILL_PARENT);
-    private static final Matrix matrix = new Matrix();
+
+    private static final Matrix4 matrix = new Matrix4();
     // RANDOM
     public static Random rand;
     public static boolean scanningForMusic;
-    private static ArrayList<StoreItem> songs;
-    private static final Runnable songRefresher = new Runnable() {
-        @Override
-        public void run() {
-            scanningForMusic = true;
-            songs = new ArrayList<StoreItem>();
-            songs.add(new StoreItem(StoreItem.Type.SONG, Uri.parse(
-                    "android.resource://"
-                            + Game.context.getApplicationInfo().packageName
-                            + "/" + R.raw.song1).toString(), "Colossus", "Meizong",
-                    0, true));
 
-            final String boughtSongs = getBoughtSongs(Game.context);
-            final String equippedSongs = getEquippedSongs(Game.context);
-            final ArrayList<File> songFiles = FileManager.scanForMusic();
-            for (int i = 0; i < songFiles.size(); i++) {
-                final StoreItem storeItem = getSongStoreItem(boughtSongs, songFiles.get(i).getAbsolutePath());
-                storeItem.equipped = equippedSongs.contains(storeItem.tag);
-                if (MusicFragment.listView != null) {
-                    MainActivity.getMainActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (MusicFragment.adapter != null) {
-                                songs.add(storeItem);
-                                MusicFragment.adapter.notifyDataSetChanged();
-                            }
-                        }
-                    });
-                } else {
-                    songs.add(storeItem);
-                }
-            }
-            scanningForMusic = false;
-        }
-    };
     private static Thread songRefreshThread;
 
     public static void setupRandom() {
@@ -136,30 +84,10 @@ public class Utility {
         return scanningForMusic;
     }
 
-    public static void showToast(String a, Context context) {
-        Toast.makeText(context, a, Toast.LENGTH_SHORT).show();
-    }
-
-    public static void refreshSongs() {
-        try {
-            stopThread(songRefreshThread);
-            if (songRefreshThread == null) {
-                songRefreshThread = new Thread(songRefresher);
-            }
-
-            if (songRefreshThread.isAlive())
-                return;
-
-
-            songRefreshThread.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     // Log Message
     public static void log(String message) {
-        Log.e(MainActivity.TAG, message);
+        System.out.println(message);
     }
 
     // Random in Range
@@ -172,17 +100,17 @@ public class Utility {
     }
 
     public static void addGameColors() {
-        final ArrayList<StoreItem> colors = Utility.getEquippedColorStoreItems(Game.context);
-        Log.e("addingColors", colors.toString());
+        final ArrayList<StoreItem> colors = GameUtils.getEquippedColorStoreItems();
+        Utility.print("addingColors " + colors.toString());
         Game.colors = new int[colors.size()];
         for (int i = 0; i < colors.size(); i++) {
-            Game.colors[i] = Utility.getColor(colors.get(i).tag);
+            Game.colors[i] = GameUtils.getColor(colors.get(i).tag);
         }
 
     }
 
     public static int generateRange(int num) {
-        return Utility.randInt(-num / 3, num / 3);
+        return GameUtils.randInt(-num / 3, num / 3);
     }
 
     // Stop Thread
@@ -202,48 +130,19 @@ public class Utility {
         }
     }
 
-    // Resize Bitmap
-    public static Bitmap getResizedBitmap(Bitmap bm, int newHeight, int newWidth) {
-        int width = bm.getWidth();
-        int height = bm.getHeight();
-        float scaleWidth = ((float) newWidth) / width;
-        float scaleHeight = ((float) newHeight) / height;
-        matrix.reset();
-        matrix.postScale(scaleWidth, scaleHeight);
-        return Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
+
+    public static void saveCoins(int coins) {
+        Utility.saveInt(COINS, coins);
     }
 
-    // Load Bitmap from Location
-    public static Bitmap getBitmapFromAsset(Context context, String filePath) {
-        AssetManager assetManager = context.getAssets();
-        InputStream istr;
-        Bitmap bitmap = null;
-        try {
-            istr = assetManager.open(filePath);
-            bitmap = BitmapFactory.decodeStream(istr);
-        } catch (IOException e) {
-        }
-        return bitmap;
+    public static int getCoins() {
+        return Utility.getInt(COINS);
     }
 
-    public static void saveCoins(Context context, int coins) {
-        getPrefs(context).put(COINS, String.valueOf(coins));
-    }
+    public static ArrayList<StoreItem> getColorStoreItems() {
 
-    public static int getCoins(Context context) {
-        int coins = 0;
-        try {
-            coins = Integer.parseInt(getPrefs(context).getString(COINS));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return coins;
-    }
-
-    public static ArrayList<StoreItem> getColorStoreItems(Context context) {
-
-        final String boughtColors = getBoughtColors(context);
-        final String equippedColors = getEquippedColors(context);
+        final String boughtColors = getBoughtColors();
+        final String equippedColors = getEquippedColors();
         final String[] colors = {COLOR_WHITE, COLOR_RED_LIGHT, COLOR_RED,
                 COLOR_RED_DARK, COLOR_PINK_LIGHT, COLOR_PINK, COLOR_PINK_DARK,
                 COLOR_BLUE_LIGHT, COLOR_BLUE, COLOR_BLUE_DARK,
@@ -264,8 +163,8 @@ public class Utility {
         return items;
     }
 
-    public static ArrayList<StoreItem> getEquippedColorStoreItems(Context context) {
-        final String[] colors = Utility.getEquippedColors(context).split(SEP);
+    public static ArrayList<StoreItem> getEquippedColorStoreItems() {
+        final String[] colors = GameUtils.getEquippedColors().split(SEP);
         final ArrayList<StoreItem> items = new ArrayList<StoreItem>(colors.length);
         for (String color : colors) {
             items.add(getColorStoreItem("", color));
@@ -273,8 +172,8 @@ public class Utility {
         return items;
     }
 
-    public static ArrayList<StoreItem> getShapeStoreItems(Context context) {
-        final String boughtShapes = getBoughtShapes(context);
+    public static ArrayList<StoreItem> getShapeStoreItems() {
+        final String boughtShapes = getBoughtShapes();
         final String[] shapes = {SHAPE_RECTANGLE, SHAPE_TRIANGLE,
                 SHAPE_CIRCLE, SHAPE_PENTAGON, SHAPE_HEXAGON, SHAPE_PENTAGON_STAR, SHAPE_SHURIKEN_STAR};
         final ArrayList<StoreItem> items = new ArrayList<StoreItem>(shapes.length);
@@ -283,16 +182,6 @@ public class Utility {
         }
 
         return items;
-    }
-
-    public static ArrayList<StoreItem> getSongStoreItems() {
-        return songs;
-    }
-
-    public static View getColor(Context context, String tag) {
-        View view = new ColorView(context, getColor(tag));
-        view.setLayoutParams(params);
-        return view;
     }
 
     public static int getColor(String tag) {
@@ -372,7 +261,7 @@ public class Utility {
     }
 
 
-    public static View getShape(Context context, String tag) {
+    public static View getShape(String tag) {
         final View view = new ShapeView(context, getShapeType(tag));
         view.setLayoutParams(params);
         return view;
@@ -396,72 +285,35 @@ public class Utility {
         return shape;
     }
 
-    public static String getEquippedShape(Context context) {
-        String out = getPrefs(context).getString(EQUIPPED_SHAPE);
+    public static String getEquippedShape() {
+        String out = Utility.getString(EQUIPPED_SHAPE);
         out = out == null ? "" : out;
         return out;
     }
 
-    public static String getEquippedSongs(Context context) {
-        String out = getPrefs(context).getString(EQUIPPED_SONG);
-        out = out == null ? "" : out;
-        out = out.length() < 2 ? "android.resource://"
-                + context.getApplicationInfo().packageName + "/raw/song1" : out;
-        return out;
-    }
-
-    public static void removeEquippedColors(Context context, String tag) {
-        String equippedColors = getEquippedColors(context);
+    public static void removeEquippedColors(String tag) {
+        String equippedColors = getEquippedColors();
         if (equippedColors.startsWith(tag)) {
             equippedColors.replace(tag + SEP, "");
         } else {
             equippedColors.replace(SEP + tag, "");
         }
 
-        getPrefs(context).put(EQUIPPED_COLORS, equippedColors);
+        Utility.saveString(EQUIPPED_COLORS, equippedColors);
         addGameColors();
     }
 
-    public static void removeEquippedSongs(Context context, String tag) {
-        try {
-            String equippedSongs = getEquippedSongs(context);
-            if (equippedSongs.startsWith(tag)) {
-                equippedSongs.replace(tag + SEP, "");
-            } else {
-                equippedSongs.replace(SEP + tag, "");
-            }
-            getPrefs(context).put(EQUIPPED_SONG, equippedSongs);
-            equipSongs(context, equippedSongs);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
-    public static void equipShape(Context context, String tag) {
-        getPrefs(context).put(EQUIPPED_SHAPE, tag);
+    public static void equipShape(String tag) {
+        Utility.saveString(EQUIPPED_SHAPE, tag);
         Player.setPlayerShape(getShapeType(tag));
     }
 
-    public static void equipSongs(Context context, String tag) {
-        getPrefs(context).put(EQUIPPED_SONG, tag);
-        Game.songs = tag.split(SEP);
-        Log.e("songs", Arrays.toString(Game.songs));
-//        if (tag == null || tag.length() < 1)
-//           // tbs.bassjump.reference.Game.playDefaultSong();
-//        else {
-        try {
-            Game.playNextSong();
-        } catch (Exception e) {
-            // tbs.bassjump.reference.Game.playDefaultSong();
-        }
-        // }
-    }
-
-    public static String getBoughtShapes(Context context) {
+    public static String getBoughtShapes() {
         StringBuilder builder = new StringBuilder();
         builder.append(SHAPE_RECTANGLE);
 
-        String out = getPrefs(context).getString(BOUGHT_SHAPES);
+        String out = Utility.getString(BOUGHT_SHAPES);
         out = out == null ? "" : out;
 
         if (out.length() < 2)
@@ -472,28 +324,11 @@ public class Utility {
         return builder.toString();
     }
 
-    public static String getBoughtSongs(Context context) {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("android.resource://"
-                + context.getApplicationInfo().packageName + "/raw/song1");
-
-        String out = getPrefs(context).getString(BOUGHT_SONGS);
-        out = (out == null) ? "" : out;
-
-        if (out.length() < 2)
-            return builder.toString();
-
-        builder.append(SEP);
-        builder.append(out);
-        return builder.toString();
-    }
-
-
-    public static String getBoughtColors(Context context) {
+    public static String getBoughtColors() {
         final StringBuilder builder = new StringBuilder();
         builder.append(COLOR_RED);
 
-        String out = getPrefs(context).getString(BOUGHT_COLORS);
+        String out = Utility.getString(BOUGHT_COLORS);
         out = (out == null) ? "" : out;
 
         if (out.length() < 2)
@@ -504,9 +339,9 @@ public class Utility {
     }
 
 
-    public static String getEquippedColors(Context context) {
+    public static String getEquippedColors() {
         final StringBuilder builder = new StringBuilder();
-        String out = getPrefs(context).getString(EQUIPPED_COLORS);
+        String out = Utility.getString(EQUIPPED_COLORS);
         out = out == null ? "" : out;
 
         if (out.length() < 4) {
@@ -517,40 +352,30 @@ public class Utility {
         return out;
     }
 
-    public static void addBoughtShapes(Context context, String tag) {
+    public static void addBoughtShapes(String tag) {
         final StringBuilder builder = new StringBuilder();
-        builder.append(getBoughtShapes(context));
+        builder.append(getBoughtShapes());
         if (builder.toString().length() > 1)
             builder.append(SEP);
         builder.append(tag);
-        getPrefs(context).put(BOUGHT_SHAPES, builder.toString());
+        Utility.saveString(BOUGHT_SHAPES, builder.toString());
         madePurchase();
     }
 
-    public static void addBoughtSongs(Context context, String tag) {
+    public static void addBoughtColors(String tag) {
         final StringBuilder builder = new StringBuilder();
-        builder.append(getBoughtSongs(context));
+        builder.append(getBoughtColors());
         if (builder.toString().length() > 1)
             builder.append(SEP);
         builder.append(tag);
-        getPrefs(context).put(BOUGHT_SONGS, builder.toString());
-        madePurchase();
-    }
-
-    public static void addBoughtColors(Context context, String tag) {
-        final StringBuilder builder = new StringBuilder();
-        builder.append(getBoughtColors(context));
-        if (builder.toString().length() > 1)
-            builder.append(SEP);
-        builder.append(tag);
-        getPrefs(context).put(BOUGHT_COLORS, builder.toString());
+        Utility.saveString(BOUGHT_COLORS, builder.toString());
         addGameColors();
         madePurchase();
     }
 
-    public static void addEquippedColors(final Context context, String tag) {
+    public static void addEquippedColors(String tag) {
         final StringBuilder builder = new StringBuilder();
-        builder.append(getEquippedColors(context));
+        builder.append(getEquippedColors());
 
         if (tag.equals(COLOR_RED)) {
 
@@ -562,25 +387,11 @@ public class Utility {
         if (builder.toString().length() > 1)
             builder.append(SEP);
         builder.append(tag);
-        getPrefs(context).put(EQUIPPED_COLORS, builder.toString());
+        Utility.saveString(EQUIPPED_COLORS, builder.toString());
         addGameColors();
         madePurchase();
     }
 
-    public static void addEquippedSongs(Context context, String tag) {
-        Log.e("addESongs", tag);
-        final StringBuilder builder = new StringBuilder();
-        builder.append(getEquippedSongs(context));
-
-        if (builder.toString().contains(tag))
-            return;
-
-        if (builder.toString().length() > 1)
-            builder.append(SEP);
-        builder.append(tag);
-        getPrefs(context).put(EQUIPPED_SONG, builder.toString());
-        equipSongs(context, builder.toString());
-    }
 
     public static void madePurchase() {
         MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQEw");
@@ -715,64 +526,8 @@ public class Utility {
         return color;
     }
 
-    public static StoreItem getSongStoreItem(String boughtSongs, String song) {
-        try {
-            final String[] songDetails = getSongTitle(song).split(SEP);
-            return new StoreItem(StoreItem.Type.SONG, song, songDetails[0],
-                    songDetails[1], SONG_PRICE, boughtSongs.contains(song));
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return new StoreItem(StoreItem.Type.SONG, song, "?", "?",
-                    SONG_PRICE, boughtSongs.contains(song));
-        } catch (Exception ex) {
-            return new StoreItem(StoreItem.Type.SONG, song, "?", "?",
-                    SONG_PRICE, boughtSongs.contains(song));
-        }
-    }
-
-    public static String getSongTitle(String song) {
-        try {
-            if (song.contains("android.resource://"))
-                return getRawFileSongName(song);
-
-            final MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-            mmr.setDataSource(song);
-
-            String title = mmr
-                    .extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-            if (title == null || title.length() < 1 || title.equals("null")) {
-                title = new File(song).getName();
-                if (title == null || title.length() < 1 || title.equals("null"))
-                    title = "UnKnown";
-            }
-
-            String artist = mmr
-                    .extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-            if (artist == null || artist.length() < 1 || artist.equals("null"))
-                artist = "Unknown";
-
-            final StringBuilder builder = new StringBuilder();
-            builder.append(title);
-            builder.append(SEP);
-            builder.append(artist);
-
-            return builder.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return "Unknown" + SEP + "Unknown";
-    }
-
-    public static String getRawFileSongName(String song) {
-        return "Colossus" + SEP + "Meizong";
-    }
-
     public static String formatNumber(int i) {
         return NumberFormat.getIntegerInstance().format(i);
     }
 
-    public static SecurePreferences getPrefs(Context context) {
-        return new SecurePreferences(context, "prefs_tbs_n", "X5TBSSDVSHYGF",
-                true);
-    }
 }

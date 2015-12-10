@@ -1,21 +1,9 @@
 package tbs.bassjump.fragments;
 
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.google.android.gms.ads.AdListener;
-
-import tbs.jumpsnew.Game;
-import tbs.jumpsnew.GameValues;
-import tbs.jumpsnew.MainActivity;
-import tbs.jumpsnew.R;
-import tbs.jumpsnew.ui.CustomDialog;
-import tbs.jumpsnew.utility.AdManager;
-import tbs.jumpsnew.utility.Utility;
+import tbs.bassjump.Game;
+import tbs.bassjump.ui.CustomDialog;
+import tbs.bassjump.utility.GameUtils;
 
 public class GetCoinsFragment extends Fragment {
     private static final AdListener fullScreenListener = new AdListener() {
@@ -28,8 +16,8 @@ public class GetCoinsFragment extends Fragment {
         @Override
         public void onAdOpened() {
             super.onAdOpened();
-            Utility.saveCoins(Game.context, Utility.getCoins(Game.context) + 50);
-            CustomDialog.setNumCoins(Utility.getCoins(Game.context));
+            GameUtils.saveCoins(GameUtils.getCoins() + 50);
+            CustomDialog.setNumCoins(GameUtils.getCoins());
         }
 
         @Override

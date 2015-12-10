@@ -24,6 +24,6 @@ public class StoreItem {
     }
 
     public enum Type {
-        SHAPE, COLOR, SONG, BACKGROUND
+        SHAPE, COLOR
     }
 }

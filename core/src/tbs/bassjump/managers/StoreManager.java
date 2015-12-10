@@ -1,25 +1,18 @@
 package tbs.bassjump.managers;
 
-import android.content.Context;
-import android.util.Log;
-import android.widget.Toast;
 
-import tbs.jumpsnew.Game;
-import tbs.jumpsnew.MainActivity;
-import tbs.jumpsnew.fragments.GetCoinsFragment;
-import tbs.jumpsnew.ui.CustomDialog;
-import tbs.jumpsnew.utility.AdManager;
-import tbs.jumpsnew.utility.ListViewLib;
-import tbs.jumpsnew.utility.StoreItem;
-import tbs.jumpsnew.utility.Utility;
+import tbs.bassjump.Utility;
+import tbs.bassjump.ui.CustomDialog;
+import tbs.bassjump.utility.GameUtils;
+import tbs.bassjump.utility.ListViewLib;
+import tbs.bassjump.utility.StoreItem;
 
 public class StoreManager {
     // public static AdManager adManager;
-    private static Context context;
     private static final ListViewLib.StoreListener storeListener = new ListViewLib.StoreListener() {
         @Override
         public boolean onBuyItem(StoreItem item) {
-            final int coins = Utility.getCoins(context);
+            final int coins = GameUtils.getCoins();
             if (item.bought) {
                 this.onEquipItem(item);
                 return false;
@@ -27,16 +20,14 @@ public class StoreManager {
                 this.onFailedToBuyItem(item);
                 return false;
             } else {
-                Utility.saveCoins(context, coins - item.price);
+                GameUtils.saveCoins(coins - item.price);
                 switch (item.type) {
                     case COLOR:
-                        Utility.addBoughtColors(context, item.tag);
+                        GameUtils.addBoughtColors(item.tag);
                         break;
-                    case SONG:
-                        Utility.addBoughtSongs(context, item.tag);
-                        break;
+
                     case SHAPE:
-                        Utility.addBoughtShapes(context, item.tag);
+                        GameUtils.addBoughtShapes(item.tag);
                         break;
                 }
                 item.bought = true;
@@ -49,50 +40,21 @@ public class StoreManager {
         public void onEquipItem(StoreItem item) {
             switch (item.type) {
                 case SHAPE:
-                    Utility.equipShape(context, item.tag);
-                    break;
-                case SONG:
-                    Log.e("equip", item.tag);
-                    if (item.equipped)
-                        Utility.removeEquippedSongs(context, item.tag);
-                    else
-                        Utility.addEquippedSongs(context, item.tag);
-
-                    try {
-                        if (Game.mediaPlayer == null || !Game.mediaPlayer.isPlaying())
-                            Game.playSong();
-                    } catch (Exception r) {
-                        r.printStackTrace();
-                    }
-
-                    if (!Game.isMusicEnabled) {
-                        MainActivity.preferences.put("musicOn", "on");
-                        Game.isMusicEnabled = true;
-                    }
+                    GameUtils.equipShape(item.tag);
                     break;
             }
         }
 
         @Override
         public void onFailedToBuyItem(StoreItem item) {
-            toast("You don't have enough money");
+            Utility.print("You don't have enough money");
         }
 
         @Override
         public void onStoreOpened() {
             try {
-                final AdManager adManager = GetCoinsFragment.adManager;
-                if (adManager == null) {
-                    GetCoinsFragment.adManager = new AdManager(context);
-                    GetCoinsFragment.adManager.loadFullscreenAd();
-                    GetCoinsFragment.adManager.loadVideoAd();
-                } else {
-                    if (!adManager.getFullscreenAd().isLoaded())
-                        adManager.loadFullscreenAd();
-
-                    if (adManager.getVideoAd().isLoaded())
-                        adManager.loadVideoAd();
-                }
+//       Todo         adManager.loadFullscreenAd();
+//       Todo         adManager.loadVideoAd();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -100,20 +62,14 @@ public class StoreManager {
 
         @Override
         public void onStoreClosed() {
-            Utility.refreshSongs();
         }
     };
 
     private static ListViewLib listViewLib;
 
-    public StoreManager(Context context) {
-        listViewLib = new ListViewLib(context);
+    public StoreManager() {
+        listViewLib = new ListViewLib();
         listViewLib.setStoreListener(storeListener);
-        StoreManager.context = context;
-    }
-
-    private static void toast(String text) {
-        Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
     }
 
     public void showStore() {

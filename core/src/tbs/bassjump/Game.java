@@ -4,9 +4,8 @@ package tbs.bassjump;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -17,6 +16,7 @@ import tbs.bassjump.objects.AnimCircle;
 import tbs.bassjump.objects.Player;
 import tbs.bassjump.utility.AdManager;
 import tbs.bassjump.utility.GameObject;
+import tbs.bassjump.utility.GameUtils;
 
 
 public class Game extends Screen {
@@ -50,7 +50,7 @@ public class Game extends Screen {
     // MODE
     public static GameMode mode;
     public static AdManager adManager;
-    // CANVAS DATA;
+    // renderer DATA;
     // SPECIAL CONSTANTS:
     public static String txt;
     public static String scoreText;
@@ -72,7 +72,7 @@ public class Game extends Screen {
     private static ArrayList<AnimCircle> circles;
     private static int circleIndex;
     // ANIMATION
-    private static String songName;
+//    private static String songName;
     // INTRO
     private static int introDelay;
     private static int loadProg;
@@ -96,11 +96,11 @@ public class Game extends Screen {
 
         player = new Player();
 
-        String shape = Utility.getPrefs(context).getString(
-                Utility.EQUIPPED_SHAPE);
+        String shape = Utility.getString(
+                GameUtils.EQUIPPED_SHAPE);
         if (shape == null || shape.length() < 2)
-            shape = Utility.SHAPE_RECTANGLE;
-        Player.setPlayerShape(Utility.getShapeType(shape));
+            shape = GameUtils.SHAPE_RECTANGLE;
+        Player.setPlayerShape(GameUtils.getShapeType(shape));
 
         level = new Level();
         setupGame();
@@ -148,62 +148,43 @@ public class Game extends Screen {
         // ADS
 
         if (MainActivity.showAds) {
-            MainActivity.getView().post(new Runnable() { // LOAD AD
-                @Override
-                public void run() {
-                    if (!Game.adManager.getFullscreenAd().isLoaded())
-                        Game.adManager.loadFullscreenAd();
-                }
-            });
+            //Todo load ads here
             if ((player.gamesPlayed + 1) % 10 == 0 && player.gamesPlayed > 0) {
                 // AD WARNING:
-                MainActivity.getView().post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Utility.showToast("Ad Showing!", context);
-                    }
-                });
+
+//                        Utility.showToast("Ad Showing!", con);
+
             }
 
             if (player.gamesPlayed % 10 == 0 && player.gamesPlayed > 0) {
-                MainActivity.getMainActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        final InterstitialAd ad = Game.adManager
-                                .getFullscreenAd();
-                        if (ad.isLoaded()) {
-                            ad.show();
-                        }
-                    }
-                });
+                //Todo show ad here
 
             }
         }
-        Utility.log("tbs.bassjump.reference.Game Setup Initialized");
         GameValues.SPEED_BONUS = 1;
 
         // COLORS:
-        color = colors[Utility.randInt(0, colors.length - 1)];
+        color = colors[random.nextInt(colors.length)];
 
         // SAVE SCORE TO LB
-        if (MainActivity.getApiClient().isConnected()) {
-            if (player.highScoreA > 0)
-                Games.Leaderboards.submitScore(MainActivity.getApiClient(),
-                        "CgkIvYbi1pMMEAIQBg", player.highScoreA);
-            if (player.highScoreR > 0)
-                Games.Leaderboards.submitScore(MainActivity.getApiClient(),
-                        "CgkIvYbi1pMMEAIQBw", player.highScoreR);
-            if (player.highScoreU > 0)
-                Games.Leaderboards.submitScore(MainActivity.getApiClient(),
-                        "CgkIvYbi1pMMEAIQEQ", player.highScoreU);
-            if (player.highScoreS > 0)
-                Games.Leaderboards.submitScore(MainActivity.getApiClient(),
-                        "CgkIvYbi1pMMEAIQEg", player.highScoreS);
-            if (player.highScoreS2 > 0)
-                Games.Leaderboards.submitScore(MainActivity.getApiClient(),
-                        "CgkIvYbi1pMMEAIQFA", player.highScoreS);
-
-        }
+//        if (MainActivity.getApiClient().isConnected()) {
+//            if (player.highScoreA > 0)
+//                Games.Leaderboards.submitScore(MainActivity.getApiClient(),
+//                        "CgkIvYbi1pMMEAIQBg", player.highScoreA);
+//            if (player.highScoreR > 0)
+//                Games.Leaderboards.submitScore(MainActivity.getApiClient(),
+//                        "CgkIvYbi1pMMEAIQBw", player.highScoreR);
+//            if (player.highScoreU > 0)
+//                Games.Leaderboards.submitScore(MainActivity.getApiClient(),
+//                        "CgkIvYbi1pMMEAIQEQ", player.highScoreU);
+//            if (player.highScoreS > 0)
+//                Games.Leaderboards.submitScore(MainActivity.getApiClient(),
+//                        "CgkIvYbi1pMMEAIQEg", player.highScoreS);
+//            if (player.highScoreS2 > 0)
+//                Games.Leaderboards.submitScore(MainActivity.getApiClient(),
+//                        "CgkIvYbi1pMMEAIQFA", player.highScoreS);
+//
+//        }
 
         // PLAYER & LEVEL
         state = GameState.Menu;
@@ -221,48 +202,48 @@ public class Game extends Screen {
         checkAchievements();
     }
 
-    private static void drawRectangle(Canvas canvas, int x, int y, int w,
+    private static void drawRectangle(ShapeRenderer renderer, int x, int y, int w,
                                       int h, boolean drawLeft, boolean drawRight, boolean drawTop,
                                       boolean drawBottom) {
         if (drawLeft)
-            canvas.drawLine(x, y, x, y + h, paint);
+            renderer.rect(x, y, x, y + h);
 
         if (drawRight)
-            canvas.drawLine(x + w, y, x + w, y + h, paint);
+            renderer.rect(x + w, y, x + w, y + h);
 
         if (drawTop)
-            canvas.drawLine(x, y, x + w, y, paint);
+            renderer.rect(x, y, x + w, y);
 
         if (drawBottom)
-            canvas.drawLine(x, y + h, x + w, y + h, paint);
+            renderer.rect(x, y + h, x + w, y + h);
 
     }
 
     private static void checkAchievements() {
         // SCORE RELATED:
-        if (MainActivity.getApiClient().isConnected()) {
-            if (player.highScoreA >= 10)
-                MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQAQ");
-            if (player.highScoreA >= 50)
-                MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQCA");
-            if (player.highScoreA >= 100)
-                MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQCg");
-            if (player.highScoreA >= 200)
-                MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQDQ");
-            if (player.highScoreR >= 10)
-                MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQAg");
-            if (player.highScoreR >= 50)
-                MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQCQ");
-
-            // DEATH & GAMES RELATED:
-            if (player.gamesPlayed >= 1000)
-                MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQAw");
-            if (player.gamesPlayed >= 500)
-                MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQBA");
-
-            // OTHER
-            MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQDA");
-        }
+//        if (MainActivity.getApiClient().isConnected()) {
+//            if (player.highScoreA >= 10)
+//                MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQAQ");
+//            if (player.highScoreA >= 50)
+//                MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQCA");
+//            if (player.highScoreA >= 100)
+//                MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQCg");
+//            if (player.highScoreA >= 200)
+//                MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQDQ");
+//            if (player.highScoreR >= 10)
+//                MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQAg");
+//            if (player.highScoreR >= 50)
+//                MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQCQ");
+//
+//            // DEATH & GAMES RELATED:
+//            if (player.gamesPlayed >= 1000)
+//                MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQAw");
+//            if (player.gamesPlayed >= 500)
+//                MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQBA");
+//
+//            // OTHER
+//            MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQDA");
+//        }
     }
 
     public static void showAnimatedText(String text, int x, int y, int spd,
@@ -355,109 +336,14 @@ public class Game extends Screen {
         loadWidth = (int) ((GameValues.LOADING_BAR_WIDTH * (pcrn / 100)));
     }
 
-    public static void playSong(String file) {
-        playSong(new File(file));
-    }
-
-    public static void pauseSong() {
-        if (mediaPlayer != null && mediaPlayer.isPlaying())
-            mediaPlayer.pause();
-    }
-
-    public static void playSong() {
-        if (!isMusicEnabled)
-            return;
-        if (mediaPlayer != null) {
-            try {
-                if (prepared)
-                    mediaPlayer.start();
-                else if (!prepared && ((mediaPlayer == null) || !(mediaPlayer.isPlaying()))) {
-                    playNextSong();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private static void playSong(File file) {
-        if (!isMusicEnabled)
-            return;
-        currSong = file.getAbsolutePath();
-        playSong(Uri.fromFile(file));
-    }
-
-    private static void playSong(Uri uri) {
-        release();
-        if (!Game.isMusicEnabled) {
-            return;
-        }
-        numberOfPlayNextSongRetries++;
-        if (numberOfPlayNextSongRetries > 15) {
-            return;
-        }
-        if (uri.toString().toLowerCase().contains("android.resource")) {
-            mediaPlayer = MediaPlayer.create(context, R.raw.song1);
-            prepared = true;
-            mediaPlayer.start();
-            numberOfPlayNextSongRetries = 0;
-        } else {
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
-            log("step2");
-            try {
-                mediaPlayer.setDataSource(context, uri);
-                log("step3");
-                try {
-                    mediaPlayer.prepare();
-
-                    log("step4");
-                } catch (IOException e) {
-                    log(e.toString());
-                    log("step4 failed IO > " + uri.toString());
-                    e.printStackTrace();
-                    playNextSong();
-                } catch (Exception e) {
-                    log(e.toString());
-                    e.printStackTrace();
-                    log("step4 failed");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                log("step3 failed");
-            }
-            mediaPlayer.setOnPreparedListener(prepareAndPlay);
-        }
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                playNextSong();
-            }
-        });
-        setUpSongDetails();
-    }
-
-    public static void playDefaultSong() {
-        // playSong(Uri.parse("android.resource://" + context.getApplicationInfo().packageName + "/raw/song1"));
-    }
-
-    private static void setUpSongDetails() {
-        final String[] songDetails = Utility.getSongTitle(currSong).split(Utility.SEP);
-        if (songDetails == null
-                || (songDetails[0] + songDetails[1]).length() < 2)
-            songName = "Meizong - Colossus"; // DEFAULT
-        else
-            songName = songDetails[1] + " - " + songDetails[0];
-    }
-
-    public static void playNextSong() {
-        if (!isMusicEnabled || songs == null) {
-            return;
-        }
-        final int songIndex = random.nextInt(songs.length) % songs.length;
-        playSong(songs[songIndex]);
-    }
+//    private static void setUpSongDetails() {
+//        final String[] songDetails = Utility.getSongTitle(currSong).split(Utility.SEP);
+//        if (songDetails == null
+//                || (songDetails[0] + songDetails[1]).length() < 2)
+//            songName = "Meizong - Colossus"; // DEFAULT
+//        else
+//            songName = songDetails[1] + " - " + songDetails[0];
+//    }
 
 
     public static void log(String log) {
@@ -480,9 +366,6 @@ public class Game extends Screen {
             circles.add(new AnimCircle());
         }
 
-
-        playNextSong();
-
         // LOAD IMAGES ONCE
         bitmapLoader = new BitmapLoader();
 
@@ -490,7 +373,7 @@ public class Game extends Screen {
         loadProg = 0;
         loadWidth = 0;
         introShowing = true;
-//  Todo      adManager = new AdManager(context);
+//  Todo      adManager = new AdManager(con);
 //   Todo     Utility.addGameColors();
 
     }
@@ -498,26 +381,25 @@ public class Game extends Screen {
     @Override
     public void onDraw() {
         // DRAW EVERYTHING IN ORDER:
-        // paint.setColor(0x000000); // DEFAULT
-        paint.setColor(0xffffffff); // FUCK ALPHA
-        paint.setAlpha(5);
+        // c.set(0x000000); // DEFAULT
+
+        c.set(0xffff12ff);
         for (int i = 0; i < level.speedParticles.size(); ++i) {
-            canvas.drawRect(level.speedParticles.get(i).xPos,
+            renderer.rect(level.speedParticles.get(i).xPos,
                     level.speedParticles.get(i).yPos,
                     level.speedParticles.get(i).xPos
                             + GameValues.SPEED_PARTICLE_WIDTH,
                     level.speedParticles.get(i).yPos
-                            + GameValues.SPEED_PARTICLE_HEIGHT, paint);
+                            + GameValues.SPEED_PARTICLE_HEIGHT);
         }
 
-        paint.setColor(0xff42453a);
-//        canvas.drawCircle(player.getXCenter(), player.getYCenter(),
-//                LOW_F_HEIGHT * 1.15f, paint);
+        c.set(0x42453aff);
+//        renderer.drawCircle(player.getXCenter(), player.getYCenter(),
+//                LOW_F_HEIGHT * 1.15f);
 
         // PLATFORMS:
         for (int i = 0; i < level.platformsRight.size(); ++i) {
-            paint.setColor(0xff6f6f6f);
-            paint.setAlpha(255);
+            c.set(0x6f6f6fff);
             drawTop = true;
             drawBottom = true;
             if (level.platformsRight.get(i).hasNext
@@ -529,23 +411,22 @@ public class Game extends Screen {
                 drawBottom = false;
             }
 
-            Game.drawRectangle(canvas, level.platformsRight.get(i).xPos,
+            Game.drawRectangle(renderer, level.platformsRight.get(i).xPos,
                     level.platformsRight.get(i).yPos,
                     GameValues.PLATFORM_WIDTH, GameValues.PLATFORM_HEIGHT,
                     false, true, drawTop, drawBottom);
 
             if (player.goingRight && alphaM > 0) {
-                paint.setColor(0xffe5e4a0);
-                paint.setAlpha(alphaM);
-                Game.drawRectangle(canvas, level.platformsRight.get(i).xPos,
+                c.set(0xe5e4a0ff);
+                c.a = alphaM / 255f;
+                Game.drawRectangle(renderer, level.platformsRight.get(i).xPos,
                         level.platformsRight.get(i).yPos,
                         GameValues.PLATFORM_WIDTH, GameValues.PLATFORM_HEIGHT,
                         false, true, drawTop, drawBottom);
             }
         }
         for (int i = 0; i < level.platformsLeft.size(); ++i) {
-            paint.setColor(0xff5b5b5b);
-            paint.setAlpha(255);
+            c.set(0x5b5b5bff);
             drawTop = true;
             drawBottom = true;
             if (level.platformsLeft.get(i).hasNext
@@ -556,14 +437,14 @@ public class Game extends Screen {
                     || Game.state != GameState.Playing) {
                 drawBottom = false;
             }
-            Game.drawRectangle(canvas, level.platformsLeft.get(i).xPos,
+            Game.drawRectangle(renderer, level.platformsLeft.get(i).xPos,
                     level.platformsLeft.get(i).yPos, GameValues.PLATFORM_WIDTH,
                     GameValues.PLATFORM_HEIGHT, true, false, drawTop,
                     drawBottom);
             if (!player.goingRight && alphaM > 0) {
-                paint.setColor(0xffe5e4a0);
-                paint.setAlpha(alphaM);
-                Game.drawRectangle(canvas, level.platformsLeft.get(i).xPos,
+                c.set(0xe5e4a0);
+                c.a = alphaM / 255f;
+                Game.drawRectangle(renderer, level.platformsLeft.get(i).xPos,
                         level.platformsLeft.get(i).yPos,
                         GameValues.PLATFORM_WIDTH, GameValues.PLATFORM_HEIGHT,
                         true, false, drawTop, drawBottom);
@@ -572,8 +453,7 @@ public class Game extends Screen {
 
         // PAINT
         for (int i = 0; i < player.paintTrail.size(); ++i) {
-            paint.setColor(color);
-            paint.setAlpha(255);
+            c.set(color);
             if (player.paintTrail.get(i).active) {
                 paintTrailRect.set(
                         player.paintTrail.get(i).xPos,
@@ -582,13 +462,13 @@ public class Game extends Screen {
                                 + GameValues.PAINT_THICKNESS,
                         player.paintTrail.get(i).yPos
                                 + player.paintTrail.get(i).height);
-                canvas.drawRoundRect(paintTrailRect, 8, 8, paint);
+                renderer.drawRoundRect(paintTrailRect, 8, 8);
             }
 
             if (player.paintTrail.get(i).isRight() != player.goingRight
                     && alphaM > 0) {
-                paint.setColor(0xffe5e475);
-                paint.setAlpha(alphaM);
+                c.set(0xe5e475);
+                c.a = alphaM / 255f;
                 paintTrailRect.set(
                         player.paintTrail.get(i).xPos,
                         player.paintTrail.get(i).yPos,
@@ -596,134 +476,120 @@ public class Game extends Screen {
                                 + GameValues.PAINT_THICKNESS,
                         player.paintTrail.get(i).yPos
                                 + player.paintTrail.get(i).height);
-                canvas.drawRoundRect(paintTrailRect, 8, 8, paint);
+                renderer.drawRoundRect(paintTrailRect, 8, 8);
             }
         }
 
         // SPLASH
         for (int i = 0; i < player.splashParticles1.size(); i++) {
-            player.splashParticles1.get(i).draw(canvas);
+            player.splashParticles1.get(i).draw(renderer);
         }
         for (int i = 0; i < player.splashParticles2.size(); i++) {
-            player.splashParticles2.get(i).draw(canvas);
+            player.splashParticles2.get(i).draw(renderer);
         }
 
         // PLAYER:
-        player.draw(canvas);
+        player.draw(renderer);
 
-        paintText.setTextAlign(Align.CENTER);
+
         paintText.setTextSize(ScreenDimen.width / 11);
         for (int i = 0; i < animatedTexts.size(); ++i) {
             if (animatedTexts.get(i).active) {
                 paintText.setAlpha(animatedTexts.get(i).alpha);
-                canvas.drawText(animatedTexts.get(i).text,
+                renderer.drawText(animatedTexts.get(i).text,
                         animatedTexts.get(i).xPos, animatedTexts.get(i).yPos,
-                        paintText);
+                        paint);
             }
         }
 
         // CIRCLES
         for (int i = 0; i < circles.size(); ++i) {
             if (circles.get(i).active) {
-                paint.setColor(0xffe5e4a0);
-                paint.setAlpha(circles.get(i).a);
-                canvas.drawCircle(circles.get(i).xPos, circles.get(i).yPos,
-                        circles.get(i).scale, paint);
+                c.set(0xe5e4a0ff);
+                c.a = circles.get(i).a / 255f;
+                renderer.drawCircle(circles.get(i).xPos, circles.get(i).yPos,
+                        circles.get(i).scale);
             }
         }
 
-        paint.setAlpha(255);
         if (state == GameState.Menu) {
-            paint.setColor(Color.WHITE);
-            canvas.drawBitmap(BitmapLoader.leader, leaderBtn.xPos,
-                    leaderBtn.yPos, paint);
-            canvas.drawBitmap(BitmapLoader.achiv, rateBtn.xPos, rateBtn.yPos,
+            c.set(Color.WHITE);
+            renderer.drawBitmap(BitmapLoader.leader, leaderBtn.xPos,
+                    leaderBtn.yPos);
+            renderer.drawBitmap(BitmapLoader.achiv, rateBtn.xPos, rateBtn.yPos,
                     paint);
-            canvas.drawBitmap(BitmapLoader.store, storeBtn.xPos, storeBtn.yPos,
+            renderer.drawBitmap(BitmapLoader.store, storeBtn.xPos, storeBtn.yPos,
                     paint);
-            canvas.drawBitmap(BitmapLoader.achievm, achievBtn.xPos,
-                    achievBtn.yPos, paint);
-            canvas.drawBitmap(BitmapLoader.share, shareBtn.xPos, shareBtn.yPos,
+            renderer.drawBitmap(BitmapLoader.achievm, achievBtn.xPos,
+                    achievBtn.yPos);
+            renderer.drawBitmap(BitmapLoader.share, shareBtn.xPos, shareBtn.yPos,
                     paint);
             if (isMusicEnabled)
-                canvas.drawBitmap(BitmapLoader.sound, soundBtn.xPos,
-                        soundBtn.yPos, paint);
+                renderer.drawBitmap(BitmapLoader.sound, soundBtn.xPos,
+                        soundBtn.yPos);
             else
-                canvas.drawBitmap(BitmapLoader.soundO, soundBtn.xPos,
-                        soundBtn.yPos, paint);
+                renderer.drawBitmap(BitmapLoader.soundO, soundBtn.xPos,
+                        soundBtn.yPos);
 
             if (mode == GameMode.Arcade)
-                canvas.drawBitmap(BitmapLoader.modeArcade, modeBtn.xPos,
-                        modeBtn.yPos, paint);
+                renderer.drawBitmap(BitmapLoader.modeArcade, modeBtn.xPos,
+                        modeBtn.yPos);
             else if (mode == GameMode.Recruit)
-                canvas.drawBitmap(BitmapLoader.modeRecruit, modeBtn.xPos,
-                        modeBtn.yPos, paint);
+                renderer.drawBitmap(BitmapLoader.modeRecruit, modeBtn.xPos,
+                        modeBtn.yPos);
             else if (mode == GameMode.Ultra)
-                canvas.drawBitmap(BitmapLoader.modeUltra, modeBtn.xPos,
-                        modeBtn.yPos, paint);
+                renderer.drawBitmap(BitmapLoader.modeUltra, modeBtn.xPos,
+                        modeBtn.yPos);
             else if (mode == GameMode.Singularity)
-                canvas.drawBitmap(BitmapLoader.modeSingular, modeBtn.xPos,
-                        modeBtn.yPos, paint);
+                renderer.drawBitmap(BitmapLoader.modeSingular, modeBtn.xPos,
+                        modeBtn.yPos);
             else if (mode == GameMode.SpeedRunner)
-                canvas.drawBitmap(BitmapLoader.modeSpeed, modeBtn.xPos,
-                        modeBtn.yPos, paint);
+                renderer.drawBitmap(BitmapLoader.modeSpeed, modeBtn.xPos,
+                        modeBtn.yPos);
 
             // TEXT
-            paintText.setColor(0xffe5e4a0);
-            paintText.setTextAlign(Align.RIGHT);
+            c.set(0xe5e4a0ff);
+
             paintText.setTextSize((ScreenDimen.width / 4.85f));
             paintText.getTextBounds("BASS", 0, "JUMP".length(), result);
-            canvas.drawText("BASS", leaderBtn.xPos - GameValues.BUTTON_PADDING,
-                    (result.height() * 1.25f), paintText);
-            canvas.drawText("JUMP", leaderBtn.xPos - GameValues.BUTTON_PADDING,
-                    (result.height() * 2.25f), paintText);
+            renderer.drawText("BASS", leaderBtn.xPos - GameValues.BUTTON_PADDING,
+                    (result.height() * 1.25f));
+            renderer.drawText("JUMP", leaderBtn.xPos - GameValues.BUTTON_PADDING,
+                    (result.height() * 2.25f));
             paintText.setTextSize(ScreenDimen.width / 19.25f);
-            canvas.drawText("Tap anywhere", leaderBtn.xPos
+            renderer.drawText("Tap anywhere", leaderBtn.xPos
                             - GameValues.BUTTON_PADDING, (result.height() * 2.75f),
-                    paintText);
-            canvas.drawText("to Start", leaderBtn.xPos
+                    paint);
+            renderer.drawText("to Start", leaderBtn.xPos
                             - GameValues.BUTTON_PADDING, (result.height() * 3.1f),
-                    paintText);
+                    paint);
 
             // SONG NAME:
-            paintText.setColor(0xffe5e4a0);
-            paintText.setAlpha(255);
-            paintText.setTextSize(ScreenDimen.width / 24);
-            paintText.setTextAlign(Align.RIGHT);
-            songName = (songName == null) ? "Music off" : songName;
-            paintText.getTextBounds(songName, 0, songName.length(), result);
+            c.set(0xe5e4a0ff);
 
-            if (isMusicEnabled && songName != null) {
-                canvas.drawText(songName, soundBtn.xPos
-                        - GameValues.BUTTON_PADDING, ScreenDimen.height
-                        - GameValues.BUTTON_PADDING, paintText);
-            } else
-                canvas.drawText("Music Off", soundBtn.xPos
-                        - GameValues.BUTTON_PADDING, ScreenDimen.height
-                        - GameValues.BUTTON_PADDING, paintText);
 
             // COINS:
-            txt = Utility.formatNumber(Utility.getCoins(context));
-            canvas.drawText(txt, storeBtn.xPos - GameValues.BUTTON_PADDING,
-                    storeBtn.yPos + GameValues.BUTTON_SCALE, paintText);
+            txt = Utility.formatNumber(Utility.getCoins(con));
+            renderer.drawText(txt, storeBtn.xPos - GameValues.BUTTON_PADDING,
+                    storeBtn.yPos + GameValues.BUTTON_SCALE);
             paintText.getTextBounds(txt, 0, txt.length(), result);
-            canvas.drawBitmap(
+            renderer.drawBitmap(
                     BitmapLoader.coin,
                     (storeBtn.xPos - result.width())
                             - (GameValues.COIN_SCALE + GameValues.BUTTON_PADDING * 1.225f),
                     (storeBtn.yPos + GameValues.BUTTON_SCALE)
-                            - GameValues.COIN_SCALE, paint);
+                            - GameValues.COIN_SCALE);
 
             // SCORE & STATS:
             txt = ("Played: " + player.gamesPlayed);
-            paintText.setColor(0xffe5e4a0);
-            paintText.setTextAlign(Align.LEFT);
+            c.set(0xe5e4a0ff);
+
             paintText.setTextSize(ScreenDimen.width / 19.25f);
             paintText.getTextBounds(txt, 0, txt.length(), result);
-            canvas.drawText(
+            renderer.drawText(
                     txt,
                     (achievBtn.xPos + GameValues.BUTTON_SCALE + GameValues.BUTTON_PADDING),
-                    (achievBtn.yPos + GameValues.BUTTON_SCALE), paintText);
+                    (achievBtn.yPos + GameValues.BUTTON_SCALE));
             scoreText = ("Best: " + player.highScoreA);
             if (mode == GameMode.Recruit) {
                 scoreText = ("Best: " + player.highScoreR);
@@ -735,14 +601,14 @@ public class Game extends Screen {
                 scoreText = ("Best: " + player.highScoreS2);
             }
 
-            canvas.drawText(
+            renderer.drawText(
                     scoreText,
                     (achievBtn.xPos + GameValues.BUTTON_SCALE + GameValues.BUTTON_PADDING),
                     (achievBtn.yPos + GameValues.BUTTON_SCALE)
-                            - result.height(), paintText);
+                            - result.height());
 
             // MODE:
-            paintText.setTextAlign(Align.CENTER);
+
             paintText.setTextSize(ScreenDimen.width / 27);
             txt = "Arcade";
             if (mode == GameMode.Recruit) {
@@ -754,26 +620,26 @@ public class Game extends Screen {
             } else if (mode == GameMode.SpeedRunner) {
                 txt = "Runner";
             }
-            canvas.drawText(txt, modeBtn.xPos + (GameValues.BUTTON_SCALE / 2),
+            renderer.drawText(txt, modeBtn.xPos + (GameValues.BUTTON_SCALE / 2),
                     (modeBtn.yPos + GameValues.BUTTON_SCALE)
-                            + (GameValues.BUTTON_PADDING * 1.15f), paintText);
+                            + (GameValues.BUTTON_PADDING * 1.15f));
             // RANK:
 
         } else if (state == GameState.Playing) {
             // SCORE
-            paintText.setColor(0xffe5e4a0);
+            c.set(0xe5e4a0ff);
             paintText.setTextSize((ScreenDimen.width / 4.1f) * scoreTextMult);
-            paintText.setTextAlign(Align.CENTER);
+
             paintText.getTextBounds(String.valueOf(player.score), 0, String
                     .valueOf(player.score).length(), result);
             paintText.setAlpha(255);
             if (player.score > 0) {
-                canvas.drawText(String.valueOf(player.score),
+                renderer.drawText(String.valueOf(player.score),
                         ScreenDimen.getCenterX(),
-                        scoreDisplay.yPos + (result.height() / 2), paintText);
+                        scoreDisplay.yPos + (result.height() / 2));
             } else {
-                canvas.drawText(String.valueOf(1), ScreenDimen.getCenterX(),
-                        scoreDisplay.yPos + (result.height() / 2), paintText);
+                renderer.drawText(String.valueOf(1), ScreenDimen.getCenterX(),
+                        scoreDisplay.yPos + (result.height() / 2));
             }
             paintText.getTextBounds("0", 0, "0".length(), result);
             paintText.setTextSize(ScreenDimen.width / 15.5f);
@@ -799,33 +665,31 @@ public class Game extends Screen {
                 if (player.score > player.highScoreS2)
                     txt = ("NEW BEST!");
             }
-            paintText.setColor(0xffe5e4a0);
-            paintText.setAlpha(255);
-            canvas.drawText(txt, ScreenDimen.getCenterX(), scoreDisplay.yPos
-                    + (result.height()), paintText);
+            c.set(0xe5e4a0ff);
+            renderer.drawText(txt, ScreenDimen.getCenterX(), scoreDisplay.yPos
+                    + (result.height()));
         }
 
         // INTRO
         if (introShowing) {
-            paint.setColor(0xff3e3e3e);
-            canvas.drawRect(0, 0, ScreenDimen.width, ScreenDimen.height, paint);
-            paintText.setColor(0xffe5e4a0);
+            c.set(0x3e3e3eff);
+            renderer.drawRect(0, 0, ScreenDimen.width, ScreenDimen.height);
+            c.set(0xe5e4a0ff);
             paintText.setTextSize(ScreenDimen.width / 9);
-            paintText.setTextAlign(Align.CENTER);
-            canvas.drawText("The Big Shots", ScreenDimen.getCenterX(),
-                    ScreenDimen.getCenterY(), paintText);
+
+            renderer.drawText("The Big Shots", ScreenDimen.getCenterX(),
+                    ScreenDimen.getCenterY());
             paintText.setTextSize(ScreenDimen.width / 25);
-            paintText.setTextAlign(Align.CENTER);
-            canvas.drawText("Thank you for Playing!", ScreenDimen.getCenterX(),
-                    ScreenDimen.height - GameValues.BUTTON_PADDING, paintText);
-            paint.setColor(0xffe532cd);
-            canvas.drawRect(ScreenDimen.getCenterX()
+            renderer.drawText("Thank you for Playing!", ScreenDimen.getCenterX(),
+                    ScreenDimen.height - GameValues.BUTTON_PADDING);
+            c.set(0xe532cdff);
+            renderer.drawRect(ScreenDimen.getCenterX()
                             - (GameValues.LOADING_BAR_WIDTH / 2), ScreenDimen.height
                             - GameValues.LOADING_BAR_WIDTH / 2f,
                     (ScreenDimen.getCenterX() - (GameValues.LOADING_BAR_WIDTH / 2))
                             + loadWidth,
                     (ScreenDimen.height - GameValues.LOADING_BAR_WIDTH / 2f)
-                            + GameValues.LOADING_BAR_WIDTH / 10, paint);
+                            + GameValues.LOADING_BAR_WIDTH / 10);
         }
     }
 

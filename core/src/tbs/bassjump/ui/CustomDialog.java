@@ -1,26 +1,5 @@
 package tbs.bassjump.ui;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
-import android.util.TypedValue;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-import tbs.jumpsnew.Game;
-import tbs.jumpsnew.MainActivity;
-import tbs.jumpsnew.R;
-import tbs.jumpsnew.fragments.ColorFragment;
-import tbs.jumpsnew.fragments.MusicFragment;
-import tbs.jumpsnew.fragments.ShapeFragment;
-import tbs.jumpsnew.utility.Utility;
 
 /**
  * Created by root on 4/01/15.

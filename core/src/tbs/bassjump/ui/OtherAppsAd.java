@@ -1,21 +1,5 @@
 package tbs.bassjump.ui;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ValueAnimator;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.util.TypedValue;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
-import android.widget.RelativeLayout;
-
-import tbs.jumpsnew.Game;
-import tbs.jumpsnew.MainActivity;
-import tbs.jumpsnew.R;
-import tbs.jumpsnew.utility.Utility;
 
 /**
  * Created by root on 5/01/15.

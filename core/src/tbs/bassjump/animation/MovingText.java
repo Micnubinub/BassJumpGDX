@@ -1,6 +1,7 @@
 package tbs.bassjump.animation;
 
-import tbs.jumpsnew.utility.GameObject;
+
+import tbs.bassjump.utility.GameObject;
 
 public class MovingText extends GameObject {
     public String text;

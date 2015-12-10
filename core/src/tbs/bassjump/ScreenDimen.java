@@ -1,27 +1,16 @@
 package tbs.bassjump;
 
-import android.content.Context;
-import android.graphics.Point;
-import android.view.Display;
-import android.view.WindowManager;
 
-import tbs.jumpsnew.utility.Utility;
+import com.badlogic.gdx.Gdx;
 
 public class ScreenDimen {
     // VARIABLES
     public static int width;
     public static int height;
 
-    public static void setup(Context context) {
-        WindowManager wm = (WindowManager) context
-                .getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        width = size.x;
-        height = size.y;
-        Utility.log("Screen Initialized. Width: " + width + " : Height: "
-                + height);
+    public static void setup() {
+        width = Gdx.graphics.getWidth();
+        height = Gdx.graphics.getHeight();
     }
 
     public static int getCenterX() {

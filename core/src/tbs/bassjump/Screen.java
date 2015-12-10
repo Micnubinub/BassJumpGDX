@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-import java.util.ArrayList;
 
 /**
  * Created by Michael on 1/28/2015.
@@ -34,8 +33,8 @@ public abstract class Screen implements com.badlogic.gdx.Screen {
 //    private static final ArrayList<ValueAnimator> animations = new ArrayList<ValueAnimator>(10);
     public static int w, h;
     protected static OrthographicCamera camera;
-    private static SpriteBatch batch;
-    private static ShapeRenderer renderer;
+    protected static SpriteBatch batch;
+    protected static ShapeRenderer renderer;
 
     public Screen() {
         w = Gdx.graphics.getWidth();
