@@ -2,7 +2,6 @@ package tbs.bassjump;
 
 
 import tbs.bassjump.fragments.GetCoinsFragment;
-import tbs.bassjump.ui.OtherAppsAd;
 import tbs.bassjump.utility.AdManager;
 
 public class MainActivity extends BaseGameActivity {
@@ -18,11 +17,9 @@ public class MainActivity extends BaseGameActivity {
     public static GetCoinsFragment getCoinsFragment = new GetCoinsFragment();
 
     // Other apps ad
-    public static OtherAppsAd otherAppsAd;
     public static int adsWatched;
 
     // PURCHASES:
-    public static GPurchaseManager purchases;
 
 
     // ADS:
@@ -135,99 +132,11 @@ public class MainActivity extends BaseGameActivity {
             Game.player.gamesPlayed = 0;
         }
 
-        // Set up other apps adView and add gameView
-        try {
-//            final RelativeLayout gameContainer = ;
-//            gameContainer.addView(view);
-            otherAppsAd = new OtherAppsAd(this, gameContainer);
-            otherAppsAd.show(5000);
-        } catch (Exception e) {
-            Log.e("Exception: ", "ERROR! DIALOG");
-        }
-        // Load songs in a thread
-        Utility.refreshSongs();
-        // tbs.bassjump.Utility.saveCoins(this, 212424124);
-        // PURCHASES: (PUT IN LATER)
-        purchases = new GPurchaseManager();
-        mHelper.reconnectClient();
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Game.pauseSong();
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        log("onResume");
-        Game.playSong();
-    }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        log("onDestroyCalled");
-        try {
-            if (purchases.mService != null) {
-                unbindService(purchases.mServiceConn);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
-    @Override
-    public void onSignInFailed() {
 
-    }
 
-    @Override
-    public void onSignInSucceeded() {
-
-    }
-
-    // COMPLETE PURCHASE
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1001) {
-            int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
-            String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
-            String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
-            if (resultCode == RESULT_OK) {
-                try {
-                    JSONObject jo = new JSONObject(purchaseData);
-                    String sku = jo.getString("productId");
-                    // HANDLE PURCHASE:
-                    if (sku.equals(GameValues.IAP_1_ID)) {
-                        Utility.saveCoins(context,
-                                Utility.getCoins(context) + 12000);
-                        CustomDialog.setNumCoins(Utility.getCoins(context));
-                    } else if (sku.equals(GameValues.IAP_2_ID)) {
-                        Utility.saveCoins(context,
-                                Utility.getCoins(context) + 25000);
-                        CustomDialog.setNumCoins(Utility.getCoins(context));
-                    } else if (sku.equals(GameValues.IAP_3_ID)) {
-                        Utility.saveCoins(context,
-                                Utility.getCoins(context) + 100000);
-                        CustomDialog.setNumCoins(Utility.getCoins(context));
-                    } else if (sku.equals(GameValues.IAP_4_ID)) {
-                        // REMOVE ADS:
-                        preferences.put("nerUds", "xxxxx");
-                        showAds = false;
-                    } else if (sku.equals(GameValues.IAP_5_ID)) {
-                        // DOUBLE COINS:
-                        Utility.saveCoins(context,
-                                Utility.getCoins(context) * 2);
-                        CustomDialog.setNumCoins(Utility.getCoins(context));
-                    }
-                    Utility.showToast("Purchase Complete!", context);
-                } catch (JSONException e) {
-                    Utility.showToast("Purchase Failed!", context);
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
 }

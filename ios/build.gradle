@@ -14,4 +14,5 @@ eclipse.project {
 }
 dependencies {
     compile project(':core')
+    compile files('libs/robopods-google-mobile-ads-ios-1.8.0.jar')
 }

@@ -6,7 +6,6 @@ package tbs.bassjump.ui;
  * Created by root on 3/01/15.
  */
 public class ColorView extends View {
-    private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private int r, cx, cy, color;
 
     public ColorView(Context context, int color) {

@@ -1,27 +1,22 @@
 package tbs.bassjump.ui;
 
 
+import tbs.bassjump.objects.Player;
+
 /**
  * Created by root on 3/01/15.
  */
 public class ShapeView extends View {
-    private static final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private static int thickness = 12;
     private int[] points;
     private Player.PlayerShape playerShape;
     private int w, h, cx, cy, l, angleOffSet, initRotation, rotationStep;
     private boolean isStarShape;
 
-    public ShapeView(Context context, Player.PlayerShape playerShape) {
-        super(context);
-
+    public ShapeView(Player.PlayerShape playerShape) {
         init(playerShape);
     }
 
-    public ShapeView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(Player.PlayerShape.HEXAGON);
-    }
 
     public void drawCircle(Canvas canvas) {
         canvas.drawCircle(cx, cy, l - (thickness / 2), paint);
@@ -29,7 +24,6 @@ public class ShapeView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
 
         switch (playerShape) {
             case CIRCLE:
@@ -43,7 +37,6 @@ public class ShapeView extends View {
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
         this.w = w;
         this.h = h;
         init(playerShape);
@@ -83,10 +76,8 @@ public class ShapeView extends View {
                 break;
         }
 
-        paint.setColor(Game.color);
         paint.setStrokeWidth(thickness);
-        paint.setStrokeCap(Paint.Cap.ROUND);
-        paint.setStyle(Paint.Style.STROKE);
+
     }
 
     private void initRectAngle() {

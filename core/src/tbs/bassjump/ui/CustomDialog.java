@@ -5,7 +5,7 @@ package tbs.bassjump.ui;
  * Created by root on 4/01/15.
  */
 public class CustomDialog extends DialogFragment {
-    private static final Fragment[] fragments = new Fragment[4];
+    private static final View[] fragments = new Fragment[4];
     private static TextView title;
     private static TextView coinText;
     private static PagerSlidingTabStrip tabs;

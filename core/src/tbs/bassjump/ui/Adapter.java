@@ -1,42 +1,28 @@
 package tbs.bassjump.ui;
 
 
+import java.util.ArrayList;
+
+import tbs.bassjump.utility.ListViewLib;
+import tbs.bassjump.utility.StoreItem;
+
 /**
  * Created by root on 4/01/15.
  */
 public class Adapter extends BaseAdapter {
-    private static final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT);
     final ArrayList<StoreItem> storeItems;
-    private final Context context;
     private final View.OnClickListener storeClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (Utility.isScanningForMusic()) {
-                try {
-                    if (storeItems.get(0).type == StoreItem.Type.SONG) {
-                        MainActivity.getMainActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(context, "Still Scanning for music, try again in a minute", Toast.LENGTH_LONG).show();
-                            }
-                        });
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return;
-            }
             final int pos = (Integer) v.getTag(R.id.buy_now);
             if (ListViewLib.buyItem(storeItems.get(pos))) {
                 storeItems.get(pos).bought = true;
-                notifyDataSetChanged();
             }
         }
     };
 
-    public Adapter(Context context, ArrayList<StoreItem> storeItems) {
+    public Adapter(ArrayList<StoreItem> storeItems) {
         this.storeItems = storeItems;
-        this.context = context;
     }
 
     @Override
@@ -55,29 +41,10 @@ public class Adapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
-        if (convertView == null) {
-            convertView = View.inflate(context, R.layout.store_item, null);
-            holder = new ViewHolder();
-            holder.name = (TextView) convertView.findViewById(R.id.name);
-            holder.description = (TextView) convertView.findViewById(R.id.description);
-            holder.price = (TextView) convertView.findViewById(R.id.price);
-            holder.buy = (Button) convertView.findViewById(R.id.buy_equip);
-            holder.icon = (FrameLayout) convertView.findViewById(R.id.icon);
-            holder.coinContainer = convertView.findViewById(R.id.coin_icon);
-            holder.iconImageView = convertView.findViewById(R.id.icon_image_view);
-            convertView.setTag(R.id.view_holder, holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag(R.id.view_holder);
-        }
-        holder.iconImageView.setVisibility(View.GONE);
+    public View getView(int position) {
+//        holder.iconImageView.setVisibility(View.GONE);
 
-        holder.price.setTypeface(Game.font);
-        holder.description.setTypeface(Game.font);
-        holder.name.setTypeface(Game.font);
-        holder.buy.setTypeface(Game.font);
-        holder.name.setMaxLines(1);
+         holder.name.setMaxLines(1);
 
         final StoreItem item = storeItems.get(position);
         holder.name.setText(item.name);
@@ -87,52 +54,15 @@ public class Adapter extends BaseAdapter {
         holder.buy.setText(item.bought ? "Use" : "Buy");
         holder.price.setText(item.bought ? "Sold" : holder.price.getText());
         holder.coinContainer.setVisibility(item.bought ? View.GONE : View.VISIBLE);
-        convertView.setTag(R.id.buy_now, position);
-        final Button button = (Button) (convertView.findViewById(R.id.buy_equip));
-        button.setTag(R.id.buy_now, position);
-        button.setOnClickListener(storeClickListener);
 
-        try {
-            for (int i = 1; i < holder.icon.getChildCount(); i++) {
-                try {
-                    holder.icon.removeViewAt(i);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        buy_equip.setTag(R.id.buy_now, position);
+        buy_equip.setOnClickListener(storeClickListener);
+
+
 
         switch (item.type) {
             case SHAPE:
                 holder.icon.addView(Utility.getShape(context, item.tag), params);
-                break;
-            case SONG:
-                //Todo
-                holder.iconImageView.setVisibility(View.VISIBLE);
-                holder.name.setText(item.description);
-                holder.description.setText(item.name);
-
-                if (item.bought) {
-                    button.setText(item.equipped ? "Remove" : "Use");
-                    button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (item.equipped)
-                                Utility.removeEquippedSongs(context, item.tag);
-                            else
-                                Utility.addEquippedSongs(context, item.tag);
-
-                            item.equipped = !item.equipped;
-                            try {
-                                notifyDataSetChanged();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                }
                 break;
             case COLOR:
                 holder.icon.addView(Utility.getColor(context, item.tag));
@@ -150,11 +80,7 @@ public class Adapter extends BaseAdapter {
                                 else
                                     Utility.addEquippedColors(context, item.tag);
                                 item.equipped = !item.equipped;
-                                try {
-                                    notifyDataSetChanged();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+
 
                             }
                         });
@@ -167,11 +93,5 @@ public class Adapter extends BaseAdapter {
         return convertView;
     }
 
-    private static class ViewHolder {
-        TextView name, description, price;
-        Button buy;
-        FrameLayout icon;
-        View coinContainer, iconImageView;
-    }
 
 }
