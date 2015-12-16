@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -394,7 +395,7 @@ public class Utility {
 
 
     public static void madePurchase() {
-        MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQEw");
+//    todo    MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQEw");
     }
 
     public static StoreItem getShapeStoreItem(String boughtShapes, String tag) {
@@ -587,5 +588,8 @@ public class Utility {
         Gdx.net.openURI(link);
     }
 
+    public static String formatNumber(int i) {
+        return NumberFormat.getIntegerInstance().format(i);
+    }
 
 }

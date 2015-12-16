@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import tbs.bassjump.animation.MovingText;
-import tbs.bassjump.fragments.GetCoinsFragment;
 import tbs.bassjump.levels.Level;
 import tbs.bassjump.managers.BitmapLoader;
 import tbs.bassjump.objects.AnimCircle;
@@ -67,12 +66,11 @@ public class Game extends ApplicationAdapter {
     public static float scoreTextMult;
     public static AdManager adManager;
     public static boolean showAds;
-    public static GetCoinsFragment getCoinsFragment = new GetCoinsFragment();
     //    private static final ArrayList<ValueAnimator> animations = new ArrayList<ValueAnimator>(10);
     public static int w, h;
+    public static SpriteBatch batch;
+    public static ShapeRenderer renderer;
     protected static OrthographicCamera camera;
-    protected static SpriteBatch batch;
-    protected static ShapeRenderer renderer;
     private static String currSong;
     // MOVING TEXTS:
     private static ArrayList<MovingText> animatedTexts; // ANIMATED TEXT LIST
@@ -655,34 +653,34 @@ public class Game extends ApplicationAdapter {
 
         if (state == GameState.Menu) {
             c.set(Color.WHITE);
-            renderer.drawBitmap(BitmapLoader.leader, leaderBtn.xPos,
+            batch.draw(BitmapLoader.leader, leaderBtn.xPos,
                     leaderBtn.yPos);
-            renderer.drawBitmap(BitmapLoader.achiv, rateBtn.xPos, rateBtn.yPos);
-            renderer.drawBitmap(BitmapLoader.store, storeBtn.xPos, storeBtn.yPos);
-            renderer.drawBitmap(BitmapLoader.achievm, achievBtn.xPos,
+            batch.draw(BitmapLoader.achiv, rateBtn.xPos, rateBtn.yPos);
+            batch.draw(BitmapLoader.store, storeBtn.xPos, storeBtn.yPos);
+            batch.draw(BitmapLoader.achievm, achievBtn.xPos,
                     achievBtn.yPos);
-            renderer.drawBitmap(BitmapLoader.share, shareBtn.xPos, shareBtn.yPos);
+            batch.draw(BitmapLoader.share, shareBtn.xPos, shareBtn.yPos);
             if (isMusicEnabled)
-                renderer.drawBitmap(BitmapLoader.sound, soundBtn.xPos,
+                batch.draw(BitmapLoader.sound, soundBtn.xPos,
                         soundBtn.yPos);
             else
-                renderer.drawBitmap(BitmapLoader.soundO, soundBtn.xPos,
+                batch.draw(BitmapLoader.soundO, soundBtn.xPos,
                         soundBtn.yPos);
 
             if (mode == GameMode.Arcade)
-                renderer.drawBitmap(BitmapLoader.modeArcade, modeBtn.xPos,
+                batch.draw(BitmapLoader.modeArcade, modeBtn.xPos,
                         modeBtn.yPos);
             else if (mode == GameMode.Recruit)
-                renderer.drawBitmap(BitmapLoader.modeRecruit, modeBtn.xPos,
+                batch.draw(BitmapLoader.modeRecruit, modeBtn.xPos,
                         modeBtn.yPos);
             else if (mode == GameMode.Ultra)
-                renderer.drawBitmap(BitmapLoader.modeUltra, modeBtn.xPos,
+                batch.draw(BitmapLoader.modeUltra, modeBtn.xPos,
                         modeBtn.yPos);
             else if (mode == GameMode.Singularity)
-                renderer.drawBitmap(BitmapLoader.modeSingular, modeBtn.xPos,
+                batch.draw(BitmapLoader.modeSingular, modeBtn.xPos,
                         modeBtn.yPos);
             else if (mode == GameMode.SpeedRunner)
-                renderer.drawBitmap(BitmapLoader.modeSpeed, modeBtn.xPos,
+                batch.draw(BitmapLoader.modeSpeed, modeBtn.xPos,
                         modeBtn.yPos);
 
             // TEXT
@@ -703,12 +701,12 @@ public class Game extends ApplicationAdapter {
 
 
             // COINS:
-            txt = Utility.formatNumber(Utility.getCoins(con));
+            txt = Utility.formatNumber(Utility.getCoins());
             Utility.drawCenteredText(batch, c, txt, storeBtn.xPos - GameValues.BUTTON_PADDING,
                     storeBtn.yPos + GameValues.BUTTON_SCALE, 0.3f);
-            renderer.drawBitmap(
+            batch.draw(
                     BitmapLoader.coin,
-                    (storeBtn.xPos - result.width())
+                    (storeBtn.xPos - w / 8)
                             - (GameValues.COIN_SCALE + GameValues.BUTTON_PADDING * 1.225f),
                     (storeBtn.yPos + GameValues.BUTTON_SCALE)
                             - GameValues.COIN_SCALE);

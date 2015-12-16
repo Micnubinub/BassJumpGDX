@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 
 
 public class BitmapLoader {
-
+    //Todo make texture atlas
     // PLAYER:
     public static Texture player;
 

@@ -1,39 +1,23 @@
 package tbs.bassjump;
 
 
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
+
 import tbs.bassjump.managers.StoreManager;
 
-public class GameController {
+public class GameController implements InputProcessor {
 
-    private static final ShareButtonClicked share = new ShareButtonClicked() {
-        @Override
-        public void onShareButtonClicked() {
-            Utility.print("should print");
-//            final Date d = Calendar.getInstance().getTime();
-//            Game.update();
-//            final Bitmap image = Bitmap.createBitmap(ScreenDimen.width, ScreenDimen.height, Bitmap.Config.RGB_565);
-//            Canvas canvas = new Canvas(image);
-//            GameView.drawGame(canvas);
-//            final String path = MediaStore.Images.Media.insertImage(
-//                    .getContentResolver(), image, "screenShotBassJump_" + d
-//                            + ".png", null);
-//            System.out.println(path + " PATH");
-//            final Intent shareIntent = new Intent(Intent.ACTION_SEND);
-//            Uri screenshotUri = Uri.parse(path);
-//            shareIntent.setType("image/*");
-//            shareIntent
-//                    .putExtra(
-//                            Intent.EXTRA_TEXT,
-//                            "Check out my High Score on Bass Jump: \nhttps://play.google.com/store/apps/details?id=tbs.jumpsnew");
-//            shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//            shareIntent.putExtra(Intent.EXTRA_STREAM, screenshotUri);
-//            .startActivity(Intent.createChooser(shareIntent,
-//                    "Share High Score:"));
-//            GameView.shareButtonClicked = null;
-        }
-    };
 
     public static void pressed(int x, int y, int index) {
+
+    }
+
+    public static void released(int x, int y, int index) {
+
+    }
+
+    public static void pressScreen(int x, int y) {
         if (!Game.introShowing) {
             if (Game.state == GameState.Menu) {
                 if (x >= Game.soundBtn.xPos
@@ -96,7 +80,7 @@ public class GameController {
                         && y >= Game.shareBtn.yPos
                         && y <= Game.shareBtn.yPos + GameValues.BUTTON_SCALE) {
                     // SHARE:
-                    share();
+                    Utility.print("share");
                     // tbs.bassjump.Utility.showToast("Share Coming Soon!", tbs.bassjump.reference.);
                 } else if (x >= Game.storeBtn.xPos
                         && x <= Game.storeBtn.xPos + GameValues.BUTTON_SCALE
@@ -109,9 +93,9 @@ public class GameController {
                     // PLAY:
                     Game.state = GameState.Playing;
                     Game.player.jump();
-                    Game.showAnimatedText("GO!", Game.w / 2,
-                            (Game.h / 2) + (Game.h / 6),
-                            Game.h / 150, 9, 255, 0);
+                    Game.showAnimatedText("GO!", (Game.w / 2),
+                            (Game.h / 2) + ((Game.h) / 6),
+                            (Game.h) / 150, 9, 255, 0);
                 }
             } else if (Game.state == GameState.Playing) {
                 Game.player.jump();
@@ -121,11 +105,49 @@ public class GameController {
         }
     }
 
-    public static void released(int x, int y, int index) {
-
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
     }
 
-    public static void share() {
-        GameView.shareButtonClicked = share;
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int x, int y, int pointer, int button) {
+        pressScreen(x, y);
+        return false;
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        switch (keycode) {
+            case Input.Keys.SPACE:
+                pressScreen(0, 0);
+                break;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
     }
 }

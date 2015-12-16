@@ -4,6 +4,9 @@ package tbs.bassjump.ui;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
+import tbs.bassjump.Game;
+import tbs.bassjump.view_lib.View;
+
 /**
  * Created by root on 3/01/15.
  */
@@ -15,10 +18,14 @@ public class ColorView extends View {
         this.color = color;
     }
 
+    @Override
+    public void dispose() {
+
+    }
 
     @Override
-    protected void onDraw(ShapeRenderer canvas) {
-
+    public void draw(float relX, float relY, float parentRight, float parentTop) {
+        final ShapeRenderer canvas = Game.renderer;
         c.set(0xffffffff);
         canvas.setColor(c);
         canvas.circle(cx, cy, r);
