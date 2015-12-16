@@ -4,22 +4,27 @@ package tbs.bassjump.ui;
 import tbs.bassjump.Utility;
 import tbs.bassjump.fragments.ColorFragment;
 import tbs.bassjump.fragments.ShapeFragment;
+import tbs.bassjump.view_lib.ListView;
+import tbs.bassjump.view_lib.TextView;
+import tbs.bassjump.view_lib.View;
+import tbs.bassjump.view_lib.ViewGroup;
+import tbs.bassjump.view_lib.ViewPager;
 
 /**
  * Created by root on 4/01/15.
  */
-public class CustomDialog extends DialogFragment {
-    private static final View[] fragments = new Fragment[2];
+public class CustomDialog extends ViewGroup {
+    private static final View[] fragments = new ListView[2];
     private static TextView title;
     private static TextView coinText;
-    private static PagerSlidingTabStrip tabs;
+    private static ViewGroup tabs;
     private static ViewPager pager;
     private static MyPagerAdapter pagerAdapter;
+    private static boolean show;
     private final String[] TITLES = {"Colors", "Shapes"};
-    private View view;
 
     public CustomDialog() {
-        super();
+        setUpFragments();
     }
 
     public static void setNumCoins(int numCoins) {
@@ -36,50 +41,49 @@ public class CustomDialog extends DialogFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater,
-                             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.store, null);
-        title = (TextView) view.findViewById(R.id.title);
+    public void dispose() {
 
-        coinText = (TextView) view.findViewById(R.id.coins);
+    }
 
-        view.findViewById(R.id.close).setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dismiss();
-                    }
-                });
+    @Override
+    public void draw(float relX, float relY, float parentRight, float parentTop) {
+        if (!show)
+            return;
+
+
+// todo        view.findViewById(R.id.close).setOnClickListener(
+//                new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        dismiss();
+//                    }
+//                });
 
         setNumCoins(Utility.getCoins());
-        return view;
+    }
+
+    public void dismiss() {
+        show = false;
     }
 
     private void setUpFragments() {
         fragments[0] = new ColorFragment();
         fragments[1] = new ShapeFragment();
 
-        ColorFragment.setListAdapter(new Adapter(Utility
-                .getColorStoreItems()));
-        ShapeFragment.setListAdapter(new Adapter(Utility
-                .getShapeStoreItems()));
-        MusicFragment.setListAdapter(new Adapter(Utility
-                .getSongStoreItems()));
+        ColorFragment.setStoreItems(Utility
+                .getColorStoreItems());
+        ShapeFragment.setStoreItems(Utility
+                .getShapeStoreItems());
+
+        title = new TextView("Store", (int) w / 2);
+
+        coinText = new TextView((int) w / 2);
 
         tabs = (PagerSlidingTabStrip) view.findViewById(R.id.tabs);
         pager = (ViewPager) view.findViewById(R.id.view_pager);
-        pager.setOffscreenPageLimit(4);
 
         pagerAdapter = new MyPagerAdapter(getChildFragmentManager());
 
-        pager.setAdapter(pagerAdapter);
-
-        final int pageMargin = (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, 4,.getResources()
-                .getDisplayMetrics())
-        pager.setPageMargin(pageMargin);
-
-        tabs.setViewPager(pager);
     }
 
 }

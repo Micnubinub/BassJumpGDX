@@ -1,32 +1,68 @@
 package tbs.bassjump.fragments;
 
 
+import java.util.ArrayList;
 
-public class ColorFragment extends Fragment {
+import tbs.bassjump.utility.StoreItem;
+import tbs.bassjump.view_lib.ListView;
+import tbs.bassjump.view_lib.View;
+import tbs.bassjump.view_lib.ViewGroup;
+
+public class ColorFragment extends ListView {
     private static ListView listView;
+
     private static Adapter adapter;
+    private static ArrayList<StoreItem> storeItems;
 
     public ColorFragment() {
     }
 
-    public static void setListAdapter(Adapter adapter) {
-        ColorFragment.adapter = adapter;
-    }
-
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public static void setStoreItems(ArrayList<StoreItem> storeItems) {
+        ColorFragment.storeItems = storeItems;
+        //Todo set scroll to 0
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.list_fragment, container, false);
-        listView = (ListView) view.findViewById(R.id.list);
-        if (adapter != null)
-            listView.setAdapter(adapter);
-        return view;
+    public void dispose() {
+
     }
 
+    @Override
+    public void draw(float relX, float relY, float parentRight, float parentTop) {
+
+    }
+
+    public static class ListItem extends ViewGroup {
+        public ListItem() {
+
+        }
+
+        @Override
+        public void dispose() {
+
+        }
+
+        @Override
+        public void draw(float relX, float relY, float parentRight, float parentTop) {
+
+        }
+    }
+
+    public static class Adapter extends tbs.bassjump.view_lib.Adapter {
+        @Override
+        public int getCount() {
+            return 0;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        @Override
+        public View getView(int position) {
+            return null;
+        }
+    }
 
 }

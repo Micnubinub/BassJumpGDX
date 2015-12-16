@@ -58,26 +58,24 @@ public class Adapter extends tbs.bassjump.view_lib.Adapter {
 
         switch (item.type) {
             case SHAPE:
-                holder.icon.addView(Utility.getShape(item.tag));
+                StoreListItem.icon.addView(Utility.getShape(item.tag));
                 break;
             case COLOR:
-                holder.icon.addView(Utility.getColor(item.tag));
+                StoreListItem.icon.addView(Utility.getColorView(item.tag));
                 if (item.bought) {
                     if (item.tag.equals(Utility.COLOR_RED)) {
-                        button.setText("Added");
-                        button.setOnClickListener(null);
+                        StoreListItem.buy_equip.setText("Added");
+                        StoreListItem.buy_equip.setOnClickListener(null);
                     } else {
-                        button.setText(item.equipped ? "Remove" : "Use");
-                        button.setOnClickListener(new View.OnClickListener() {
+                        StoreListItem.buy_equip.setText(item.equipped ? "Remove" : "Use");
+                        StoreListItem.buy_equip.setOnClickListener(new View.OnClickListener() {
                             @Override
-                            public void onClick(View v) {
+                            public void onClick(View view, int x, int y) {
                                 if (item.equipped)
                                     Utility.removeEquippedColors(item.tag);
                                 else
                                     Utility.addEquippedColors(item.tag);
                                 item.equipped = !item.equipped;
-
-
                             }
                         });
                     }
@@ -92,6 +90,7 @@ public class Adapter extends tbs.bassjump.view_lib.Adapter {
     public static class StoreListItem extends ViewGroup {
         public static TextView name, description, buy, price;
         public static Button buy_equip;
+        public static ViewGroup icon;
 
         @Override
         public void dispose() {

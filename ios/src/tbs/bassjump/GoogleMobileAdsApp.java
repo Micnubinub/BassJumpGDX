@@ -16,10 +16,22 @@
  * Portions of this code is based on Google Inc's Google Mobile Ads sample
  * which is copyright (C) 2015 Google Inc.
  */
-package tbs.bassjump.reference;
+package tbs.bassjump;
 
+import org.robovm.apple.foundation.NSAutoreleasePool;
+import org.robovm.apple.foundation.NSErrorException;
+import org.robovm.apple.uikit.UIApplication;
+import org.robovm.apple.uikit.UIApplicationDelegateAdapter;
+import org.robovm.apple.uikit.UIApplicationLaunchOptions;
+import org.robovm.pods.google.GGLContextMobileAds;
 
 public class GoogleMobileAdsApp extends UIApplicationDelegateAdapter {
+
+    public static void main(String[] args) {
+        try (NSAutoreleasePool pool = new NSAutoreleasePool()) {
+            UIApplication.main(args, null, GoogleMobileAdsApp.class);
+        }
+    }
 
     @Override
     public boolean didFinishLaunching(UIApplication application, UIApplicationLaunchOptions launchOptions) {
@@ -30,11 +42,5 @@ public class GoogleMobileAdsApp extends UIApplicationDelegateAdapter {
         }
 
         return true;
-    }
-
-    public static void main(String[] args) {
-        try (NSAutoreleasePool pool = new NSAutoreleasePool()) {
-            UIApplication.main(args, null, GoogleMobileAdsApp.class);
-        }
     }
 }

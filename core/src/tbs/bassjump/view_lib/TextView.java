@@ -18,7 +18,6 @@ public class TextView extends View {
     protected String[] textStrings = {};
     protected Gravity gravity;
 
-
     public TextView(int w) {
         this.w = w;
     }
@@ -37,6 +36,15 @@ public class TextView extends View {
         this.textColor = textColor;
         setText(text);
         this.w = w;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+        getTextStrings();
     }
 
     @Override
@@ -67,7 +75,6 @@ public class TextView extends View {
         getTextStrings();
     }
 
-
     @Override
     public void setY(int y) {
         this.y = y;
@@ -81,12 +88,6 @@ public class TextView extends View {
     public void setTextScale(float textScale) {
         this.textScale = textScale;
     }
-
-    public void setText(String text) {
-        this.text = text;
-        getTextStrings();
-    }
-
 
     public void getTextStrings() {
         if (text == null || text.length() < 1)

@@ -3,7 +3,9 @@ package tbs.bassjump.ui;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
+import tbs.bassjump.Game;
 import tbs.bassjump.objects.Player;
+import tbs.bassjump.view_lib.View;
 
 /**
  * Created by root on 3/01/15.
@@ -25,7 +27,13 @@ public class ShapeView extends View {
     }
 
     @Override
-    protected void onDraw(ShapeRenderer canvas) {
+    public void dispose() {
+
+    }
+
+    @Override
+    public void draw(float relX, float relY, float parentRight, float parentTop) {
+        final ShapeRenderer canvas = Game.renderer;
 
         switch (playerShape) {
             case CIRCLE:

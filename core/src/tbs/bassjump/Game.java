@@ -18,7 +18,6 @@ import tbs.bassjump.levels.Level;
 import tbs.bassjump.managers.BitmapLoader;
 import tbs.bassjump.objects.AnimCircle;
 import tbs.bassjump.objects.Player;
-import tbs.bassjump.utility.AdManager;
 import tbs.bassjump.utility.GameObject;
 import tbs.bassjump.utility.GameUtils;
 
@@ -64,7 +63,6 @@ public class Game extends ApplicationAdapter {
     public static Music ambientMusic;
     public static int numberOfPlayNextSongRetries;
     public static float scoreTextMult;
-    public static AdManager adManager;
     public static boolean showAds;
     //    private static final ArrayList<ValueAnimator> animations = new ArrayList<ValueAnimator>(10);
     public static int w, h;
@@ -401,7 +399,7 @@ public class Game extends ApplicationAdapter {
         // SETUP:
         Game.setup();
         // LOAD AD:
-        Game.adManager.loadFullscreenAd();
+// Todo       Game.adManager.loadFullscreenAd();
 
         // LOAD DATA:
         showAds = Utility.getString("nerUds") == null;

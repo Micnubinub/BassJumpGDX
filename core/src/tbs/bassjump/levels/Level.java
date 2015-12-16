@@ -42,7 +42,7 @@ public class Level {
 			Platform platform = new Platform();
 			platform.height = GameValues.PLATFORM_HEIGHT;
 			platform.width = GameValues.PLATFORM_WIDTH;
-			platform.xPos = (ScreenDimen.width - GameValues.PLATFORM_WIDTH);
+			platform.xPos = (Game.w - GameValues.PLATFORM_WIDTH);
 			platform.yPos = (i * GameValues.PLATFORM_HEIGHT);
 			platformsLeft.add(platform);
 		}
@@ -58,7 +58,7 @@ public class Level {
 		speedParticles = new ArrayList<SpeedParticle>();
 		for (int i = 0; i < 5; ++i) {
 			SpeedParticle sp = new SpeedParticle();
-			sp.xPos = (i * (ScreenDimen.width / 4));
+			sp.xPos = (i * (Game.w / 4));
 			sp.xPos += GameUtils.randInt(-GameValues.SPEED_PARTICLE_WIDTH,
 					GameValues.SPEED_PARTICLE_WIDTH);
 			speedParticles.add(sp);
@@ -94,8 +94,8 @@ public class Level {
 
 		// SPEED PARTICLES
 		for (int i = 0; i < speedParticles.size(); ++i) {
-			speedParticles.get(i).yPos = GameUtils.randInt(-(ScreenDimen.height / 3),
-					ScreenDimen.height);
+			speedParticles.get(i).yPos = GameUtils.randInt(-(Game.h / 3),
+					Game.h);
 		}
 	}
 
