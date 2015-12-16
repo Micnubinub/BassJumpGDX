@@ -1,23 +1,22 @@
 package tbs.bassjump.objects;
 
-import android.graphics.Canvas;
-import android.graphics.Paint;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import java.util.ArrayList;
 
-import tbs.jumpsnew.Game;
-import tbs.jumpsnew.GameMode;
-import tbs.jumpsnew.GameValues;
-import tbs.jumpsnew.MainActivity;
-import tbs.jumpsnew.Screen;
-import tbs.jumpsnew.levels.Level;
-import tbs.jumpsnew.levels.Platform;
-import tbs.jumpsnew.ui.CustomDialog;
-import tbs.jumpsnew.utility.GameObject;
-import tbs.jumpsnew.utility.Utility;
+import tbs.bassjump.Game;
+import tbs.bassjump.GameMode;
+import tbs.bassjump.GameValues;
+import tbs.bassjump.Utility;
+import tbs.bassjump.levels.Level;
+import tbs.bassjump.levels.Platform;
+import tbs.bassjump.ui.CustomDialog;
+import tbs.bassjump.utility.GameObject;
+
 
 public class Player extends GameObject {
-    private static final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private static final Color c = new Color();
     // Color
     public static int paintIndex;
     public static PlayerShape playerShape;
@@ -51,7 +50,6 @@ public class Player extends GameObject {
     public int gamesHund; // Games over 100;
     // PAINT TRAIL
     public ArrayList<PaintParticle> paintTrail;
-
     // OTHER:
     int speed;
     int right1;
@@ -60,7 +58,7 @@ public class Player extends GameObject {
     int bottom2;
 
     public Player() {
-        Utility.log("Player Initialized");
+        Utility.print("Player Initialized");
         splashParticles1 = new ArrayList<Particle>();
         for (int i = 0; i < 12; i++) {
             splashParticles1.add(new Particle());
@@ -69,9 +67,9 @@ public class Player extends GameObject {
         for (int i = 0; i < 12; i++) {
             splashParticles2.add(new Particle());
         }
-        playerJumpDistance = Screen.width - (GameValues.PLATFORM_WIDTH * 2)
+        playerJumpDistance = Game.w - (GameValues.PLATFORM_WIDTH * 2)
                 - GameValues.PLAYER_SCALE;
-        Utility.equipShape(Game.context, Utility.getEquippedShape(Game.context));
+        Utility.equipShape(Utility.getEquippedShape());
     }
 
     public static void setPlayerShape(PlayerShape playerShape) {
@@ -102,9 +100,7 @@ public class Player extends GameObject {
                 initPentagonStar();
                 break;
         }
-        paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth((GameValues.PAINT_THICKNESS + 16));
-        paint.setStrokeCap(Paint.Cap.ROUND);
     }
 
     private static void initRectAngle() {
@@ -204,9 +200,8 @@ public class Player extends GameObject {
         }
     }
 
-    public static void drawCircle(Canvas canvas) {
-        canvas.drawCircle(cx, cy, l - ((GameValues.PAINT_THICKNESS + 16) / 2),
-                paint);
+    public static void circle(ShapeRenderer canvas) {
+        canvas.circle(cx, cy, l - ((GameValues.PAINT_THICKNESS + 16) / 2));
     }
 
     @Override
@@ -219,7 +214,7 @@ public class Player extends GameObject {
 
         // LOCATION & SCALE
         scale = GameValues.PLAYER_SCALE;
-        yPos = Screen.height; // START OFF SCREEN
+        yPos = Game.h; // START OFF SCREEN
         xPos = GameValues.PLATFORM_WIDTH;
 
         // OTHER
@@ -234,7 +229,7 @@ public class Player extends GameObject {
         }
         activatePaint(true);
 
-        Utility.equipShape(Game.context, Utility.getEquippedShape(Game.context));
+        Utility.equipShape(Utility.getEquippedShape());
         tmpCoins = 0;
     }
 
@@ -299,7 +294,7 @@ public class Player extends GameObject {
                     }
                 } else {
                     xPos += GameValues.PLAYER_JUMP_SPEED;
-                    if (xPos > Screen.width + GameValues.DEATH_GAP) {
+                    if (xPos > Game.w + GameValues.DEATH_GAP) {
                         deathActual();
                         Game.setupGame();
                     }
@@ -309,8 +304,8 @@ public class Player extends GameObject {
             case JUMPING:
                 if (goingRight) { // RIGHT
                     xPos += GameValues.PLAYER_JUMP_SPEED;
-                    if ((xPos + scale) >= (Screen.width - GameValues.PLATFORM_WIDTH)) {
-                        goingRight = (xPos < (Screen.width / 2));
+                    if ((xPos + scale) >= (Game.w - GameValues.PLATFORM_WIDTH)) {
+                        goingRight = (xPos < (Game.w / 2));
                         if (isAlive(true))
                             land(true);
                         else
@@ -319,7 +314,7 @@ public class Player extends GameObject {
                 } else { // LEFT
                     xPos -= GameValues.PLAYER_JUMP_SPEED;
                     if (xPos <= (GameValues.PLATFORM_WIDTH)) {
-                        goingRight = (xPos < (Screen.width / 2));
+                        goingRight = (xPos < (Game.w / 2));
                         if (isAlive(true))
                             land(false);
                         else
@@ -341,53 +336,52 @@ public class Player extends GameObject {
         // SCORE
         if (Game.mode == GameMode.Arcade) {
             if (highScoreA < score) {
-                MainActivity.preferences.put("hScore", String.valueOf(score));
+                Utility.saveInt("hScore", score);
                 highScoreA = score;
             }
         } else if (Game.mode == GameMode.Recruit) {
             if (highScoreR < score) {
-                MainActivity.preferences.put("hScoreR", String.valueOf(score));
+                Utility.saveInt("hScoreR", score);
                 highScoreR = score;
             }
         } else if (Game.mode == GameMode.Ultra) {
             if (highScoreU < score) {
-                MainActivity.preferences.put("hScoreU", String.valueOf(score));
+                Utility.saveInt("hScoreU", score);
                 highScoreU = score;
             }
         } else if (Game.mode == GameMode.Singularity) {
             if (highScoreS < score) {
-                MainActivity.preferences.put("hScoreS", String.valueOf(score));
+                Utility.saveInt("hScoreS", score);
                 highScoreS = score;
             }
         } else if (Game.mode == GameMode.SpeedRunner) {
             if (highScoreS2 < score) {
-                MainActivity.preferences.put("hScoreS2", String.valueOf(score));
+                Utility.saveInt("hScoreS2", score);
                 highScoreS2 = score;
             }
         }
 
         // PLAYED AND DEATHS
-        if (MainActivity.preferences.getString("gPlayed") != null) {
-            gamesPlayed = Integer.parseInt(MainActivity.preferences
-                    .getString("gPlayed")) + 1;
+        if (Utility.getString("gPlayed") != null) {
+            gamesPlayed = Utility.getInt("gPlayed") + 1;
         } else {
             gamesPlayed = 0;
         }
-        MainActivity.preferences.put("gPlayed", String.valueOf(gamesPlayed));
+        Utility.saveInt("gPlayed", gamesPlayed);
 
         if (score > 100 && Game.mode == GameMode.Arcade) {
             gamesHund += 1;
             if (gamesHund >= 10) {
-                MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQDg");
+//                MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQDg");
             }
         } else if (Game.mode == GameMode.Arcade) {
             gamesHund = 0;
         }
 
         // SAVE COINS
-        Utility.saveCoins(Game.context, Utility.getCoins(Game.context)
+        Utility.saveCoins(Utility.getCoins()
                 + tmpCoins);
-        CustomDialog.setNumCoins(Utility.getCoins(Game.context));
+        CustomDialog.setNumCoins(Utility.getCoins());
     }
 
     public boolean isAlive(boolean j) {
@@ -468,7 +462,7 @@ public class Player extends GameObject {
                 paintTrail.get(moveIndex).xPos = GameValues.PLATFORM_WIDTH
                         - GameValues.PAINT_THICKNESS;
             } else {
-                paintTrail.get(moveIndex).xPos = (Screen.width - GameValues.PLATFORM_WIDTH);
+                paintTrail.get(moveIndex).xPos = (Game.w - GameValues.PLATFORM_WIDTH);
             }
         } else {
             paintTrail.get(moveIndex).xPos = GameValues.PLATFORM_WIDTH
@@ -499,7 +493,7 @@ public class Player extends GameObject {
         Game.color = Game.colors[Utility.randInt(0, Game.colors.length - 1)];
         state = PlayerState.ON_GROUND;
         if (right) {
-            xPos = ((Screen.width - GameValues.PLATFORM_WIDTH) - scale);
+            xPos = ((Game.w - GameValues.PLATFORM_WIDTH) - scale);
         } else {
             xPos = (GameValues.PLATFORM_WIDTH);
         }
@@ -516,11 +510,11 @@ public class Player extends GameObject {
         // TEXT
         if (right)
             Game.showAnimatedText("+" + coinPluser, xPos, getYCenter(),
-                    (Screen.height / 100), 12, 255, 0);
+                    (Game.h / 100), 12, 255, 0);
         else
             Game.showAnimatedText("+" + coinPluser, xPos
                             + GameValues.PLAYER_SCALE, getYCenter(),
-                    (Screen.height / 100), 12, 255, 0);
+                    (Game.h / 100), 12, 255, 0);
     }
 
     public int getXCenter() {
@@ -560,27 +554,27 @@ public class Player extends GameObject {
         }
     }
 
-    public void drawPolygon(Canvas canvas) {
+    public void drawPolygon(ShapeRenderer canvas) {
         if (points == null || points.length <= 5)
             return;
         for (int i = 0; i < points.length; i += 2) {
             // canvas.drawLine(points[i], points[i + 1], points[(i + 2)
             // % points.length], points[(i + 3) % points.length], paint);
-            canvas.drawLine(goingRight ? points[i] - xOffset : points[i]
+            canvas.line(goingRight ? points[i] - xOffset : points[i]
                             + xOffset, points[i + 1], goingRight ? points[(i + 2)
                             % points.length]
                             - xOffset : points[(i + 2) % points.length] + xOffset,
-                    points[(i + 3) % points.length], paint);
+                    points[(i + 3) % points.length]);
 
         }
     }
 
-    public void draw(Canvas canvas) {
+    public void draw(ShapeRenderer canvas) {
         setShapeRotation(playerJumpPercentage * 180);
-        paint.setColor(Game.color);
+        c.set(Game.color);
         switch (playerShape) {
             case CIRCLE:
-                drawCircle(canvas);
+                circle(canvas);
                 break;
             default:
                 drawPolygon(canvas);
@@ -589,17 +583,16 @@ public class Player extends GameObject {
 
         // DRAW GLOW:
         if (Game.alphaM > 0) {
-            paint.setColor(0xffe5e4a0);
-            paint.setAlpha(Game.alphaM);
+            c.set(0xffe5e4a0);
+            c.a = (Game.alphaM / 255f);
             switch (playerShape) {
                 case CIRCLE:
-                    drawCircle(canvas);
+                    circle(canvas);
                     break;
                 default:
                     drawPolygon(canvas);
                     break;
             }
-            paint.setAlpha(255);
         }
     }
 

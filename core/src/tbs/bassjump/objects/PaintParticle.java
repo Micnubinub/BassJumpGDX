@@ -1,7 +1,8 @@
 package tbs.bassjump.objects;
 
-import tbs.jumpsnew.Screen;
-import tbs.jumpsnew.utility.GameObject;
+
+import tbs.bassjump.Game;
+import tbs.bassjump.utility.GameObject;
 
 public class PaintParticle extends GameObject {
 
@@ -9,7 +10,7 @@ public class PaintParticle extends GameObject {
     public boolean active;
 
     public boolean isRight() {
-        return xPos > Screen.getCenterX();
+        return xPos > (Game.w / 2);
 
     }
 }

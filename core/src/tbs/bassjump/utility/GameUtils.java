@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import tbs.bassjump.Game;
-import tbs.bassjump.MainActivity;
 import tbs.bassjump.Utility;
 import tbs.bassjump.objects.Player;
 import tbs.bassjump.ui.ShapeView;

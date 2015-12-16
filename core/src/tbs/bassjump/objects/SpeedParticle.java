@@ -2,7 +2,6 @@ package tbs.bassjump.objects;
 
 
 import tbs.bassjump.GameValues;
-import tbs.bassjump.ScreenDimen;
 import tbs.bassjump.Utility;
 import tbs.bassjump.utility.GameObject;
 

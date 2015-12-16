@@ -1,7 +1,8 @@
 package tbs.bassjump.objects;
 
-import tbs.jumpsnew.Screen;
-import tbs.jumpsnew.utility.GameObject;
+
+import tbs.bassjump.Game;
+import tbs.bassjump.utility.GameObject;
 
 public class AnimCircle extends GameObject {
 
@@ -13,7 +14,7 @@ public class AnimCircle extends GameObject {
 
     public void update() {
         if (active) {
-            this.scale += Screen.width / 38;
+            this.scale += Game.w / 38;
             this.a -= 10;
             if (a <= 0) {
                 active = false;
