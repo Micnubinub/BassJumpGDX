@@ -16,7 +16,13 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import java.util.ArrayList;
 import java.util.Date;
 
+import tbs.bassjump.GameState;
+import tbs.bassjump.GameValues;
 import tbs.bassjump.Utility;
+import tbs.bassjump.levels.Level;
+import tbs.bassjump.objects.Player;
+import tbs.bassjump.ui.CanvasButton;
+import tbs.bassjump.utility.StoreItem;
 
 public class Game extends ApplicationAdapter {
     // SAVE STATE:
@@ -90,24 +96,6 @@ public class Game extends ApplicationAdapter {
     public static void showAd(final boolean manual) {
 
 
-    }
-
-    private void getSprites() {
-        dispose();
-        batch = new SpriteBatch();
-        renderer = new ShapeRenderer();
-        font = Utility.getFont();
-        getCanvasButtons();
-        Gdx.input.setInputProcessor(controller);
-        jumpSound = Gdx.audio.newSound(Gdx.files.internal("jump.mp3"));
-        coinSound = Gdx.audio.newSound(Gdx.files.internal("coin.mp3"));
-        buttonSound = Gdx.audio.newSound(Gdx.files.internal("button.mp3"));
-        moneySound = Gdx.audio.newSound(Gdx.files.internal("money.mp3"));
-        deathSound = Gdx.audio.newSound(Gdx.files.internal("death2.mp3"));
-        winSound = Gdx.audio.newSound(Gdx.files.internal("win.mp3"));
-//        ambientMusic = Gdx.audio.newMusic(Gdx.files.internal("ambient.mp3"));
-//        ambientMusic.setLooping(true);
-//        ambientMusic.play();
     }
 
     public static void draw() {
@@ -280,7 +268,6 @@ public class Game extends ApplicationAdapter {
         }
     }
 
-
     public static void update(float delta) {
         level.update(delta);
         player.update(delta);
@@ -428,7 +415,6 @@ public class Game extends ApplicationAdapter {
         storeItems.add(buyCoins);
     }
 
-
     // STORE DIALOG:
     public static void showStore() {
 
@@ -437,6 +423,24 @@ public class Game extends ApplicationAdapter {
     public static void log(String msg) {
         date.setTime(System.currentTimeMillis());
         Gdx.app.error("" + date.toString(), msg);
+    }
+
+    private void getSprites() {
+        dispose();
+        batch = new SpriteBatch();
+        renderer = new ShapeRenderer();
+        font = Utility.getFont();
+        getCanvasButtons();
+        Gdx.input.setInputProcessor(controller);
+        jumpSound = Gdx.audio.newSound(Gdx.files.internal("jump.mp3"));
+        coinSound = Gdx.audio.newSound(Gdx.files.internal("coin.mp3"));
+        buttonSound = Gdx.audio.newSound(Gdx.files.internal("button.mp3"));
+        moneySound = Gdx.audio.newSound(Gdx.files.internal("money.mp3"));
+        deathSound = Gdx.audio.newSound(Gdx.files.internal("death2.mp3"));
+        winSound = Gdx.audio.newSound(Gdx.files.internal("win.mp3"));
+//        ambientMusic = Gdx.audio.newMusic(Gdx.files.internal("ambient.mp3"));
+//        ambientMusic.setLooping(true);
+//        ambientMusic.play();
     }
 
     @Override

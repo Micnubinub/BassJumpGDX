@@ -11,7 +11,6 @@ public class MainActivity extends BaseGameActivity {
 //    public static View view;
 
     // SAVE DATA:
-    public static SecurePreferences preferences;
     public static AdManager adManager;
     public static MainActivity mainActivity;
     public static GetCoinsFragment getCoinsFragment = new GetCoinsFragment();
@@ -59,47 +58,41 @@ public class MainActivity extends BaseGameActivity {
         Game.adManager.loadFullscreenAd();
 
         // LOAD DATA:
-        preferences = new SecurePreferences("prefs_tbs_n",
-                "X5TBSSDVSHYGF", true);
-        if (preferences.getString("nerUds") != null) {
-            showAds = false;
-        } else {
-            showAds = true;
-        }
+        showAds = Utility.getString("nerUds") == null;
 
-        if (preferences.getString("hScore") != null) {
-            Game.player.highScoreA = Integer.parseInt(preferences
+        if (Utility.getString("hScore") != null) {
+            Game.player.highScoreA = Integer.parseInt(Utility
                     .getString("hScore"));
         } else {
             Game.player.highScoreA = 0;
         }
-        if (preferences.getString("hScoreR") != null) {
-            Game.player.highScoreR = Integer.parseInt(preferences
+        if (Utility.getString("hScoreR") != null) {
+            Game.player.highScoreR = Integer.parseInt(Utility
                     .getString("hScoreR"));
         } else {
             Game.player.highScoreR = 0;
         }
-        if (preferences.getString("hScoreU") != null) {
-            Game.player.highScoreU = Integer.parseInt(preferences
+        if (Utility.getString("hScoreU") != null) {
+            Game.player.highScoreU = Integer.parseInt(Utility
                     .getString("hScoreU"));
         } else {
             Game.player.highScoreR = 0;
         }
-        if (preferences.getString("hScoreS") != null) {
-            Game.player.highScoreS = Integer.parseInt(preferences
+        if (Utility.getString("hScoreS") != null) {
+            Game.player.highScoreS = Integer.parseInt(Utility
                     .getString("hScoreS"));
         } else {
             Game.player.highScoreS = 0;
         }
-        if (preferences.getString("hScoreS2") != null) {
-            Game.player.highScoreS2 = Integer.parseInt(preferences
+        if (Utility.getString("hScoreS2") != null) {
+            Game.player.highScoreS2 = Integer.parseInt(Utility
                     .getString("hScoreS2"));
         } else {
             Game.player.highScoreS2 = 0;
         }
 
-        if (preferences.getString("musicOn") != null) {
-            if (preferences.getString("musicOn").equals("off")) {
+        if (Utility.getString("musicOn") != null) {
+            if (Utility.getString("musicOn").equals("off")) {
                 Game.isMusicEnabled = false;
                 Game.pauseSong();
             } else {
@@ -109,24 +102,24 @@ public class MainActivity extends BaseGameActivity {
             Game.isMusicEnabled = true;
         }
 
-        if (preferences.getString("gMode") != null) {
-            if (preferences.getString("gMode").equals("arcade")) {
+        if (Utility.getString("gMode") != null) {
+            if (Utility.getString("gMode").equals("arcade")) {
                 Game.mode = GameMode.Arcade;
-            } else if (preferences.getString("gMode").equals("recruit")) {
+            } else if (Utility.getString("gMode").equals("recruit")) {
                 Game.mode = GameMode.Recruit;
-            } else if (preferences.getString("gMode").equals("ultra")) {
+            } else if (Utility.getString("gMode").equals("ultra")) {
                 Game.mode = GameMode.Ultra;
-            } else if (preferences.getString("gMode").equals("singul")) {
+            } else if (Utility.getString("gMode").equals("singul")) {
                 Game.mode = GameMode.Singularity;
-            } else if (preferences.getString("gMode").equals("speed")) {
+            } else if (Utility.getString("gMode").equals("speed")) {
                 Game.mode = GameMode.SpeedRunner;
                 GameValues.PLAYER_JUMP_SPEED_MULT = 8;
             }
         } else {
             Game.mode = GameMode.Arcade;
         }
-        if (MainActivity.preferences.getString("gPlayed") != null) {
-            Game.player.gamesPlayed = Integer.parseInt(MainActivity.preferences
+        if (Utility.getString("gPlayed") != null) {
+            Game.player.gamesPlayed = Integer.parseInt(Utility
                     .getString("gPlayed")) + 1;
         } else {
             Game.player.gamesPlayed = 0;

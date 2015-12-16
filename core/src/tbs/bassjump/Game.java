@@ -109,40 +109,6 @@ public class Game extends Screen {
 //        Log.e("setUp ticToc = ", String.valueOf(System.currentTimeMillis() - tic));
     }
 
-    public void update() {
-        if (introShowing) {
-            introDelay -= 1;
-            loadProg += 1;
-            loadProg(loadProg);
-            if (introDelay <= 0) {
-                introShowing = false;
-            }
-        } else {
-            introShowing = false;
-        }
-
-        player.update();
-        level.update();
-        for (int i = 0; i < animatedTexts.size(); ++i) {
-            animatedTexts.get(i).update();
-        }
-        for (int i = 0; i < circles.size(); ++i) {
-            circles.get(i).update();
-        }
-        // M:
-        if (alphaM > 0) {
-            alphaM -= 15;
-            if (alphaM < 0)
-                alphaM = 0;
-        }
-
-        // ANIM:
-        scoreTextMult -= 0.05f;
-        if (scoreTextMult < 1) {
-            scoreTextMult = 1;
-        }
-    }
-
     public static void setupGame() {
         // SETUP NEW GAME
         // ADS
@@ -327,13 +293,16 @@ public class Game extends Screen {
         circles.get(circleIndex).activate(scale, x, y, a, special);
     }
 
-
     // FAKE LOADER:
     private static void loadProg(int loadProg) {
         float pcrn = loadProg * 100 / 150;
         if (pcrn < 0)
             pcrn = 0;
         loadWidth = (int) ((GameValues.LOADING_BAR_WIDTH * (pcrn / 100)));
+    }
+
+    public static void log(String log) {
+        Gdx.app.log("game", log);
     }
 
 //    private static void setUpSongDetails() {
@@ -345,11 +314,43 @@ public class Game extends Screen {
 //            songName = songDetails[1] + " - " + songDetails[0];
 //    }
 
-
-    public static void log(String log) {
-        Gdx.app.log("game", log);
+    public static void pauseMusic() {
+        //Todo
     }
 
+    public void update() {
+        if (introShowing) {
+            introDelay -= 1;
+            loadProg += 1;
+            loadProg(loadProg);
+            if (introDelay <= 0) {
+                introShowing = false;
+            }
+        } else {
+            introShowing = false;
+        }
+
+        player.update();
+        level.update();
+        for (int i = 0; i < animatedTexts.size(); ++i) {
+            animatedTexts.get(i).update();
+        }
+        for (int i = 0; i < circles.size(); ++i) {
+            circles.get(i).update();
+        }
+        // M:
+        if (alphaM > 0) {
+            alphaM -= 15;
+            if (alphaM < 0)
+                alphaM = 0;
+        }
+
+        // ANIM:
+        scoreTextMult -= 0.05f;
+        if (scoreTextMult < 1) {
+            scoreTextMult = 1;
+        }
+    }
 
     @Override
     public void init() {

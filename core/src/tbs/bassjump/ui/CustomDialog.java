@@ -1,16 +1,19 @@
 package tbs.bassjump.ui;
 
 
+import tbs.bassjump.Utility;
+
 /**
  * Created by root on 4/01/15.
  */
 public class CustomDialog extends DialogFragment {
-    private static final View[] fragments = new Fragment[4];
+    private static final View[] fragments = new Fragment[3];
     private static TextView title;
     private static TextView coinText;
     private static PagerSlidingTabStrip tabs;
     private static ViewPager pager;
     private static MyPagerAdapter pagerAdapter;
+    private final String[] TITLES = {"Colors", "Shapes", "Get Coins"};
     private View view;
 
     public CustomDialog() {
@@ -18,11 +21,11 @@ public class CustomDialog extends DialogFragment {
     }
 
     public static void setNumCoins(int numCoins) {
-        if (numCoins >= 10000) {
-            MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQEA");
-        } else if (numCoins >= 1000) {
-            MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQCw");
-        }
+//        if (numCoins >= 10000) {
+//            MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQEA");
+//        } else if (numCoins >= 1000) {
+//            MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQCw");
+//        }
         try {
             coinText.setText(Utility.formatNumber(numCoins));
         } catch (Exception e) {
@@ -35,10 +38,8 @@ public class CustomDialog extends DialogFragment {
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.store, null);
         title = (TextView) view.findViewById(R.id.title);
-        title.setTypeface(Game.font);
 
         coinText = (TextView) view.findViewById(R.id.coins);
-        coinText.setTypeface(Game.font);
 
         view.findViewById(R.id.close).setOnClickListener(
                 new View.OnClickListener() {
@@ -48,22 +49,10 @@ public class CustomDialog extends DialogFragment {
                     }
                 });
 
-        view.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.FILL_PARENT,
-                ViewGroup.LayoutParams.FILL_PARENT));
-        setNumCoins(Utility.getCoins(Game.context));
+        setNumCoins(Utility.getCoins());
         return view;
     }
 
-    @Override
-    public int show(FragmentTransaction transaction, String tag) {
-        return super.show(transaction, tag);
-    }
-
-    @Override
-    public void show(FragmentManager manager, String tag) {
-        super.show(manager, tag);
-    }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -74,8 +63,7 @@ public class CustomDialog extends DialogFragment {
     private void setUpFragments() {
         fragments[0] = new ColorFragment();
         fragments[1] = new ShapeFragment();
-        fragments[2] = new MusicFragment();
-        fragments[3] = MainActivity.getCoinsFragment;
+        fragments[2] = MainActivity.getCoinsFragment;
 
         ColorFragment.setListAdapter(new Adapter(Game.context, Utility
                 .getColorStoreItems(Game.context)));
@@ -98,36 +86,6 @@ public class CustomDialog extends DialogFragment {
         pager.setPageMargin(pageMargin);
 
         tabs.setViewPager(pager);
-
-        // Toast.makeText(tbs.jumpsnew.tbs.bassjump.reference.Game.tbs.bassjump.reference.Game.context,
-        // "Listing song in the Music or music folder", Toast.LENGTH_LONG)
-        // .show();
-
-    }
-
-    public class MyPagerAdapter extends FragmentPagerAdapter {
-
-        private final String[] TITLES = {"Colors", "Shapes", "Music",
-                "Get Coins"};
-
-        public MyPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return TITLES[position];
-        }
-
-        @Override
-        public int getCount() {
-            return TITLES.length;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return fragments[position];
-        }
     }
 
 }

@@ -1,39 +1,35 @@
 package tbs.bassjump.ui;
 
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 /**
  * Created by root on 3/01/15.
  */
 public class ColorView extends View {
+    private static Color c = new Color();
     private int r, cx, cy, color;
 
-    public ColorView(Context context, int color) {
-        super(context);
+    public ColorView(int color) {
         this.color = color;
     }
 
-    public ColorView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
 
     @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+    protected void onDraw(ShapeRenderer canvas) {
 
-        paint.setColor(0xffffffff);
-        canvas.drawCircle(cx, cy, r, paint);
+        c.set(0xffffffff);
+        canvas.setColor(c);
+        canvas.circle(cx, cy, r);
 
-        paint.setColor(color);
-        canvas.drawCircle(cx, cy, Math.round(r * 0.95f), paint);
+        c.set(color);
+        canvas.circle(cx, cy, Math.round(r * 0.95f));
     }
 
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
+    public void setSize(int w, int h) {
         cx = w / 2;
         cy = h / 2;
         r = Math.min(cx, cy);
-        invalidate();
     }
 }

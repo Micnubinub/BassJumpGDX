@@ -1,6 +1,8 @@
 package tbs.bassjump.ui;
 
 
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+
 import tbs.bassjump.objects.Player;
 
 /**
@@ -18,12 +20,12 @@ public class ShapeView extends View {
     }
 
 
-    public void drawCircle(Canvas canvas) {
-        canvas.drawCircle(cx, cy, l - (thickness / 2), paint);
+    public void drawCircle(ShapeRenderer canvas) {
+        canvas.circle(cx, cy, l - (thickness / 2));
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(ShapeRenderer canvas) {
 
         switch (playerShape) {
             case CIRCLE:
@@ -35,13 +37,12 @@ public class ShapeView extends View {
         }
     }
 
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+    public void setSize(int w, int h) {
         this.w = w;
         this.h = h;
-        init(playerShape);
+        cx = w / 2;
+        cy = h / 2;
     }
-
 
     private void init(Player.PlayerShape playerShape) {
         this.playerShape = playerShape;
@@ -149,9 +150,9 @@ public class ShapeView extends View {
         }
     }
 
-    public void drawPolygon(Canvas canvas) {
+    public void drawPolygon(ShapeRenderer canvas) {
         for (int i = 0; i < points.length; i += 2) {
-            canvas.drawLine(points[i], points[i + 1], points[(i + 2) % points.length], points[(i + 3) % points.length], paint);
+            canvas.line(points[i], points[i + 1], points[(i + 2) % points.length], points[(i + 3) % points.length]);
         }
     }
 }
