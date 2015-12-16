@@ -1,13 +1,12 @@
 package tbs.bassjump.objects;
 
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 
-import tbs.jumpsnew.Game;
-import tbs.jumpsnew.GameValues;
-import tbs.jumpsnew.Screen;
-import tbs.jumpsnew.utility.Utility;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+
+import tbs.bassjump.Game;
+import tbs.bassjump.GameValues;
+import tbs.bassjump.Utility;
 
 public class Particle {
     public static final int STATE_ALIVE = 0; // particle is alive
@@ -16,7 +15,7 @@ public class Particle {
     public static final int DEFAULT_LIFETIME = 200; // play with this
     public static final int MAX_DIMENSION = 5; // the maximum width or height
     public static final int MAX_SPEED = 10; // maximum speed (per update)
-    private final Paint paint; // internal use to avoid instantiation
+    private static final Color c = new Color();
     int a;
     private int state; // particle is alive or dead
     private float width; // width of the particle
@@ -28,9 +27,7 @@ public class Particle {
     private int color; // the color of the particle
 
     public Particle() {
-        this.paint = new Paint();
-        paint.setStyle(Paint.Style.FILL);
-        paint.setStrokeWidth(GameValues.STROKE_WIDTH / 3);
+        //todo paint.setStrokeWidth(GameValues.STROKE_WIDTH / 3);
     }
 
     public void setup(int x, int y, boolean right) {
@@ -53,14 +50,14 @@ public class Particle {
         yv *= 0.85;
 
         // RESET COLOR:
-        this.color = Color.argb(255, 229, 228, 160);
+        c.set(229 / 255f, 228 / 255f, 160 / 255f, 1);
     }
 
     public void update() {
         if (this.state != STATE_DEAD) {
             this.x += this.xv;
             if (xv > 0) { // GOING RIGHT
-                if (x + width >= Screen.width - GameValues.PLATFORM_WIDTH) {
+                if (x + width >= Game.w - GameValues.PLATFORM_WIDTH) {
                     xv *= -1;
                 }
             } else { // GOING LEFT
@@ -79,7 +76,7 @@ public class Particle {
             } else {
                 this.color = (this.color & 0x00ffffff) + (a << 24); // set the
                 // new alpha
-                this.paint.setAlpha(Game.alphaM);
+                c.a = Game.alphaM / 255f;
                 this.age++; // increase the age of the particle
             }
             if (this.age >= this.lifetime) { // reached the end if its life
@@ -88,11 +85,11 @@ public class Particle {
         }
     }
 
-    public void draw(Canvas canvas) {
+    public void draw(ShapeRenderer canvas) {
         if (this.state == STATE_ALIVE) {
-            paint.setColor(this.color);
-            canvas.drawRect(this.x, this.y, this.x + this.width, this.y
-                    + this.height, paint);
+            c.set(this.color);
+            canvas.rect(this.x, this.y, this.x + this.width, this.y
+                    + this.height);
         }
     }
 }

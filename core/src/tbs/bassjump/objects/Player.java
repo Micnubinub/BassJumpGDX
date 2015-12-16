@@ -100,7 +100,7 @@ public class Player extends GameObject {
                 initPentagonStar();
                 break;
         }
-        paint.setStrokeWidth((GameValues.PAINT_THICKNESS + 16));
+        //todo paint.setStrokeWidth((GameValues.PAINT_THICKNESS + 16));
     }
 
     private static void initRectAngle() {
