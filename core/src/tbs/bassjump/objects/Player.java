@@ -572,7 +572,7 @@ public class Player extends GameObject {
     public void draw(ShapeRenderer canvas) {
         setShapeRotation(playerJumpPercentage * 180);
         c.set(Game.color);
-        canvas.rect(xPos, Game.h - yPos, scale, scale);
+        canvas.rect(xPos, yPos, scale, scale);
 //        switch (playerShape) {
 //            case CIRCLE:
 //                circle(canvas);

@@ -9,7 +9,7 @@ public class GameValues {
 	public static final int SPIKE_HEIGHT = (int) (PLATFORM_WIDTH / 1.65f);
 
 	// PAINT
-	public static final int PAINT_THICKNESS = PLATFORM_WIDTH / 24;
+	public static final int PAINT_THICKNESS = PLATFORM_WIDTH / 18;
 	public static final int PAINT_GLOW_SCALE = PAINT_THICKNESS / 2;
 	public static final int PAINT_OUTER_GLOW_SCALE = PAINT_GLOW_SCALE * 3;
 

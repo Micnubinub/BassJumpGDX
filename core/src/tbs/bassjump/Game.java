@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
@@ -104,6 +105,7 @@ public class Game extends ApplicationAdapter {
     // RANKING:
 //    private static LeaderboardScore leaderboard;
     private static BitmapLoader bitmapLoader;
+    private static OrthographicCamera camera;
 
     public static void initDisposables() {
         batch = new SpriteBatch();
@@ -115,8 +117,6 @@ public class Game extends ApplicationAdapter {
     }
 
     public static void setup() {
-        long tic = System.currentTimeMillis();
-//        Utility.log("tbs.bassjump.reference.Game Initialized");
         // MUSIC
         alphaM = 0;
         // MENU
@@ -124,8 +124,6 @@ public class Game extends ApplicationAdapter {
 
         // SPEED CALC
         GameValues.SPEED_FACTOR_ORIGINAL = ((float) h / 600);
-
-//        Utility.log("SPEED: " + GameValues.SPEED_FACTOR_ORIGINAL);
 
         player = new Player();
 
@@ -211,12 +209,6 @@ public class Game extends ApplicationAdapter {
                                   int h, boolean drawLeft, boolean drawRight, boolean drawTop,
                                   boolean drawBottom) {
         //Test
-        final int tmpC = c.toIntBits();
-
-        setColor(0xffccbbff);
-        renderer.rect(x, y, w, h);
-
-        setColor(tmpC);
         if (drawLeft)
             renderer.rect(x, y, GameValues.STROKE_WIDTH, h);
 
@@ -228,20 +220,6 @@ public class Game extends ApplicationAdapter {
 
         if (drawBottom)
             renderer.rect(x, (y + h), w, GameValues.STROKE_WIDTH);
-
-
-        setColor(0xffffffff);
-        renderer.circle(x, y, GameValues.STROKE_WIDTH);
-        renderer.circle(x + w, y, GameValues.STROKE_WIDTH);
-
-        setColor(0x000000ff);
-        renderer.circle(x, y + h, GameValues.STROKE_WIDTH);
-        renderer.circle(x + w, (y + h), GameValues.STROKE_WIDTH);
-
-        setColor(tmpC);
-
-
-
     }
 
     private static void checkAchievements() {
@@ -451,6 +429,9 @@ public class Game extends ApplicationAdapter {
         log("initCalled");
         w = Gdx.graphics.getWidth();
         h = Gdx.graphics.getHeight();
+        camera = new OrthographicCamera(w, h);
+        camera.translate(w / 2, h / 2);
+        camera.setToOrtho(true);
         // ACHIEVEMENT:
 //        unlockAchievement("CgkIvYbi1pMMEAIQDA");
 
@@ -544,6 +525,8 @@ public class Game extends ApplicationAdapter {
     @Override
     public void render() {
         clear();
+        camera.update();
+        renderer.setProjectionMatrix(camera.combined);
         update();
         onDraw();
         drawHUD();
@@ -558,7 +541,7 @@ public class Game extends ApplicationAdapter {
         setColor(0xffffff55);
         for (int i = 0; i < level.speedParticles.size(); ++i) {
             renderer.rect(level.speedParticles.get(i).xPos,
-                    h - level.speedParticles.get(i).yPos,
+                    level.speedParticles.get(i).yPos,
                     GameValues.SPEED_PARTICLE_WIDTH,
                     GameValues.SPEED_PARTICLE_HEIGHT);
         }
@@ -583,7 +566,7 @@ public class Game extends ApplicationAdapter {
             }
 
             rectangle(renderer, level.platformsRight.get(i).xPos,
-                    h - level.platformsRight.get(i).yPos,
+                    level.platformsRight.get(i).yPos,
                     GameValues.PLATFORM_WIDTH, GameValues.PLATFORM_HEIGHT,
                     false, true, drawTop, drawBottom);
 
@@ -592,7 +575,7 @@ public class Game extends ApplicationAdapter {
                 c.a = alphaM / 255f;
                 renderer.setColor(c);
                 rectangle(renderer, level.platformsRight.get(i).xPos,
-                        h - level.platformsRight.get(i).yPos,
+                        level.platformsRight.get(i).yPos,
                         GameValues.PLATFORM_WIDTH, GameValues.PLATFORM_HEIGHT,
                         false, true, drawTop, drawBottom);
             }
@@ -612,7 +595,7 @@ public class Game extends ApplicationAdapter {
                 drawBottom = false;
             }
             rectangle(renderer, level.platformsLeft.get(i).xPos,
-                    h - level.platformsLeft.get(i).yPos, GameValues.PLATFORM_WIDTH,
+                    level.platformsLeft.get(i).yPos, GameValues.PLATFORM_WIDTH,
                     GameValues.PLATFORM_HEIGHT, true, false, drawTop,
                     drawBottom);
             if (!player.goingRight && alphaM > 0) {
@@ -620,11 +603,12 @@ public class Game extends ApplicationAdapter {
                 c.a = alphaM / 255f;
                 renderer.setColor(c);
                 rectangle(renderer, level.platformsLeft.get(i).xPos,
-                        h - level.platformsLeft.get(i).yPos,
+                        level.platformsLeft.get(i).yPos,
                         GameValues.PLATFORM_WIDTH, GameValues.PLATFORM_HEIGHT,
                         true, false, drawTop, drawBottom);
             }
         }
+
 
         // PAINT
         for (int i = 0; i < player.paintTrail.size(); ++i) {
@@ -674,7 +658,7 @@ public class Game extends ApplicationAdapter {
                 c.set(0xe5e4a0ff);
                 c.a = circles.get(i).a / 255f;
                 renderer.setColor(c);
-                renderer.circle(circles.get(i).xPos, h - circles.get(i).yPos,
+                renderer.circle(circles.get(i).xPos, circles.get(i).yPos,
                         circles.get(i).scale);
             }
         }
@@ -831,13 +815,12 @@ public class Game extends ApplicationAdapter {
             Utility.drawCenteredText(batch, c, "Thank you for Playing!", (w / 2),
                     h - (h - GameValues.BUTTON_PADDING - GameValues.BUTTON_PADDING), 0.3f);
 
-
             beginRenderer();
             setColor(0xe532cdff);
 
             renderer.rect((w / 2)
                             - (GameValues.LOADING_BAR_WIDTH / 2),
-                    GameValues.LOADING_BAR_WIDTH / 2f,
+                    h - GameValues.LOADING_BAR_WIDTH / 2f,
                     loadWidth, GameValues.LOADING_BAR_WIDTH / 10);
         }
     }
