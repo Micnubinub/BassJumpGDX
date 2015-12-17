@@ -6,7 +6,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
@@ -19,7 +18,7 @@ import tbs.bassjump.managers.BitmapLoader;
 import tbs.bassjump.objects.AnimCircle;
 import tbs.bassjump.objects.Player;
 import tbs.bassjump.utility.GameObject;
-import tbs.bassjump.utility.GameUtils;
+import tbs.bassjump.view_lib.HUDManager;
 
 
 public class Game extends ApplicationAdapter {
@@ -27,17 +26,17 @@ public class Game extends ApplicationAdapter {
     private static final Color c = new Color();
     //MusicShuffle
     private static final Random random = new Random();
-    private static final int background = 0xff222222;
-    public static int[] colors = new int[]{0xffbb00};
+    private static final int background = 0x222222ff;
+    public static int[] colors = new int[]{0xffbb00ff};
     // CONTEXT
     // LEVEL AND PLAYER:
     public static Player player; // PLAYER CONTAINS PLAYER INFO
     public static Level level; // LEVEL CONTAINS LEVEL OBJECTS
     // MUSIC
-    public static int alphaM, delta;
+    public static int alphaM;
     public static boolean isMusicEnabled;
     // STATE
-    public static GameState state;
+    public static GameState state = GameState.Menu;
     public static GameObject leaderBtn;
     public static GameObject rateBtn;
     public static GameObject modeBtn;
@@ -68,7 +67,7 @@ public class Game extends ApplicationAdapter {
     public static int w, h;
     public static SpriteBatch batch;
     public static ShapeRenderer renderer;
-    protected static OrthographicCamera camera;
+    public static short delta;
     private static String currSong;
     // MOVING TEXTS:
     private static ArrayList<MovingText> animatedTexts; // ANIMATED TEXT LIST
@@ -78,7 +77,6 @@ public class Game extends ApplicationAdapter {
     // GLOBAL PARTICLES:
     private static ArrayList<AnimCircle> circles;
     private static int circleIndex;
-
     /* Todo 'security find-identity -v -p codesigning' for iosSignIdentity
 
       robovm {
@@ -107,6 +105,15 @@ public class Game extends ApplicationAdapter {
 //    private static LeaderboardScore leaderboard;
     private static BitmapLoader bitmapLoader;
 
+    public static void initDisposables() {
+        batch = new SpriteBatch();
+        renderer = new ShapeRenderer();
+        bitmapLoader = new BitmapLoader();
+        ambientMusic = Gdx.audio.newMusic(Gdx.files.internal("song1.mp3"));
+        ambientMusic.setLooping(true);
+        ambientMusic.play();
+    }
+
     public static void setup() {
         long tic = System.currentTimeMillis();
 //        Utility.log("tbs.bassjump.reference.Game Initialized");
@@ -123,10 +130,10 @@ public class Game extends ApplicationAdapter {
         player = new Player();
 
         String shape = Utility.getString(
-                GameUtils.EQUIPPED_SHAPE);
+                Utility.EQUIPPED_SHAPE);
         if (shape == null || shape.length() < 2)
-            shape = GameUtils.SHAPE_RECTANGLE;
-        Player.setPlayerShape(GameUtils.getShapeType(shape));
+            shape = Utility.SHAPE_RECTANGLE;
+        Player.setPlayerShape(Utility.getShapeType(shape));
 
         level = new Level();
         setupGame();
@@ -134,7 +141,6 @@ public class Game extends ApplicationAdapter {
         setupInterface();
 //        Log.e("setUp ticToc = ", String.valueOf(System.currentTimeMillis() - tic));
     }
-
 
     protected static void clear() {
         Gdx.gl.glClearColor(.22f, .22f, .22f, 1);
@@ -146,7 +152,7 @@ public class Game extends ApplicationAdapter {
         // SETUP NEW GAME
         // ADS
 
-        if (Game.showAds) {
+        if (showAds) {
             //Todo load ads here
             if ((player.gamesPlayed + 1) % 10 == 0 && player.gamesPlayed > 0) {
                 // AD WARNING:
@@ -204,17 +210,37 @@ public class Game extends ApplicationAdapter {
     private static void rectangle(ShapeRenderer renderer, int x, int y, int w,
                                   int h, boolean drawLeft, boolean drawRight, boolean drawTop,
                                   boolean drawBottom) {
+        //Test
+        final int tmpC = c.toIntBits();
+
+        setColor(0xffccbbff);
+        renderer.rect(x, y, w, h);
+
+        setColor(tmpC);
         if (drawLeft)
-            renderer.rect(x, y, x, y + h);
+            renderer.rect(x, y, GameValues.STROKE_WIDTH, h);
 
         if (drawRight)
-            renderer.rect(x + w, y, x + w, y + h);
+            renderer.rect(x + w, y, GameValues.STROKE_WIDTH, h);
 
         if (drawTop)
-            renderer.rect(x, y, x + w, y);
+            renderer.rect(x, y, w, GameValues.STROKE_WIDTH);
 
         if (drawBottom)
-            renderer.rect(x, y + h, x + w, y + h);
+            renderer.rect(x, (y + h), w, GameValues.STROKE_WIDTH);
+
+
+        setColor(0xffffffff);
+        renderer.circle(x, y, GameValues.STROKE_WIDTH);
+        renderer.circle(x + w, y, GameValues.STROKE_WIDTH);
+
+        setColor(0x000000ff);
+        renderer.circle(x, y + h, GameValues.STROKE_WIDTH);
+        renderer.circle(x + w, (y + h), GameValues.STROKE_WIDTH);
+
+        setColor(tmpC);
+
+
 
     }
 
@@ -339,16 +365,50 @@ public class Game extends ApplicationAdapter {
     }
 
     public static void pauseMusic() {
-        ambientMusic.pause();
+        try {
+            ambientMusic.pause();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void playMusic() {
-        ambientMusic.play();
+        try {
+            ambientMusic.play();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
+    public static void setColor(int color) {
+        c.set(color);
+        renderer.setColor(c);
+    }
+
+    public static void beginRenderer() {
+        if (batch.isDrawing())
+            batch.end();
+
+        if (!renderer.isDrawing())
+            renderer.begin(ShapeRenderer.ShapeType.Filled);
+    }
+
+    public static void beginSpriteBatch() {
+        if (renderer.isDrawing())
+            renderer.end();
+
+        if (!batch.isDrawing())
+            batch.begin();
+    }
+
+    @Override
+    public void create() {
+        initDisposables();
+        init();
+    }
 
     public void update() {
-        delta = (int) (Gdx.graphics.getDeltaTime() * 1000);
+        delta = (short) (Gdx.graphics.getDeltaTime() * 1000);
         GameValues.SPEED_FACTOR = (int) ((GameValues.SPEED_FACTOR_ORIGINAL * GameValues.SPEED_BONUS) * delta);
         if (GameValues.SPEED_FACTOR < 1)
             GameValues.SPEED_FACTOR = 1;
@@ -391,89 +451,77 @@ public class Game extends ApplicationAdapter {
         log("initCalled");
         w = Gdx.graphics.getWidth();
         h = Gdx.graphics.getHeight();
-        camera = new OrthographicCamera(w, h);
-
         // ACHIEVEMENT:
 //        unlockAchievement("CgkIvYbi1pMMEAIQDA");
 
         // SETUP:
-        Game.setup();
+        setup();
         // LOAD AD:
-// Todo       Game.adManager.loadFullscreenAd();
+// Todo       adManager.loadFullscreenAd();
+        long tic = System.currentTimeMillis();
 
         // LOAD DATA:
         showAds = Utility.getString("nerUds") == null;
 
         if (Utility.getString("hScore") != null) {
-            Game.player.highScoreA = Integer.parseInt(Utility
-                    .getString("hScore"));
+            player.highScoreA = Utility.getInt("hScore");
         } else {
-            Game.player.highScoreA = 0;
+            player.highScoreA = 0;
         }
         if (Utility.getString("hScoreR") != null) {
-            Game.player.highScoreR = Integer.parseInt(Utility
-                    .getString("hScoreR"));
+            player.highScoreR = Utility.getInt("hScoreR");
         } else {
-            Game.player.highScoreR = 0;
+            player.highScoreR = 0;
         }
         if (Utility.getString("hScoreU") != null) {
-            Game.player.highScoreU = Integer.parseInt(Utility
-                    .getString("hScoreU"));
+            player.highScoreU = Utility.getInt("hScoreU");
         } else {
-            Game.player.highScoreR = 0;
+            player.highScoreR = 0;
         }
         if (Utility.getString("hScoreS") != null) {
-            Game.player.highScoreS = Integer.parseInt(Utility
-                    .getString("hScoreS"));
+            player.highScoreS = Utility.getInt("hScoreS");
         } else {
-            Game.player.highScoreS = 0;
+            player.highScoreS = 0;
         }
         if (Utility.getString("hScoreS2") != null) {
-            Game.player.highScoreS2 = Integer.parseInt(Utility
-                    .getString("hScoreS2"));
+            player.highScoreS2 = Utility.getInt("hScoreS2");
         } else {
-            Game.player.highScoreS2 = 0;
+            player.highScoreS2 = 0;
         }
 
         if (Utility.getString("musicOn") != null) {
             if (Utility.getString("musicOn").equals("off")) {
-                Game.isMusicEnabled = false;
-                Game.pauseMusic();
+                isMusicEnabled = false;
+                pauseMusic();
             } else {
-                Game.isMusicEnabled = true;
+                isMusicEnabled = true;
             }
         } else {
-            Game.isMusicEnabled = true;
+            isMusicEnabled = true;
         }
 
+        mode = GameMode.Arcade;
         if (Utility.getString("gMode") != null) {
             if (Utility.getString("gMode").equals("arcade")) {
-                Game.mode = GameMode.Arcade;
+                mode = GameMode.Arcade;
             } else if (Utility.getString("gMode").equals("recruit")) {
-                Game.mode = GameMode.Recruit;
+                mode = GameMode.Recruit;
             } else if (Utility.getString("gMode").equals("ultra")) {
-                Game.mode = GameMode.Ultra;
+                mode = GameMode.Ultra;
             } else if (Utility.getString("gMode").equals("singul")) {
-                Game.mode = GameMode.Singularity;
+                mode = GameMode.Singularity;
             } else if (Utility.getString("gMode").equals("speed")) {
-                Game.mode = GameMode.SpeedRunner;
+                mode = GameMode.SpeedRunner;
                 GameValues.PLAYER_JUMP_SPEED_MULT = 8;
             }
-        } else {
-            Game.mode = GameMode.Arcade;
         }
+
         if (Utility.getString("gPlayed") != null) {
-            Game.player.gamesPlayed = Integer.parseInt(Utility
-                    .getString("gPlayed")) + 1;
+            player.gamesPlayed = Utility.getInt("gPlayed") + 1;
         } else {
-            Game.player.gamesPlayed = 0;
+            player.gamesPlayed = 0;
         }
 
-
-        long tic = System.currentTimeMillis();
-        ambientMusic = Gdx.audio.newMusic(Gdx.files.internal("ambient.mp3"));
-        ambientMusic.setLooping(true);
-        ambientMusic.play();
 
         circles = new ArrayList<AnimCircle>();
         circleIndex = 0;
@@ -482,7 +530,7 @@ public class Game extends ApplicationAdapter {
         }
 
         // LOAD IMAGES ONCE
-        bitmapLoader = new BitmapLoader();
+
 
         introDelay = 150;
         loadProg = 0;
@@ -495,104 +543,84 @@ public class Game extends ApplicationAdapter {
 
     @Override
     public void render() {
-        c.set(background);
-        Gdx.gl.glClearColor(c.r, c.g, c.b, c.a);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-
+        clear();
         update();
-
-        try {
-            renderer.begin(ShapeRenderer.ShapeType.Filled);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         onDraw();
-        try {
-            renderer.end();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            batch.begin();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         drawHUD();
-        try {
-            batch.end();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
     }
 
     public void onDraw() {
         // DRAW EVERYTHING IN ORDER:
         // c.set(0x000000); // DEFAULT
 
-        c.set(0xffff12ff);
+        beginRenderer();
+        setColor(0xffffff55);
         for (int i = 0; i < level.speedParticles.size(); ++i) {
             renderer.rect(level.speedParticles.get(i).xPos,
-                    level.speedParticles.get(i).yPos,
-                    level.speedParticles.get(i).xPos
-                            + GameValues.SPEED_PARTICLE_WIDTH,
-                    level.speedParticles.get(i).yPos
-                            + GameValues.SPEED_PARTICLE_HEIGHT);
+                    h - level.speedParticles.get(i).yPos,
+                    GameValues.SPEED_PARTICLE_WIDTH,
+                    GameValues.SPEED_PARTICLE_HEIGHT);
         }
 
-        c.set(0x42453aff);
+//        c.set(0x42453aff);
+//        renderer.setColor(c);
 //        renderer.circle(player.getXCenter(), player.getYCenter(),
 //                LOW_F_HEIGHT * 1.15f);
 
         // PLATFORMS:
+        setColor(0x6f6f6fff);
         for (int i = 0; i < level.platformsRight.size(); ++i) {
-            c.set(0x6f6f6fff);
             drawTop = true;
             drawBottom = true;
             if (level.platformsRight.get(i).hasNext
-                    || Game.state != GameState.Playing) {
+                    || state != GameState.Playing) {
                 drawTop = false;
             }
             if (level.platformsRight.get(i).hasPrevious
-                    || Game.state != GameState.Playing) {
+                    || state != GameState.Playing) {
                 drawBottom = false;
             }
 
-            Game.rectangle(renderer, level.platformsRight.get(i).xPos,
-                    level.platformsRight.get(i).yPos,
+            rectangle(renderer, level.platformsRight.get(i).xPos,
+                    h - level.platformsRight.get(i).yPos,
                     GameValues.PLATFORM_WIDTH, GameValues.PLATFORM_HEIGHT,
                     false, true, drawTop, drawBottom);
 
             if (player.goingRight && alphaM > 0) {
                 c.set(0xe5e4a0ff);
                 c.a = alphaM / 255f;
-                Game.rectangle(renderer, level.platformsRight.get(i).xPos,
-                        level.platformsRight.get(i).yPos,
+                renderer.setColor(c);
+                rectangle(renderer, level.platformsRight.get(i).xPos,
+                        h - level.platformsRight.get(i).yPos,
                         GameValues.PLATFORM_WIDTH, GameValues.PLATFORM_HEIGHT,
                         false, true, drawTop, drawBottom);
             }
         }
+
+        setColor(0x5b5b5bff);
+
         for (int i = 0; i < level.platformsLeft.size(); ++i) {
-            c.set(0x5b5b5bff);
             drawTop = true;
             drawBottom = true;
             if (level.platformsLeft.get(i).hasNext
-                    || Game.state != GameState.Playing) {
+                    || state != GameState.Playing) {
                 drawTop = false;
             }
             if (level.platformsLeft.get(i).hasPrevious
-                    || Game.state != GameState.Playing) {
+                    || state != GameState.Playing) {
                 drawBottom = false;
             }
-            Game.rectangle(renderer, level.platformsLeft.get(i).xPos,
-                    level.platformsLeft.get(i).yPos, GameValues.PLATFORM_WIDTH,
+            rectangle(renderer, level.platformsLeft.get(i).xPos,
+                    h - level.platformsLeft.get(i).yPos, GameValues.PLATFORM_WIDTH,
                     GameValues.PLATFORM_HEIGHT, true, false, drawTop,
                     drawBottom);
             if (!player.goingRight && alphaM > 0) {
-                c.set(0xe5e4a0);
+                c.set(0xe5e4a0ff);
                 c.a = alphaM / 255f;
-                Game.rectangle(renderer, level.platformsLeft.get(i).xPos,
-                        level.platformsLeft.get(i).yPos,
+                renderer.setColor(c);
+                rectangle(renderer, level.platformsLeft.get(i).xPos,
+                        h - level.platformsLeft.get(i).yPos,
                         GameValues.PLATFORM_WIDTH, GameValues.PLATFORM_HEIGHT,
                         true, false, drawTop, drawBottom);
             }
@@ -600,9 +628,8 @@ public class Game extends ApplicationAdapter {
 
         // PAINT
         for (int i = 0; i < player.paintTrail.size(); ++i) {
-            c.set(color);
+            setColor(color);
             if (player.paintTrail.get(i).active) {
-
                 renderer.rect(player.paintTrail.get(i).xPos,
                         player.paintTrail.get(i).yPos,
                         GameValues.PAINT_THICKNESS,
@@ -611,7 +638,7 @@ public class Game extends ApplicationAdapter {
 
             if (player.paintTrail.get(i).isRight() != player.goingRight
                     && alphaM > 0) {
-                c.set(0xe5e475);
+                c.set(0xe5e475ff);
                 c.a = alphaM / 255f;
                 renderer.rect(player.paintTrail.get(i).xPos,
                         player.paintTrail.get(i).yPos,
@@ -631,83 +658,84 @@ public class Game extends ApplicationAdapter {
         // PLAYER:
         player.draw(renderer);
 
+        beginSpriteBatch();
         for (int i = 0; i < animatedTexts.size(); ++i) {
             if (animatedTexts.get(i).active) {
                 c.a = animatedTexts.get(i).alpha / 255f;
                 Utility.drawCenteredText(batch, c, animatedTexts.get(i).text,
-                        animatedTexts.get(i).xPos, animatedTexts.get(i).yPos, 0.3f);
+                        animatedTexts.get(i).xPos, h - animatedTexts.get(i).yPos, 0.3f);
             }
         }
 
+        beginRenderer();
         // CIRCLES
         for (int i = 0; i < circles.size(); ++i) {
             if (circles.get(i).active) {
                 c.set(0xe5e4a0ff);
                 c.a = circles.get(i).a / 255f;
-                renderer.circle(circles.get(i).xPos, circles.get(i).yPos,
+                renderer.setColor(c);
+                renderer.circle(circles.get(i).xPos, h - circles.get(i).yPos,
                         circles.get(i).scale);
             }
         }
 
         if (state == GameState.Menu) {
             c.set(Color.WHITE);
+            beginSpriteBatch();
             batch.draw(BitmapLoader.leader, leaderBtn.xPos,
-                    leaderBtn.yPos);
-            batch.draw(BitmapLoader.achiv, rateBtn.xPos, rateBtn.yPos);
-            batch.draw(BitmapLoader.store, storeBtn.xPos, storeBtn.yPos);
+                    h - leaderBtn.yPos - leaderBtn.scale, leaderBtn.scale, leaderBtn.scale);
+            batch.draw(BitmapLoader.achiv, rateBtn.xPos, h - rateBtn.yPos - rateBtn.scale, rateBtn.scale, rateBtn.scale);
+            batch.draw(BitmapLoader.store, storeBtn.xPos, h - storeBtn.yPos - storeBtn.scale, storeBtn.scale, storeBtn.scale);
             batch.draw(BitmapLoader.achievm, achievBtn.xPos,
-                    achievBtn.yPos);
-            batch.draw(BitmapLoader.share, shareBtn.xPos, shareBtn.yPos);
+                    h - achievBtn.yPos - achievBtn.scale, achievBtn.scale, achievBtn.scale);
+            batch.draw(BitmapLoader.share, shareBtn.xPos, h - shareBtn.yPos - shareBtn.scale, shareBtn.scale, shareBtn.scale);
             if (isMusicEnabled)
                 batch.draw(BitmapLoader.sound, soundBtn.xPos,
-                        soundBtn.yPos);
+                        h - soundBtn.yPos - soundBtn.scale, soundBtn.scale, soundBtn.scale);
             else
                 batch.draw(BitmapLoader.soundO, soundBtn.xPos,
-                        soundBtn.yPos);
+                        h - soundBtn.yPos - soundBtn.scale, soundBtn.scale, soundBtn.scale);
 
             if (mode == GameMode.Arcade)
                 batch.draw(BitmapLoader.modeArcade, modeBtn.xPos,
-                        modeBtn.yPos);
+                        h - modeBtn.yPos - modeBtn.scale, modeBtn.scale, modeBtn.scale);
             else if (mode == GameMode.Recruit)
                 batch.draw(BitmapLoader.modeRecruit, modeBtn.xPos,
-                        modeBtn.yPos);
+                        h - modeBtn.yPos - modeBtn.scale, modeBtn.scale, modeBtn.scale);
             else if (mode == GameMode.Ultra)
                 batch.draw(BitmapLoader.modeUltra, modeBtn.xPos,
-                        modeBtn.yPos);
+                        h - modeBtn.yPos - modeBtn.scale, modeBtn.scale, modeBtn.scale);
             else if (mode == GameMode.Singularity)
                 batch.draw(BitmapLoader.modeSingular, modeBtn.xPos,
-                        modeBtn.yPos);
-            else if (mode == GameMode.SpeedRunner)
+                        h - modeBtn.yPos - modeBtn.scale, modeBtn.scale, modeBtn.scale);
+            else
                 batch.draw(BitmapLoader.modeSpeed, modeBtn.xPos,
-                        modeBtn.yPos);
+                        h - modeBtn.yPos - modeBtn.scale, modeBtn.scale, modeBtn.scale);
 
             // TEXT
             c.set(0xe5e4a0ff);
 
-
+            final float textH = w / 4.85f;
             Utility.drawCenteredText(batch, c, "BASS", leaderBtn.xPos - GameValues.BUTTON_PADDING,
-                    h / 3, 0.3f);
+                    h - (textH * 1.25f), 0.3f);
             Utility.drawCenteredText(batch, c, "JUMP", leaderBtn.xPos - GameValues.BUTTON_PADDING,
-                    h / 4, 0.3f);
+                    h - (textH * 2.25f), 0.3f);
             Utility.drawCenteredText(batch, c, "Tap anywhere", leaderBtn.xPos
-                    - GameValues.BUTTON_PADDING, h / 7, 0.3f);
+                    - GameValues.BUTTON_PADDING, h - (textH * 2.75f), 0.3f);
             Utility.drawCenteredText(batch, c, "to Start", leaderBtn.xPos
-                    - GameValues.BUTTON_PADDING, h / 2, 0.3f);
+                    - GameValues.BUTTON_PADDING, h - (textH * 3.1f), 0.3f);
 
-            // SONG NAME:
-            c.set(0xe5e4a0ff);
-
-
+            c.set(0xffffffff);
             // COINS:
             txt = Utility.formatNumber(Utility.getCoins());
             Utility.drawCenteredText(batch, c, txt, storeBtn.xPos - GameValues.BUTTON_PADDING,
-                    storeBtn.yPos + GameValues.BUTTON_SCALE, 0.3f);
+                    h - (storeBtn.yPos + GameValues.BUTTON_SCALE), 0.3f);
             batch.draw(
                     BitmapLoader.coin,
                     (storeBtn.xPos - w / 8)
                             - (GameValues.COIN_SCALE + GameValues.BUTTON_PADDING * 1.225f),
-                    (storeBtn.yPos + GameValues.BUTTON_SCALE)
-                            - GameValues.COIN_SCALE);
+                    h - ((storeBtn.yPos + GameValues.BUTTON_SCALE)
+                            - GameValues.COIN_SCALE), GameValues.COIN_SCALE * 2, GameValues.COIN_SCALE * 2);
 
             // SCORE & STATS:
             txt = ("Played: " + player.gamesPlayed);
@@ -716,7 +744,7 @@ public class Game extends ApplicationAdapter {
             Utility.drawCenteredText(batch, c,
                     txt,
                     (achievBtn.xPos + GameValues.BUTTON_SCALE + GameValues.BUTTON_PADDING),
-                    (achievBtn.yPos + GameValues.BUTTON_SCALE), 0.3f);
+                    h - (achievBtn.yPos + GameValues.BUTTON_SCALE), 0.3f);
             scoreText = ("Best: " + player.highScoreA);
             if (mode == GameMode.Recruit) {
                 scoreText = ("Best: " + player.highScoreR);
@@ -745,20 +773,21 @@ public class Game extends ApplicationAdapter {
                 txt = "Runner";
             }
             Utility.drawCenteredText(batch, c, txt, modeBtn.xPos + (GameValues.BUTTON_SCALE / 2),
-                    (modeBtn.yPos + GameValues.BUTTON_SCALE)
-                            + (GameValues.BUTTON_PADDING * 1.15f), 0.3f);
+                    h - ((modeBtn.yPos + GameValues.BUTTON_SCALE)
+                            + (GameValues.BUTTON_PADDING * 1.15f)), 0.3f);
             // RANK:
 
         } else if (state == GameState.Playing) {
             // SCORE
+            beginSpriteBatch();
             c.set(0xe5e4a0ff);
             if (player.score > 0) {
                 Utility.drawCenteredText(batch, c, String.valueOf(player.score),
                         (w / 2),
-                        scoreDisplay.yPos, 0.3f * scoreTextMult);
+                        h - scoreDisplay.yPos, 0.3f * scoreTextMult);
             } else {
                 Utility.drawCenteredText(batch, c, "1", (w / 2),
-                        scoreDisplay.yPos, 0.3f * scoreTextMult);
+                        h - scoreDisplay.yPos, 0.3f * scoreTextMult);
             }
 
             txt = "";
@@ -784,38 +813,67 @@ public class Game extends ApplicationAdapter {
                     txt = ("NEW BEST!");
             }
             c.set(0xe5e4a0ff);
-            Utility.drawCenteredText(batch, c, txt, (w / 2), scoreDisplay.yPos, 0.23f);
+            Utility.drawCenteredText(batch, c, txt, (w / 2), h - scoreDisplay.yPos, 0.23f);
 
         }
 
         // INTRO
         if (introShowing) {
-            c.set(0x3e3e3eff);
+            beginRenderer();
+            setColor(0x3e3e3eff);
             renderer.rect(0, 0, w, h);
             c.set(0xe5e4a0ff);
 
+            beginSpriteBatch();
+
             Utility.drawCenteredText(batch, c, "The Big Shots", (w / 2),
-                    (h / 2), 0.4f);
+                    h - (h / 2), 0.4f);
             Utility.drawCenteredText(batch, c, "Thank you for Playing!", (w / 2),
-                    h - GameValues.BUTTON_PADDING, 0.3f);
-            c.set(0xe532cdff);
+                    h - (h - GameValues.BUTTON_PADDING - GameValues.BUTTON_PADDING), 0.3f);
+
+
+            beginRenderer();
+            setColor(0xe532cdff);
+
             renderer.rect((w / 2)
-                            - (GameValues.LOADING_BAR_WIDTH / 2), h
-                            - GameValues.LOADING_BAR_WIDTH / 2f,
-                    ((w / 2) - (GameValues.LOADING_BAR_WIDTH / 2))
-                            + loadWidth,
-                    (h - GameValues.LOADING_BAR_WIDTH / 2f)
-                            + GameValues.LOADING_BAR_WIDTH / 10);
+                            - (GameValues.LOADING_BAR_WIDTH / 2),
+                    GameValues.LOADING_BAR_WIDTH / 2f,
+                    loadWidth, GameValues.LOADING_BAR_WIDTH / 10);
         }
     }
 
     @Override
     public void dispose() {
-        bitmapLoader.dispose();
+        try {
+            bitmapLoader.dispose();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            ambientMusic.dispose();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            batch.dispose();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        renderer.dispose();
+
         Utility.disposeFont();
     }
 
-    public void drawHUD() {
+    @Override
+    public void resume() {
+        System.out.println("resume");
+        initDisposables();
+    }
 
+    public void drawHUD() {
+        HUDManager.getHUDManager().draw(batch, renderer);
     }
 }

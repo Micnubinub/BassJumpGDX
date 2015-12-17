@@ -201,7 +201,7 @@ public class Player extends GameObject {
     }
 
     public static void circle(ShapeRenderer canvas) {
-        canvas.circle(cx, cy, l - ((GameValues.PAINT_THICKNESS + 16) / 2));
+        canvas.circle(cx, Game.h - cy, l - ((GameValues.PAINT_THICKNESS + 16) / 2));
     }
 
     @Override
@@ -561,10 +561,10 @@ public class Player extends GameObject {
             // canvas.drawLine(points[i], points[i + 1], points[(i + 2)
             // % points.length], points[(i + 3) % points.length], paint);
             canvas.line(goingRight ? points[i] - xOffset : points[i]
-                            + xOffset, points[i + 1], goingRight ? points[(i + 2)
+                            + xOffset, Game.h - points[i + 1], goingRight ? points[(i + 2)
                             % points.length]
                             - xOffset : points[(i + 2) % points.length] + xOffset,
-                    points[(i + 3) % points.length]);
+                    Game.h - points[(i + 3) % points.length]);
 
         }
     }
@@ -572,28 +572,29 @@ public class Player extends GameObject {
     public void draw(ShapeRenderer canvas) {
         setShapeRotation(playerJumpPercentage * 180);
         c.set(Game.color);
-        switch (playerShape) {
-            case CIRCLE:
-                circle(canvas);
-                break;
-            default:
-                drawPolygon(canvas);
-                break;
-        }
-
-        // DRAW GLOW:
-        if (Game.alphaM > 0) {
-            c.set(0xffe5e4a0);
-            c.a = (Game.alphaM / 255f);
-            switch (playerShape) {
-                case CIRCLE:
-                    circle(canvas);
-                    break;
-                default:
-                    drawPolygon(canvas);
-                    break;
-            }
-        }
+        canvas.rect(xPos, Game.h - yPos, scale, scale);
+//        switch (playerShape) {
+//            case CIRCLE:
+//                circle(canvas);
+//                break;
+//            default:
+//                drawPolygon(canvas);
+//                break;
+//        }
+//
+//        // DRAW GLOW:
+//        if (Game.alphaM > 0) {
+//            c.set(0xffe5e4a0);
+//            c.a = (Game.alphaM / 255f);
+//            switch (playerShape) {
+//                case CIRCLE:
+//                    circle(canvas);
+//                    break;
+//                default:
+//                    drawPolygon(canvas);
+//                    break;
+//            }
+//        }
     }
 
     public enum PlayerShape {

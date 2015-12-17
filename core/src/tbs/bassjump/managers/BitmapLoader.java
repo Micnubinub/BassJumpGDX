@@ -31,7 +31,7 @@ public class BitmapLoader {
     public BitmapLoader() {
 
         // PLAYER:
-        player = new Texture("player");
+        player = new Texture("player.png");
 
         leader = new Texture("leader.png");
         sound = new Texture("sound.png");

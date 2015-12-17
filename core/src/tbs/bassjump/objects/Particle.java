@@ -88,7 +88,7 @@ public class Particle {
     public void draw(ShapeRenderer canvas) {
         if (this.state == STATE_ALIVE) {
             c.set(this.color);
-            canvas.rect(this.x, this.y, this.x + this.width, this.y
+            canvas.rect(this.x, Game.h - this.y, this.x + this.width, this.y
                     + this.height);
         }
     }

@@ -6,6 +6,8 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 
+import tbs.bassjump.GameController;
+
 /**
  * Created by Michael on 4/18/2015.
  */
@@ -25,10 +27,12 @@ public class UniversalClickListener implements InputProcessor, GestureDetector.G
     public static UniversalClickListener getUniversalClickListener() {
         if (universalClickListener == null) {
             universalClickListener = new UniversalClickListener();
-            Gdx.input.setInputProcessor(new InputMultiplexer(universalClickListener, new GestureDetector(universalClickListener)));
+            Gdx.input.setInputProcessor(new InputMultiplexer(universalClickListener, new GestureDetector(universalClickListener), new GameController()));
             w = Gdx.graphics.getWidth();
             h = Gdx.graphics.getHeight();
         }
+        if (Gdx.input.getInputProcessor() == null)
+            Gdx.input.setInputProcessor(new InputMultiplexer(universalClickListener, new GestureDetector(universalClickListener), new GameController()));
 
         return universalClickListener;
     }

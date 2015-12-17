@@ -3,7 +3,6 @@ package tbs.bassjump.managers;
 
 import tbs.bassjump.Utility;
 import tbs.bassjump.ui.CustomDialog;
-import tbs.bassjump.utility.GameUtils;
 import tbs.bassjump.utility.ListViewLib;
 import tbs.bassjump.utility.StoreItem;
 
@@ -12,7 +11,7 @@ public class StoreManager {
     private static final ListViewLib.StoreListener storeListener = new ListViewLib.StoreListener() {
         @Override
         public boolean onBuyItem(StoreItem item) {
-            final int coins = GameUtils.getCoins();
+            final int coins = Utility.getCoins();
             if (item.bought) {
                 this.onEquipItem(item);
                 return false;
@@ -20,14 +19,14 @@ public class StoreManager {
                 this.onFailedToBuyItem(item);
                 return false;
             } else {
-                GameUtils.saveCoins(coins - item.price);
+                Utility.saveCoins(coins - item.price);
                 switch (item.type) {
                     case COLOR:
-                        GameUtils.addBoughtColors(item.tag);
+                        Utility.addBoughtColors(item.tag);
                         break;
 
                     case SHAPE:
-                        GameUtils.addBoughtShapes(item.tag);
+                        Utility.addBoughtShapes(item.tag);
                         break;
                 }
                 item.bought = true;
@@ -40,7 +39,7 @@ public class StoreManager {
         public void onEquipItem(StoreItem item) {
             switch (item.type) {
                 case SHAPE:
-                    GameUtils.equipShape(item.tag);
+                    Utility.equipShape(item.tag);
                     break;
             }
         }

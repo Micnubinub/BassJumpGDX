@@ -40,7 +40,7 @@ public class ValueAnimator {
         animated_value = 0;
         if (updateListener != null)
             updateListener.onAnimationStart();
-        Screen.addAnimator(this);
+        //Screen.addAnimator(this);
     }
 
     public void reset() {
@@ -48,7 +48,7 @@ public class ValueAnimator {
         startTime = 0;
         duration = 0;
         running = false;
-        Screen.removeAnimator(this);
+//        Screen.removeAnimator(this);
     }
 
     public void stop() {
@@ -59,8 +59,8 @@ public class ValueAnimator {
 
         running = false;
 
-        if (autoRemove)
-            Screen.removeAnimator(this);
+//        if (autoRemove)
+//            Screen.removeAnimator(this);
     }
 
     public void setAutoRemove(boolean autoRemove) {

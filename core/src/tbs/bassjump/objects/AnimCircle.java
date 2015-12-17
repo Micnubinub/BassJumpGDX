@@ -14,8 +14,8 @@ public class AnimCircle extends GameObject {
 
     public void update() {
         if (active) {
-            this.scale += Game.w / 38;
-            this.a -= 10;
+            this.scale += ((Game.w / (38 * 16f)) * Game.delta);
+            this.a -= ((10 / 16f) * Game.delta);
             if (a <= 0) {
                 active = false;
             }

@@ -14,10 +14,6 @@ public class GameObject {
     public boolean bouncing; // IS JUMPING?
     public int bounceSpeed; // Jump Speed
 
-    public GameObject() {
-
-    }
-
     public void setup() {
         bouncing = false;
         bounceSpeed = 0;

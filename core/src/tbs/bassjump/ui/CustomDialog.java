@@ -1,6 +1,8 @@
 package tbs.bassjump.ui;
 
 
+import java.util.ArrayList;
+
 import tbs.bassjump.Utility;
 import tbs.bassjump.fragments.ColorFragment;
 import tbs.bassjump.fragments.ShapeFragment;
@@ -19,7 +21,7 @@ public class CustomDialog extends ViewGroup {
     private static TextView coinText;
     private static ViewGroup tabs;
     private static ViewPager pager;
-    private static MyPagerAdapter pagerAdapter;
+    //    private static MyPagerAdapter pagerAdapter;
     private static boolean show;
     private final String[] TITLES = {"Colors", "Shapes"};
 
@@ -49,8 +51,6 @@ public class CustomDialog extends ViewGroup {
     public void draw(float relX, float relY, float parentRight, float parentTop) {
         if (!show)
             return;
-
-
 // todo        view.findViewById(R.id.close).setOnClickListener(
 //                new View.OnClickListener() {
 //                    @Override
@@ -79,10 +79,29 @@ public class CustomDialog extends ViewGroup {
 
         coinText = new TextView((int) w / 2);
 
-        tabs = (PagerSlidingTabStrip) view.findViewById(R.id.tabs);
-        pager = (ViewPager) view.findViewById(R.id.view_pager);
 
-        pagerAdapter = new MyPagerAdapter(getChildFragmentManager());
+        tabs = new ViewGroup() {
+            @Override
+            public void dispose() {
+
+            }
+
+            @Override
+            public void draw(float relX, float relY, float parentRight, float parentTop) {
+
+            }
+        };
+        pager = new ViewPager() {
+            @Override
+            public ArrayList getTitles() {
+                return null;
+            }
+        };
+
+//    todo    tabs = (PagerSlidingTabStrip) view.findViewById(R.id.tabs);
+//        pager = (ViewPager) view.findViewById(R.id.view_pager);
+//
+//        pagerAdapter = new MyPagerAdapter(getChildFragmentManager());
 
     }
 

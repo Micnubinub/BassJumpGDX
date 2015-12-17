@@ -6,8 +6,8 @@ import tbs.bassjump.Game;
 import tbs.bassjump.GameMode;
 import tbs.bassjump.GameState;
 import tbs.bassjump.GameValues;
+import tbs.bassjump.Utility;
 import tbs.bassjump.objects.SpeedParticle;
-import tbs.bassjump.utility.GameUtils;
 
 public class Level {
 
@@ -34,7 +34,7 @@ public class Level {
 	private int platformIndexer;
 
 	public Level() {
-		GameUtils.log("Level Initialized");
+		Utility.print("Level Initialized");
 		platformIndexR = 0;
 		platformIndexL = 0;
 		platformsLeft = new ArrayList<Platform>(platformAmount);
@@ -59,7 +59,7 @@ public class Level {
 		for (int i = 0; i < 5; ++i) {
 			SpeedParticle sp = new SpeedParticle();
 			sp.xPos = (i * (Game.w / 4));
-			sp.xPos += GameUtils.randInt(-GameValues.SPEED_PARTICLE_WIDTH,
+			sp.xPos += Utility.randInt(-GameValues.SPEED_PARTICLE_WIDTH,
 					GameValues.SPEED_PARTICLE_WIDTH);
 			speedParticles.add(sp);
 		}
@@ -94,7 +94,7 @@ public class Level {
 
 		// SPEED PARTICLES
 		for (int i = 0; i < speedParticles.size(); ++i) {
-			speedParticles.get(i).yPos = GameUtils.randInt(-(Game.h / 3),
+			speedParticles.get(i).yPos = Utility.randInt(-(Game.h / 3),
 					Game.h);
 		}
 	}
@@ -190,11 +190,11 @@ public class Level {
 						if (right == gapRight)
 							platformsPerSide -= 1;
 						if (right == gapRight && platformsPerSide <= 0) {
-							if (GameUtils.randInt(0, 3) == 0) {
-								platformsPerSide = GameUtils.randInt(3, 4);
+							if (Utility.randInt(0, 3) == 0) {
+								platformsPerSide = Utility.randInt(3, 4);
 							} else {
 								if (!hadTwo) {
-									platformsPerSide = GameUtils.randInt(2, 3);
+									platformsPerSide = Utility.randInt(2, 3);
 									hadTwo = (platformsPerSide == 2);
 
 								} else {
@@ -203,7 +203,7 @@ public class Level {
 							}
 
 							if (platformsPerSide > 1) {
-								gap = GameUtils
+								gap = Utility
 										.randInt(
 												(GameValues.PLATFORM_HEIGHT),
 												((GameValues.PLATFORM_HEIGHT) * (platformsPerSide - 1)));

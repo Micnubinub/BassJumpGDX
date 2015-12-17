@@ -85,7 +85,7 @@ public class ShapeView extends View {
                 break;
         }
 
-        paint.setStrokeWidth(thickness);
+//todo        paint.setStrokeWidth(thickness);
 
     }
 
