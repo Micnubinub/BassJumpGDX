@@ -203,6 +203,7 @@ public class HUDManager implements InteractiveObject, Viewable {
             renderer.end();
 
         proj = batch.getProjectionMatrix().cpy();
+
         if (camera != null) {
             batch.setProjectionMatrix(camera.combined);
             renderer.setProjectionMatrix(camera.combined);
@@ -211,9 +212,10 @@ public class HUDManager implements InteractiveObject, Viewable {
         if (views.size() < 1)
             return;
 
-
         for (int i = views.size() - 1; i >= 0; i--) {
-            views.get(i).draw(0, 0, w, h);
+            final View v = views.get(i);
+            if (v.visible)
+                v.draw(0, 0, w, h);
         }
 
         if (renderer.isDrawing())

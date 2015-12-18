@@ -97,7 +97,7 @@ public class ScrollView extends LinearLayout {
 //            v.y -= scrollY;
             v.setLastRelX(relX + x + scrollX);
             v.setLastRelY(viewTop - cumulative - scrollY);
-            if (cullView(v))
+            if (cullView(v) && v.visible)
                 v.draw(relX + x + scrollX, viewTop - cumulative - scrollY, Math.min(relX + x + scrollX + w, parentRight), Math.min(viewTop - cumulative - scrollY + h, parentTop));
         }
         lastMeasuredHeight = cumulative;

@@ -21,6 +21,7 @@ public abstract class View implements InteractiveObject, Viewable {
     public OnLongClickListener onLongClickListener;
     public Object tag;
     public Background background;
+    public boolean visible = true;
     //Todo tmp
     public boolean debugDraw;
     public long tic;
@@ -260,6 +261,10 @@ public abstract class View implements InteractiveObject, Viewable {
 
         if (background != null)
             background.drawRelative(relX + x, relY + y, w, h);
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 
     public void setLastRelX(float lastRelX) {

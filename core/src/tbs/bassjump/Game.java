@@ -114,6 +114,7 @@ public class Game extends ApplicationAdapter {
         ambientMusic = Gdx.audio.newMusic(Gdx.files.internal("song1.mp3"));
         ambientMusic.setLooping(true);
         ambientMusic.play();
+
     }
 
     public static void setup() {

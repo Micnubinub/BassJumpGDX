@@ -1,20 +1,23 @@
 package tbs.bassjump.utility;
 
 
-import tbs.bassjump.ui.CustomDialog;
+import tbs.bassjump.Game;
+import tbs.bassjump.Utility;
+import tbs.bassjump.view_lib.HUDManager;
+import tbs.bassjump.view_lib.ViewPager;
 
 /**
  * Created by root on 29/12/14.
  */
 public class ListViewLib {
 
-    private static StoreListener storeListener;
-    // private static int numCoins;
-    // , descriptionTextSize, priceTextSize, itemNameTextSize,buyButtonTextSize;
-
     // private static Drawable listItemBackground;
 //    private static View view;
-    private CustomDialog dialog;
+    public static ViewPager dialog;
+    // private static int numCoins;
+    // , descriptionTextSize, priceTextSize, itemNameTextSize,buyButtonTextSize;
+    private static StoreListener storeListener;
+
 
     //    private int nameTextColor, priceTextColor, itemTextColor, buyTextColor,
 //            descriptionTextColor, coinTextColor, titleTextColor;
@@ -22,7 +25,6 @@ public class ListViewLib {
 //    private Drawable storeItemBackground;
 //    private Typeface storeItemFont;
 //    private Drawable buyButtonBackground;
-
 
     public static boolean buyItem(StoreItem item) {
         return storeListener.onBuyItem(item);
@@ -42,17 +44,28 @@ public class ListViewLib {
 //    }
 
     public void show() {
+        Utility.print("show store");
+
         if (dialog == null) {
-            dialog = new CustomDialog();
+            dialog = new ViewPager();
+
+            final int p = Game.w / 12;
+            dialog.setWidth(Game.w - p - p);
+            dialog.setHeight(Game.h - p - p);
+
+            dialog.x = p;
+            dialog.y = p;
+            HUDManager.getHUDManager().addView(dialog);
+        } else {
+            dialog.visible = true;
         }
 //Todo show dialog here
         if (storeListener != null)
             storeListener.onStoreOpened();
     }
 
-
     public void setStoreListener(StoreListener storeListener) {
-        this.storeListener = storeListener;
+        ListViewLib.storeListener = storeListener;
     }
 
 //    public void setListItemBackground(Drawable listItemBackground) {

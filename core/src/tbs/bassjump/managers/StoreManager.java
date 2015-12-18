@@ -2,9 +2,9 @@ package tbs.bassjump.managers;
 
 
 import tbs.bassjump.Utility;
-import tbs.bassjump.ui.CustomDialog;
 import tbs.bassjump.utility.ListViewLib;
 import tbs.bassjump.utility.StoreItem;
+import tbs.bassjump.view_lib.ViewPager;
 
 public class StoreManager {
     // public static AdManager adManager;
@@ -30,7 +30,7 @@ public class StoreManager {
                         break;
                 }
                 item.bought = true;
-                CustomDialog.setNumCoins(coins - item.price);
+                ViewPager.setNumCoins(coins - item.price);
             }
             return true;
         }

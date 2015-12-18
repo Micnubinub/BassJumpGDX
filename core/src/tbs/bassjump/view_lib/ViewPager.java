@@ -1,55 +1,69 @@
 package tbs.bassjump.view_lib;
 
-import java.util.ArrayList;
+import tbs.bassjump.Game;
 
 /**
  * Created by linde on 09-Dec-15.
  */
-public abstract class ViewPager extends ViewGroup {
-    protected static final ArrayList<View> pages = new ArrayList<View>(4);
-    public int currentPage;
-    protected float pageScrollOffSetX, pageScrollOffSetY;
-    private PageScrollListener pageScrollListener;
+public class ViewPager extends ViewGroup {
+    private static int coins;
+    private TextView title, shapesTitle, colorsTitle, numCoins;
+    private ListView shapes, colors;
+
     //Todo ensure all pages are the same size as the parent
     //Todo make adapter for both the pages and the titles* optional
-
-    @Override
-    public boolean longClick(UniversalClickListener.TouchType touchType, int xPos, int yPos) {
-        //Todo notify on pageListener
-        if (pageScrollListener != null) {
-
+    private Background selectedItemBackground;
+    public View.OnClickListener titleClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View view, int x, int y) {
+            if (view instanceof TextView) {
+                if (shapesTitle.getText().equals(((TextView) view).getText())) {
+                    shapes.setVisible(true);
+                    shapes.setBackground(selectedItemBackground);
+                    colors.setVisible(false);
+                    colors.setBackground(null);
+                } else {
+                    shapes.setVisible(false);
+                    shapes.setBackground(null);
+                    colors.setVisible(true);
+                    colors.setBackground(selectedItemBackground);
+                }
+            }
         }
-        return super.longClick(touchType, xPos, yPos);
-    }
-
-    @Override
-    public boolean click(UniversalClickListener.TouchType touchType, int xPos, int yPos) {
-        //Todo notify on pageListener
-        if (pageScrollListener != null) {
-
-        }
-        return super.click(touchType, xPos, yPos);
-    }
-
-    public void setCurrentPage(int currentPage) {
-        this.currentPage = currentPage;
-        //Todo
-    }
-
-    public abstract ArrayList getTitles();
-
-    public View getPage(int position) {
-        if (position < 0 || position >= pages.size())
-            return null;
-
-        return pages.get(position);
-    }
+    };
 
     //Todo views are the title, pager tab strip and pages
 
+    public ViewPager() {
+        title = new TextView(23);
+        shapesTitle = new TextView(23);
+        colorsTitle = new TextView(23);
+        numCoins = new TextView(23);
 
-    public void setPageScrollListener(PageScrollListener pageScrollListener) {
-        this.pageScrollListener = pageScrollListener;
+        shapes = new ListView();
+        colors = new ListView();
+
+        title.setText("Shop");
+        shapesTitle.setText("Shapes");
+        numCoins.setText("0");
+        colorsTitle.setText("Colors");
+
+        shapesTitle.setOnClickListener(titleClickListener);
+        colorsTitle.setOnClickListener(titleClickListener);
+
+        shapes.setAdapter(new ShapeAdapter());
+        colors.setAdapter(new ColorAdapter());
+
+        shapes.setVisible(true);
+        colors.setVisible(false);
+
+        setBackground(new Background(0x444444ff, Background.Type.COLOR));
+        selectedItemBackground = new Background(0x888888ff, Background.Type.COLOR);
+    }
+
+    public static void setNumCoins(int coins) {
+        coins = coins < 0 ? 0 : coins;
+        ViewPager.coins = coins;
     }
 
     @Override
@@ -58,31 +72,102 @@ public abstract class ViewPager extends ViewGroup {
     }
 
     @Override
+    public boolean click(UniversalClickListener.TouchType touchType, int xPos, int yPos) {
+        rect.set(lastRelX + x, lastRelY + y, w, h);
+        if (!rect.contains(xPos, yPos)) {
+            visible = false;
+            return true;
+        }
+        return super.click(touchType, xPos, yPos);
+    }
+
+    @Override
     public void draw(float relX, float relY, float parentRight, float parentTop) {
         //Todo draw title and tab strip
+        if (!visible)
+            return;
+
+        Game.beginRenderer();
+
+        color.set(0x00000099);
+        color.a = 0.2f;
+        Game.renderer.setColor(color);
+//        Game.renderer.rect(0, 0, Game.w, Game.h);
+
         drawBackground(relX, relY);
+        setDimens();
 
-        final View behind = getPage(currentPage - 1);
-        final View current = getPage(currentPage);
-        final View ahead = getPage(currentPage + 1);
+        final float drawR = Math.min(parentRight, relX + x + w);
+        final float drawT = Math.min(parentTop, relY + y + h);
 
-        final float behindLeft = relX + x + 3;
+        title.draw(relX + x, relY + y, drawR, drawT);
+        colorsTitle.draw(relX + x, relY + y, drawR, drawT);
+        shapesTitle.draw(relX + x, relY + y, drawR, drawT);
 
-        //Todo calculate offset and draw the views that a re behind and ahead based on that value
-        if (behind != null)
-            behind.draw(behindLeft, relY + y, parentRight, parentTop);
+        shapes.setHeight(h - title.h - colorsTitle.h);
+        colors.setHeight(h - title.h - colorsTitle.h);
 
-        if (current != null)
-            current.draw(behindLeft + w, relY + y, parentRight, parentTop);
+        if (colors.visible)
+            colors.draw(relX + x, relY + y, drawR, drawT);
 
-        if (ahead != null)
-            ahead.draw(behindLeft + w + w, relY + y, parentRight, parentTop);
+        if (shapes.visible)
+            shapes.draw(relX + x, relY + y, drawR, drawT);
+    }
+
+    private void setDimens() {
+        title.setWidth(w);
+        colorsTitle.setWidth(w / 2);
+        shapesTitle.setWidth(w / 2);
+        shapesTitle.setX((int) w / 2);
+
+        title.y = h - title.h;
+
+        final float pageH = h - title.h - Math.min(colorsTitle.h, shapesTitle.h);
+
+        shapesTitle.y = pageH;
+        colorsTitle.y = pageH;
+
+        shapes.setWidth(w);
+        shapes.setHeight(h);
+
+        colors.setWidth(w);
+        colors.setHeight(h);
 
     }
 
-    public interface PageScrollListener {
-        void onPageScrolled(int currentPage, float pageScrollOffSet);
+    public static class ShapeAdapter extends Adapter {
 
-        void onPageSelected(int selectedPage);
+        @Override
+        public int getCount() {
+            return 0;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        @Override
+        public View getView(int position) {
+            return null;
+        }
+    }
+
+    public static class ColorAdapter extends Adapter {
+
+        @Override
+        public int getCount() {
+            return 0;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        @Override
+        public View getView(int position) {
+            return null;
+        }
     }
 }

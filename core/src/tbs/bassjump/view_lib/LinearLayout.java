@@ -114,7 +114,7 @@ public class LinearLayout extends ViewGroup {
             v.setLastRelX(relX + x);
             v.setLastRelY(viewTop - cumulative);
 
-            if (cullView(v))
+            if (cullView(v) && v.visible)
                 v.draw(relX + x, viewTop - cumulative, Math.min(relX + w, parentRight), Math.min(relY + h, parentTop));
         }
     }
