@@ -53,7 +53,7 @@ public class ListView extends ScrollView {
 
     @Override
     public void draw(float relX, float relY, float parentRight, float parentTop) {
-        tic = System.nanoTime();
+//        tic = System.nanoTime();
         updatePanAnimator();
         drawBackground(relX, relY);
         if (adapter == null || adapter.getCount() < 1) {
@@ -78,7 +78,7 @@ public class ListView extends ScrollView {
         }
         lastMeasuredHeight = cumulative;
 
-        print("listView tic toc > " + (System.nanoTime() - tic));
+//        print("listView tic toc > " + (System.nanoTime() - tic));
 
     }
 

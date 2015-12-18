@@ -558,13 +558,13 @@ public class Player extends GameObject {
         if (points == null || points.length <= 5)
             return;
         for (int i = 0; i < points.length; i += 2) {
-            // canvas.drawLine(points[i], points[i + 1], points[(i + 2)
-            // % points.length], points[(i + 3) % points.length], paint);
-            canvas.line(goingRight ? points[i] - xOffset : points[i]
-                            + xOffset, points[i + 1], goingRight ? points[(i + 2)
-                            % points.length]
-                            - xOffset : points[(i + 2) % points.length] + xOffset,
-                    Game.h - points[(i + 3) % points.length]);
+            canvas.line(points[i], points[i + 1], points[(i + 2)
+                    % points.length], points[(i + 3) % points.length]);
+//            canvas.line(goingRight ? points[i] - xOffset : points[i]
+//                            + xOffset, points[i + 1], goingRight ? points[(i + 2)
+//                            % points.length]
+//                            - xOffset : points[(i + 2) % points.length] + xOffset,
+//                    points[(i + 3) % points.length]);
 
         }
     }

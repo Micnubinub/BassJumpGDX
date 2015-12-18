@@ -30,7 +30,6 @@ public class Button extends View {
 
     @Override
     public void draw(float relX, float relY, float relW, float relH) {
-        tic = System.nanoTime();
         drawBackground(relX, relY);
         final SpriteBatch batch = getSpriteBatch(relX, relY);
 //        for (int i = drawables.size() - 1; i >= 0; i--) {
@@ -40,7 +39,6 @@ public class Button extends View {
 //        }
 
         Utility.drawCenteredText(batch, text, textColor, 0.5f, relX + x + (w / 2), relY + y + (h / 2));
-        print("button tic toc > " + (System.nanoTime() - tic));
 
     }
 

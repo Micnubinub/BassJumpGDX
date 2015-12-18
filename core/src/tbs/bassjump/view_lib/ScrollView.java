@@ -78,7 +78,7 @@ public class ScrollView extends LinearLayout {
 
     @Override
     public void draw(float relX, float relY, float parentRight, float parentTop) {
-        tic = System.nanoTime();
+//        tic = System.nanoTime();
         updatePanAnimator();
         drawBackground(relX, relY);
 
@@ -101,7 +101,7 @@ public class ScrollView extends LinearLayout {
                 v.draw(relX + x + scrollX, viewTop - cumulative - scrollY, Math.min(relX + x + scrollX + w, parentRight), Math.min(viewTop - cumulative - scrollY + h, parentTop));
         }
         lastMeasuredHeight = cumulative;
-        print("scrollView tic toc > " + (System.nanoTime() - tic));
+//        print("scrollView tic toc > " + (System.nanoTime() - tic));
     }
 
     public int getScrollX() {

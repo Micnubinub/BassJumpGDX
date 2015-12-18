@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -589,7 +588,8 @@ public class Utility {
     }
 
     public static String formatNumber(int i) {
-        return NumberFormat.getIntegerInstance().format(i);
+//  Todo      return NumberFormat.getIntegerInstance().format(i);
+        return String.valueOf(i);
     }
 
 }

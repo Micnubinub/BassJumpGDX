@@ -45,8 +45,8 @@ public class Rect {
         return (x < r.x + r.w && x + w > r.x && y < r.y + r.h && y + h > r.y);
     }
 
-    @Override
-    public String toString() {
-        return String.format("x : %.0f, y : %.0f | w : %.0f, h : %.0f", x, y, w, h);
-    }
+//    @Override
+//    public String toString() {
+//        return String.format("x : %.0f, y : %.0f | w : %.0f, h : %.0f", x, y, w, h);
+//    }
 }

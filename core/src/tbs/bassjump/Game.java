@@ -113,8 +113,6 @@ public class Game extends ApplicationAdapter {
         bitmapLoader = new BitmapLoader();
         ambientMusic = Gdx.audio.newMusic(Gdx.files.internal("song1.mp3"));
         ambientMusic.setLooping(true);
-        ambientMusic.play();
-
     }
 
     public static void setup() {
@@ -476,6 +474,7 @@ public class Game extends ApplicationAdapter {
                 isMusicEnabled = false;
                 pauseMusic();
             } else {
+                playMusic();
                 isMusicEnabled = true;
             }
         } else {
@@ -642,13 +641,12 @@ public class Game extends ApplicationAdapter {
 
         // PLAYER:
         player.draw(renderer);
-
         beginSpriteBatch();
         for (int i = 0; i < animatedTexts.size(); ++i) {
             if (animatedTexts.get(i).active) {
                 c.a = animatedTexts.get(i).alpha / 255f;
                 Utility.drawCenteredText(batch, c, animatedTexts.get(i).text,
-                        animatedTexts.get(i).xPos, h - animatedTexts.get(i).yPos, 0.3f);
+                        animatedTexts.get(i).xPos, h - animatedTexts.get(i).yPos, Utility.getScale(w / 11));
             }
         }
 
@@ -702,13 +700,13 @@ public class Game extends ApplicationAdapter {
 
             final float textH = w / 4.85f;
             Utility.drawCenteredText(batch, c, "BASS", leaderBtn.xPos - GameValues.BUTTON_PADDING,
-                    h - (textH * 1.25f), 0.3f);
+                    h - (textH * 1.25f), Utility.getScale(w / 4.85f));
             Utility.drawCenteredText(batch, c, "JUMP", leaderBtn.xPos - GameValues.BUTTON_PADDING,
                     h - (textH * 2.25f), 0.3f);
             Utility.drawCenteredText(batch, c, "Tap anywhere", leaderBtn.xPos
-                    - GameValues.BUTTON_PADDING, h - (textH * 2.75f), 0.3f);
+                    - GameValues.BUTTON_PADDING, h - (textH * 2.75f), Utility.getScale(w / 19.25f));
             Utility.drawCenteredText(batch, c, "to Start", leaderBtn.xPos
-                    - GameValues.BUTTON_PADDING, h - (textH * 3.1f), 0.3f);
+                    - GameValues.BUTTON_PADDING, h - (textH * 3.1f), Utility.getScale(w / 19.25f));
 
             c.set(0xffffffff);
             // COINS:
@@ -725,11 +723,10 @@ public class Game extends ApplicationAdapter {
             // SCORE & STATS:
             txt = ("Played: " + player.gamesPlayed);
             c.set(0xe5e4a0ff);
-
             Utility.drawCenteredText(batch, c,
                     txt,
                     (achievBtn.xPos + GameValues.BUTTON_SCALE + GameValues.BUTTON_PADDING),
-                    h - (achievBtn.yPos + GameValues.BUTTON_SCALE), 0.3f);
+                    h - (achievBtn.yPos + GameValues.BUTTON_SCALE), Utility.getScale(w / 19.25f));
             scoreText = ("Best: " + player.highScoreA);
             if (mode == GameMode.Recruit) {
                 scoreText = ("Best: " + player.highScoreR);
@@ -759,7 +756,7 @@ public class Game extends ApplicationAdapter {
             }
             Utility.drawCenteredText(batch, c, txt, modeBtn.xPos + (GameValues.BUTTON_SCALE / 2),
                     h - ((modeBtn.yPos + GameValues.BUTTON_SCALE)
-                            + (GameValues.BUTTON_PADDING * 1.15f)), 0.3f);
+                            + (GameValues.BUTTON_PADDING * 1.15f)), Utility.getScale(w / 27));
             // RANK:
 
         } else if (state == GameState.Playing) {
@@ -769,12 +766,11 @@ public class Game extends ApplicationAdapter {
             if (player.score > 0) {
                 Utility.drawCenteredText(batch, c, String.valueOf(player.score),
                         (w / 2),
-                        h - scoreDisplay.yPos, 0.3f * scoreTextMult);
+                        h - scoreDisplay.yPos, Utility.getScale((w / 4.1f) * scoreTextMult));
             } else {
                 Utility.drawCenteredText(batch, c, "1", (w / 2),
-                        h - scoreDisplay.yPos, 0.3f * scoreTextMult);
+                        h - scoreDisplay.yPos, Utility.getScale((w / 4.1f) * scoreTextMult));
             }
-
             txt = "";
             if (mode == GameMode.Arcade) {
                 txt = ("BEST: " + String.valueOf(player.highScoreA));
@@ -798,7 +794,7 @@ public class Game extends ApplicationAdapter {
                     txt = ("NEW BEST!");
             }
             c.set(0xe5e4a0ff);
-            Utility.drawCenteredText(batch, c, txt, (w / 2), h - scoreDisplay.yPos, 0.23f);
+            Utility.drawCenteredText(batch, c, txt, (w / 2), h - scoreDisplay.yPos, Utility.getScale(w / 15.5f));
 
         }
 
@@ -810,11 +806,10 @@ public class Game extends ApplicationAdapter {
             c.set(0xe5e4a0ff);
 
             beginSpriteBatch();
-
             Utility.drawCenteredText(batch, c, "The Big Shots", (w / 2),
-                    h - (h / 2), 0.4f);
+                    h - (h / 2), Utility.getScale(w / 9));
             Utility.drawCenteredText(batch, c, "Thank you for Playing!", (w / 2),
-                    h - (h - GameValues.BUTTON_PADDING - GameValues.BUTTON_PADDING), 0.3f);
+                    h - (h - GameValues.BUTTON_PADDING - GameValues.BUTTON_PADDING), Utility.getScale(w / 25));
 
             beginRenderer();
             setColor(0xe532cdff);
