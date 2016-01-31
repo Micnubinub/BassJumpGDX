@@ -80,7 +80,7 @@ public class GameController implements InputProcessor {
                         && y >= Game.shareBtn.yPos
                         && y <= Game.shareBtn.yPos + GameValues.BUTTON_SCALE) {
                     // SHARE:
-                    Utility.print("share");
+                    Utility.openLink("http://thebigshots.net");
                     // tbs.bassjump.Utility.showToast("Share Coming Soon!", tbs.bassjump.reference.);
                 } else if (x >= Game.storeBtn.xPos
                         && x <= Game.storeBtn.xPos + GameValues.BUTTON_SCALE

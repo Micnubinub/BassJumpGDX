@@ -1,88 +1,78 @@
 package tbs.bassjump.managers;
 
-
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 
 public class BitmapLoader {
-    //Todo make texture atlas
-    // PLAYER:
-    public static Texture player;
-
     // LOADING
-    public static Texture leader;
-    public static Texture sound;
-    public static Texture soundO;
-    public static Texture achiv;
-    public static Texture store;
-    public static Texture achievm;
-    public static Texture share;
-
+    public static TextureRegion leader;
+    public static TextureRegion sound;
+    public static TextureRegion soundO;
+    public static TextureRegion achiv;
+    public static TextureRegion store;
+    public static TextureRegion achievm;
+    public static TextureRegion share;
     // MODES:
-    public static Texture modeArcade;
-    public static Texture modeRecruit;
-    public static Texture modeUltra;
-    public static Texture modeSingular;
-    public static Texture modeSpeed;
-
+    public static TextureRegion modeArcade;
+    public static TextureRegion modeRecruit;
+    public static TextureRegion modeUltra;
+    public static TextureRegion modeSingular;
+    public static TextureRegion modeSpeed;
     // COIN:
-    public static Texture coin;
+    public static TextureRegion coin;
+    //Todo make texture atlas
+    private static TextureAtlas atlas;
 
     public BitmapLoader() {
+        init();
+    }
+
+    public void init() {
+
+        try {
+            dispose();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        atlas = new TextureAtlas(Gdx.files.internal("textures"));
 
         // PLAYER:
-        player = new Texture("player.png");
 
-        leader = new Texture("leader.png");
-        sound = new Texture("sound.png");
+        leader = atlas.findRegion("leader");
+        sound = atlas.findRegion("sound");
 
-        soundO = new Texture("soundoff.png");
+        soundO = atlas.findRegion("soundoff");
 
-        achiv = new Texture("achiv.png");
+        achiv = atlas.findRegion("achiv");
 
-        store = new Texture("store.png");
+        store = atlas.findRegion("store");
 
-        achievm = new Texture("achiv2.png");
-        share = new Texture("share.png");
+        achievm = atlas.findRegion("achiv2");
+        share = atlas.findRegion("share");
 
 
         // MODE:
-        modeArcade = new Texture("modearcade.png");
+        modeArcade = atlas.findRegion("modearcade");
 
-        modeRecruit = new Texture("moderecruit.png");
+        modeRecruit = atlas.findRegion("moderecruit");
 
-        modeUltra = new Texture("modeultra.png");
+        modeUltra = atlas.findRegion("modeultra");
 
-        modeSingular = new Texture("modesingul.png");
+        modeSingular = atlas.findRegion("modesingul");
 
-        modeSpeed = new Texture("modespeed.png");
+        modeSpeed = atlas.findRegion("modespeed");
 
 
         // COIN:
-        coin = new Texture("coin.png");
+        coin = atlas.findRegion("coin");
     }
 
-    public void dispose(){
-         player.dispose();
-
-        // LOADING
-        leader.dispose();
-        sound.dispose();
-        soundO.dispose();
-        achiv.dispose();
-        store.dispose();
-        achievm.dispose();
-        share.dispose();
-
-        // MODES:
-        modeArcade.dispose();
-        modeRecruit.dispose();
-        modeUltra.dispose();
-        modeSingular.dispose();
-        modeSpeed.dispose();
-
-        // COIN:
-        coin.dispose();
+    public void dispose() {
+        if (atlas != null)
+            atlas.dispose();
     }
 
 }

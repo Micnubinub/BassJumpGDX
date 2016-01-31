@@ -770,13 +770,15 @@ public class Game extends ApplicationAdapter {
             // SCORE
             beginSpriteBatch();
             c.set(0xe5e4a0ff);
+            final float scale = Utility.getScale((w / 4.1f) * scoreTextMult);
+            float[] scoreTextSize = Utility.measureText("1", scale);
             if (player.score > 0) {
                 Utility.drawCenteredText(batch, c, String.valueOf(player.score),
                         (w / 2),
-                        h - scoreDisplay.yPos, Utility.getScale((w / 4.1f) * scoreTextMult));
+                        h - scoreDisplay.yPos, scale);
             } else {
                 Utility.drawCenteredText(batch, c, "1", (w / 2),
-                        h - scoreDisplay.yPos, Utility.getScale((w / 4.1f) * scoreTextMult));
+                        h - scoreDisplay.yPos, scale);
             }
             txt = "";
             if (mode == GameMode.Arcade) {
@@ -803,7 +805,7 @@ public class Game extends ApplicationAdapter {
 
             //Todo  txt = txt + " fps: " + Gdx.graphics.getFramesPerSecond();
             c.set(0xe5e4a0ff);
-            Utility.drawCenteredText(batch, c, txt, (w / 2), h - scoreDisplay.yPos, Utility.getScale(w / 15.5f));
+            Utility.drawCenteredText(batch, c, txt, (w / 2), h - scoreDisplay.yPos - scoreTextSize[1], Utility.getScale(w / 15.5f));
         }
 
         // INTRO

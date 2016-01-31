@@ -1,0 +1,131 @@
+textures.png
+size: 1290, 1290
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+achiv
+  rotate: false
+  xy: 1, 1029
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+achiv2
+  rotate: false
+  xy: 1, 1
+  size: 512, 512
+  orig: 512, 512
+  offset: 0, 0
+  index: -1
+close
+  rotate: false
+  xy: 259, 1029
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+coin
+  rotate: false
+  xy: 515, 775
+  size: 246, 247
+  orig: 256, 256
+  offset: 0, 4
+  index: -1
+icon
+  rotate: false
+  xy: 1, 515
+  size: 512, 512
+  orig: 512, 512
+  offset: 0, 0
+  index: -1
+leader
+  rotate: false
+  xy: 517, 1
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+modearcade
+  rotate: false
+  xy: 775, 1
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+moderecruit
+  rotate: false
+  xy: 1033, 1
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+modesingul
+  rotate: false
+  xy: 515, 259
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+modespeed
+  rotate: false
+  xy: 515, 517
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+modeultra
+  rotate: false
+  xy: 517, 1024
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+player
+  rotate: false
+  xy: 775, 259
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+share
+  rotate: false
+  xy: 1033, 259
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+song1
+  rotate: false
+  xy: 773, 517
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+song2
+  rotate: false
+  xy: 1031, 517
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+sound
+  rotate: false
+  xy: 775, 775
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+soundoff
+  rotate: false
+  xy: 775, 1033
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+store
+  rotate: false
+  xy: 1033, 775
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
