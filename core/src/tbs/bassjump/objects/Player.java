@@ -505,7 +505,7 @@ public class Player extends GameObject {
         }
         // / PARTICLES:
         showParticles();
-        Game.showCircle(scale, getXCenter(), getYCenter(), 160, false);
+        Game.showCircle(getXCenter(), getYCenter());
 
         // TEXT
         if (right)

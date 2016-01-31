@@ -1,6 +1,5 @@
 package tbs.bassjump;
 
-
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
@@ -20,7 +19,6 @@ import tbs.bassjump.objects.AnimCircle;
 import tbs.bassjump.objects.Player;
 import tbs.bassjump.utility.GameObject;
 import tbs.bassjump.view_lib.HUDManager;
-
 
 public class Game extends ApplicationAdapter {
     // PAINTER:
@@ -142,6 +140,7 @@ public class Game extends ApplicationAdapter {
     protected static void clear() {
         Gdx.gl.glClearColor(.22f, .22f, .22f, 1);
         Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling ? GL20.GL_COVERAGE_BUFFER_BIT_NV : 0));
     }
 
@@ -322,11 +321,11 @@ public class Game extends ApplicationAdapter {
         }
     }
 
-    public static void showCircle(int scale, int x, int y, int a, boolean special) {
+    public static void showCircle(int x, int y) {
         circleIndex += 1;
         if (circleIndex == circles.size())
             circleIndex = 0;
-        circles.get(circleIndex).activate(scale, x, y, a, special);
+        circles.get(circleIndex).activate(x, y);
     }
 
     // FAKE LOADER:
@@ -366,14 +365,17 @@ public class Game extends ApplicationAdapter {
         if (batch.isDrawing())
             batch.end();
 
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+
         if (!renderer.isDrawing())
             renderer.begin(ShapeRenderer.ShapeType.Filled);
+
     }
 
     public static void beginSpriteBatch() {
         if (renderer.isDrawing())
             renderer.end();
-
+        Gdx.gl.glEnable(GL20.GL_BLEND);
         if (!batch.isDrawing())
             batch.begin();
     }
@@ -655,8 +657,7 @@ public class Game extends ApplicationAdapter {
         for (int i = 0; i < circles.size(); ++i) {
             if (circles.get(i).active) {
                 c.set(0xe5e4a0ff);
-                c.a = circles.get(i).a / 255f;
-                renderer.setColor(c);
+                renderer.setColor(c.r, c.g, c.b, circles.get(i).a);
                 renderer.circle(circles.get(i).xPos, circles.get(i).yPos,
                         circles.get(i).scale);
             }
