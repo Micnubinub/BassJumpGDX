@@ -73,7 +73,8 @@ public class Utility {
 
     public static final Random rand = new Random();
     private static final int[] ints = new int[2];
-    private static final GlyphLayout layout = new GlyphLayout();
+    private static final GlyphLayout glyphLayout = new GlyphLayout();
+    private static final float[] textSize = new float[2];
     private static boolean isFontInit;
     private static BitmapFont font;
 
@@ -555,6 +556,9 @@ public class Utility {
 
     public static void drawCenteredText(SpriteBatch batch, Color color, String text, float x, float y, float scale) {
 
+        if (text == null || text.length() < 1) {
+            return;
+        }
 //        font.getData().setScale(scale);
 //        textToMeasure = "" + player.score;
 //        glyphLayout.setText(font, textToMeasure);
@@ -562,12 +566,24 @@ public class Utility {
         final BitmapFont font = getFont();
         font.getData().setScale(scale * 1.25f);
 
-        layout.setText(font, text);
-        final float textWidth = layout.width;
+        glyphLayout.setText(font, text);
+        final float textWidth = glyphLayout.width;
         final float left = x - (textWidth / 2);
         final float textHeight = font.getLineHeight();
         font.setColor(color);
         font.draw(batch, text, left, y + (textHeight / 2));
+    }
+
+    public static void drawLeftText(SpriteBatch batch, Color color, String text, float x, float y, float scale) {
+
+        if (text == null || text.length() < 1) {
+            return;
+        }
+
+        final BitmapFont font = getFont();
+        font.getData().setScale(scale * 1.25f);
+        font.setColor(color);
+        font.draw(batch, text, x, y + font.getLineHeight());
     }
 
     public static boolean customBool(int i) {
@@ -592,4 +608,21 @@ public class Utility {
         return String.valueOf(i);
     }
 
+    public static float[] measureText(String text) {
+        if (text == null || text.length() < 1) {
+            textSize[0] = 0;
+            textSize[1] = 0;
+        } else {
+            final BitmapFont font = getFont();
+            glyphLayout.setText(font, text);
+            textSize[0] = glyphLayout.width;
+            textSize[1] = glyphLayout.height;
+        }
+        return textSize;
+    }
+
+    public static float[] measureText(String text, float scale) {
+        getFont().getData().setScale(scale);
+        return measureText(text);
+    }
 }
