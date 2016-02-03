@@ -75,4 +75,30 @@ public class StoreManager {
         listViewLib.show();
     }
 
+    //Todo implement
+//    public static void setTextureColor(int color) {
+//        dispose();
+//        final Texture tmpTexture = new Texture(Gdx.files.internal("sprites"));
+//        final TextureData data = tmpTexture.getTextureData();
+//        data.prepare();
+//        while (!data.isPrepared()) {
+//
+//        }
+//        final Pixmap p = data.consumePixmap();
+//        int j, w = p.getWidth(), h = p.getHeight(), total = w * h;
+//        for (int i = 0; i < total; i++) {
+//            j = i % w;
+//            if (0x000000ff == p.getPixel(i, j)) {
+//                p.drawPixel(i, j, color);
+//            }
+//        }
+//
+//        regionTexture = new Texture(p);
+//
+////        data.disposePixmap();
+//        tmpTexture.dispose();
+////        p.dispose();
+//        region.setTexture(regionTexture);
+//    }
+
 }

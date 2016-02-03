@@ -21,11 +21,12 @@ import tbs.bassjump.utility.GameObject;
 import tbs.bassjump.view_lib.HUDManager;
 
 public class Game extends ApplicationAdapter {
+    //Todo make everything a texture >> walls > 1x1 opaque, 'rain particles' 1x1 translucent ** group with sprites.png
+    //Todo make order of drawing 1) walls, player, rain particle 2)menu, text >> group textures
     // PAINTER:
     private static final Color c = new Color();
     //MusicShuffle
     private static final Random random = new Random();
-    private static final int background = 0x222222ff;
     public static int[] colors = new int[]{0xffbb00ff};
     // CONTEXT
     // LEVEL AND PLAYER:
@@ -643,8 +644,8 @@ public class Game extends ApplicationAdapter {
         }
 
         // PLAYER:
-        player.draw(renderer);
         beginSpriteBatch();
+        player.draw(batch);
         for (int i = 0; i < animatedTexts.size(); ++i) {
             if (animatedTexts.get(i).active) {
                 c.a = animatedTexts.get(i).alpha / 255f;
@@ -675,12 +676,8 @@ public class Game extends ApplicationAdapter {
             batch.draw(BitmapLoader.achievm, achievBtn.xPos,
                     h - achievBtn.yPos - achievBtn.scale, achievBtn.scale, achievBtn.scale);
             batch.draw(BitmapLoader.share, shareBtn.xPos, h - shareBtn.yPos - shareBtn.scale, shareBtn.scale, shareBtn.scale);
-            if (isMusicEnabled)
-                batch.draw(BitmapLoader.sound, soundBtn.xPos,
-                        h - soundBtn.yPos - soundBtn.scale, soundBtn.scale, soundBtn.scale);
-            else
-                batch.draw(BitmapLoader.soundO, soundBtn.xPos,
-                        h - soundBtn.yPos - soundBtn.scale, soundBtn.scale, soundBtn.scale);
+            batch.draw(isMusicEnabled ? BitmapLoader.sound : BitmapLoader.soundO, soundBtn.xPos,
+                    h - soundBtn.yPos - soundBtn.scale, soundBtn.scale, soundBtn.scale);
 
             if (mode == GameMode.Arcade)
                 batch.draw(BitmapLoader.modeArcade, modeBtn.xPos,
@@ -774,8 +771,7 @@ public class Game extends ApplicationAdapter {
             float[] scoreTextSize = Utility.measureText("1", scale);
             if (player.score > 0) {
                 Utility.drawCenteredText(batch, c, String.valueOf(player.score),
-                        (w / 2),
-                        h - scoreDisplay.yPos, scale);
+                        (w / 2), h - scoreDisplay.yPos, scale);
             } else {
                 Utility.drawCenteredText(batch, c, "1", (w / 2),
                         h - scoreDisplay.yPos, scale);
@@ -803,7 +799,7 @@ public class Game extends ApplicationAdapter {
                     txt = ("NEW BEST!");
             }
 
-            //Todo  txt = txt + " fps: " + Gdx.graphics.getFramesPerSecond();
+            txt = txt + " fps: " + Gdx.graphics.getFramesPerSecond();
             c.set(0xe5e4a0ff);
             Utility.drawCenteredText(batch, c, txt, (w / 2), h - scoreDisplay.yPos - scoreTextSize[1], Utility.getScale(w / 15.5f));
         }
@@ -824,8 +820,7 @@ public class Game extends ApplicationAdapter {
             beginRenderer();
             setColor(0xe532cdff);
 
-            renderer.rect((w / 2)
-                            - (GameValues.LOADING_BAR_WIDTH / 2),
+            renderer.rect((w / 2) - (GameValues.LOADING_BAR_WIDTH / 2),
                     h - GameValues.LOADING_BAR_WIDTH / 2f,
                     loadWidth, GameValues.LOADING_BAR_WIDTH / 10);
         }
@@ -833,6 +828,7 @@ public class Game extends ApplicationAdapter {
 
     @Override
     public void dispose() {
+        super.dispose();
         try {
             bitmapLoader.dispose();
         } catch (Exception e) {
@@ -858,6 +854,8 @@ public class Game extends ApplicationAdapter {
 
     @Override
     public void resume() {
+        super.resume();
+
         System.out.println("resume");
         initDisposables();
     }

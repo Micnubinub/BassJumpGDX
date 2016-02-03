@@ -1,6 +1,13 @@
 package tbs.bassjump.objects;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.TextureData;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import java.util.ArrayList;
@@ -11,12 +18,13 @@ import tbs.bassjump.GameValues;
 import tbs.bassjump.Utility;
 import tbs.bassjump.levels.Level;
 import tbs.bassjump.levels.Platform;
+import tbs.bassjump.managers.BitmapLoader;
 import tbs.bassjump.utility.GameObject;
 import tbs.bassjump.view_lib.ViewPager;
 
 
 public class Player extends GameObject {
-    private static final Color c = new Color();
+    private static final Color c = new Color(0xffbb00ff);
     // Color
     public static int paintIndex;
     public static PlayerShape playerShape;
@@ -28,6 +36,9 @@ public class Player extends GameObject {
     // TMP till final fix
     private static int xOffset;
     private static boolean isStarShape;
+    private static TextureRegion region;
+    private static Sprite playerTexture;
+    private static String regionName = "4";
     // PARTICLES
     public final ArrayList<Particle> splashParticles1;
     public final ArrayList<Particle> splashParticles2;
@@ -51,11 +62,9 @@ public class Player extends GameObject {
     // PAINT TRAIL
     public ArrayList<PaintParticle> paintTrail;
     // OTHER:
-    int speed;
-    int right1;
-    int right2;
-    int bottom1;
-    int bottom2;
+    int speed, right1, right2, bottom1, bottom2;
+//    private static boolean isTextureLoaded;
+
 
     public Player() {
         Utility.print("Player Initialized");
@@ -67,8 +76,7 @@ public class Player extends GameObject {
         for (int i = 0; i < 12; i++) {
             splashParticles2.add(new Particle());
         }
-        playerJumpDistance = Game.w - (GameValues.PLATFORM_WIDTH * 2)
-                - GameValues.PLAYER_SCALE;
+        playerJumpDistance = Game.w - (GameValues.PLATFORM_WIDTH * 2) + GameValues.PAINT_THICKNESS;
         Utility.equipShape(Utility.getEquippedShape());
     }
 
@@ -204,6 +212,70 @@ public class Player extends GameObject {
         canvas.circle(cx, cy, l - ((GameValues.PAINT_THICKNESS + 16) / 2));
     }
 
+    public static void setRegionName(String regionName) {
+        Player.regionName = regionName;
+        reloadPlayerTexture();
+    }
+
+    public static void setPlayerSprite(String regionName) {
+        Player.regionName = regionName;
+        region = BitmapLoader.sprites.findRegion(regionName);
+        reloadPlayerTexture();
+    }
+
+    //Todo copy to store
+    public static void setTextureColor(int color) {
+        c.set(color);
+        reloadPlayerTexture();
+    }
+
+    public static void reloadPlayerTexture() {
+        dispose();
+        final Texture tmpTexture = new Texture(Gdx.files.internal("sprites.png"));
+        final TextureData data = tmpTexture.getTextureData();
+        data.prepare();
+        while (!data.isPrepared()) {
+
+        }
+        final Pixmap p = data.consumePixmap();
+        if (region == null) {
+            //Todo check database for the right on, default is 4>> do the same for color
+            region = BitmapLoader.sprites.findRegion("4");
+        }
+        System.out.println("region: " + region.getRegionX() + ", " + region.getRegionY() + " @ " + region.getRegionWidth() + "x" + region.getRegionHeight());
+        final Pixmap player = new Pixmap(region.getRegionWidth(), region.getRegionHeight(), Pixmap.Format.RGBA8888);
+
+        for (int i = region.getRegionX(); i < region.getRegionX() + region.getRegionWidth(); i++) {
+            for (int j = region.getRegionY(); j < region.getRegionY() + region.getRegionHeight(); j++) {
+                player.drawPixel(i - region.getRegionX(), j - region.getRegionHeight(), p.getPixel(i, j));
+            }
+        }
+
+//        final int color = c.toIntBits();
+//        for (int i = 0; i < player.getWidth(); i++) {
+//            for (int j = 0; j < player.getHeight(); j++) {
+//                if (0x000000ff == player.getPixel(i, j)) {
+//                    player.drawPixel(i, j, color);
+//                }
+//            }
+//        }
+
+        playerTexture = new Sprite(new Texture(player));
+
+        data.disposePixmap();
+        tmpTexture.dispose();
+        p.dispose();
+//        player.dispose();
+    }
+
+    public static void dispose() {
+        try {
+            playerTexture.getTexture().dispose();
+        } catch (Exception e) {
+//            e.printStackTrace();
+        }
+    }
+
     @Override
     public void setup() {
         super.setup();
@@ -304,7 +376,8 @@ public class Player extends GameObject {
             case JUMPING:
                 if (goingRight) { // RIGHT
                     xPos += GameValues.PLAYER_JUMP_SPEED;
-                    if ((xPos + scale) >= (Game.w - GameValues.PLATFORM_WIDTH)) {
+
+                    if ((xPos) >= (Game.w - GameValues.PLATFORM_WIDTH + GameValues.PAINT_THICKNESS)) {
                         goingRight = (xPos < (Game.w / 2));
                         if (isAlive(true))
                             land(true);
@@ -323,8 +396,6 @@ public class Player extends GameObject {
                 }
                 break;
         }
-        playerJumpPercentage = (xPos - GameValues.PLATFORM_WIDTH)
-                / playerJumpDistance;
     }
 
     public void startDying() {
@@ -476,6 +547,9 @@ public class Player extends GameObject {
         Game.scoreTextMult = 1.5f;
         Game.alphaM = 255; // BLITZ
         score += 1;
+        xPos = xPos < GameValues.PLATFORM_WIDTH ? GameValues.PLATFORM_WIDTH : xPos;
+        xPos = xPos > Game.w - GameValues.PLATFORM_WIDTH + GameValues.PAINT_THICKNESS ? Game.w - GameValues.PLATFORM_WIDTH + GameValues.PAINT_THICKNESS : xPos;
+        playerJumpPercentage = (xPos - GameValues.PLATFORM_WIDTH) / playerJumpDistance;
 
         // COIN BONUS:
         if (score >= 50) {
@@ -492,11 +566,7 @@ public class Player extends GameObject {
         // if (score % 5 == 0)
         Game.color = Game.colors[Utility.randInt(0, Game.colors.length - 1)];
         state = PlayerState.ON_GROUND;
-        if (right) {
-            xPos = ((Game.w - GameValues.PLATFORM_WIDTH) - scale);
-        } else {
-            xPos = (GameValues.PLATFORM_WIDTH);
-        }
+
         if (score % 2 == 0)
             GameValues.SPEED_BONUS += .005f;
 
@@ -554,48 +624,23 @@ public class Player extends GameObject {
         }
     }
 
-    public void drawPolygon(ShapeRenderer canvas) {
-        if (points == null || points.length <= 5)
-            return;
-        for (int i = 0; i < points.length; i += 2) {
-            canvas.line(points[i], points[i + 1], points[(i + 2)
-                    % points.length], points[(i + 3) % points.length]);
-//            canvas.line(goingRight ? points[i] - xOffset : points[i]
-//                            + xOffset, points[i + 1], goingRight ? points[(i + 2)
-//                            % points.length]
-//                            - xOffset : points[(i + 2) % points.length] + xOffset,
-//                    points[(i + 3) % points.length]);
-
-        }
-    }
-
-    public void draw(ShapeRenderer canvas) {
-        setShapeRotation(playerJumpPercentage * 180);
-        c.set(Game.color);
-//        canvas.rect(xPos, yPos, scale, scale);
-        switch (playerShape) {
-            case CIRCLE:
-                circle(canvas);
-                break;
-            default:
-                drawPolygon(canvas);
-                break;
-        }
-
-        // DRAW GLOW:
+    public void draw(SpriteBatch canvas) {
+        //Todo fix rotation
+        final float rotation = (float) (playerJumpPercentage * 180);
+        playerTexture.setRotation(rotation);
+//        playerTexture.setColor(0, 0, 0, 0);
+        canvas.draw(playerTexture, xPos, Game.h - yPos, scale, scale);
+//        canvas.setColor(1, 1, 1, 1);
+        //todo DRAW GLOW:
         if (Game.alphaM > 0) {
             c.set(0xffe5e4a0);
             c.a = (Game.alphaM / 255f);
-            switch (playerShape) {
-                case CIRCLE:
-                    circle(canvas);
-                    break;
-                default:
-                    drawPolygon(canvas);
-                    break;
-            }
+            playerTexture.setColor(c);
+            canvas.draw(playerTexture, xPos, Game.h - yPos, scale, scale);
+            canvas.setColor(1, 1, 1, 1);
         }
     }
+
 
     public enum PlayerShape {
         CIRCLE, RECT, TRIANGLE, HEXAGON, PENTAGON, SHURIKEN_STAR, PENTAGON_STAR

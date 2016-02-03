@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import tbs.bassjump.objects.Player;
+
 
 public class BitmapLoader {
     // LOADING
@@ -22,6 +24,7 @@ public class BitmapLoader {
     public static TextureRegion modeSpeed;
     // COIN:
     public static TextureRegion coin;
+    public static TextureAtlas sprites;
     //Todo make texture atlas
     private static TextureAtlas atlas;
 
@@ -38,6 +41,7 @@ public class BitmapLoader {
         }
 
         atlas = new TextureAtlas(Gdx.files.internal("textures"));
+        sprites = new TextureAtlas(Gdx.files.internal("sprites"));
 
         // PLAYER:
 
@@ -68,11 +72,15 @@ public class BitmapLoader {
 
         // COIN:
         coin = atlas.findRegion("coin");
+        Player.reloadPlayerTexture();
     }
 
     public void dispose() {
         if (atlas != null)
             atlas.dispose();
+
+        if (sprites != null)
+            sprites.dispose();
     }
 
 }
