@@ -238,34 +238,22 @@ public class Player extends GameObject {
 
         }
         final Pixmap p = data.consumePixmap();
-        if (region == null) {
-            //Todo check database for the right on, default is 4>> do the same for color
-            region = BitmapLoader.sprites.findRegion("4");
-        }
-        System.out.println("region: " + region.getRegionX() + ", " + region.getRegionY() + " @ " + region.getRegionWidth() + "x" + region.getRegionHeight());
+        //Todo check database for the right on, default is 4>> do the same for color
+        region = BitmapLoader.sprites.findRegion("4");
         final Pixmap player = new Pixmap(region.getRegionWidth(), region.getRegionHeight(), Pixmap.Format.RGBA8888);
-
+        final int color = c.toIntBits();
         for (int i = region.getRegionX(); i < region.getRegionX() + region.getRegionWidth(); i++) {
             for (int j = region.getRegionY(); j < region.getRegionY() + region.getRegionHeight(); j++) {
-                player.drawPixel(i - region.getRegionX(), j - region.getRegionHeight(), p.getPixel(i, j));
+                if (p.getPixel(i, j) != 0x00000000) {
+                    player.drawPixel(i - region.getRegionX(), j - region.getRegionY(), color);
+                }
             }
         }
-
-//        final int color = c.toIntBits();
-//        for (int i = 0; i < player.getWidth(); i++) {
-//            for (int j = 0; j < player.getHeight(); j++) {
-//                if (0x000000ff == player.getPixel(i, j)) {
-//                    player.drawPixel(i, j, color);
-//                }
-//            }
-//        }
-
         playerTexture = new Sprite(new Texture(player));
-
         data.disposePixmap();
         tmpTexture.dispose();
         p.dispose();
-//        player.dispose();
+        player.dispose();
     }
 
     public static void dispose() {
@@ -628,17 +616,17 @@ public class Player extends GameObject {
         //Todo fix rotation
         final float rotation = (float) (playerJumpPercentage * 180);
         playerTexture.setRotation(rotation);
-//        playerTexture.setColor(0, 0, 0, 0);
+        playerTexture.setColor(0, 0, 0, 0);
         canvas.draw(playerTexture, xPos, Game.h - yPos, scale, scale);
-//        canvas.setColor(1, 1, 1, 1);
+        canvas.setColor(1, 1, 1, 1);
         //todo DRAW GLOW:
-        if (Game.alphaM > 0) {
-            c.set(0xffe5e4a0);
-            c.a = (Game.alphaM / 255f);
-            playerTexture.setColor(c);
-            canvas.draw(playerTexture, xPos, Game.h - yPos, scale, scale);
-            canvas.setColor(1, 1, 1, 1);
-        }
+//        if (Game.alphaM > 0) {
+//            c.set(0xffe5e4a0);
+//            c.a = (Game.alphaM / 255f);
+//            playerTexture.setColor(c);
+//            canvas.draw(playerTexture, xPos, Game.h - yPos, scale, scale);
+//            canvas.setColor(1, 1, 1, 1);
+//        }
     }
 
 
