@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import java.util.ArrayList;
 
@@ -21,21 +20,25 @@ import tbs.bassjump.levels.Platform;
 import tbs.bassjump.managers.BitmapLoader;
 import tbs.bassjump.utility.GameObject;
 import tbs.bassjump.view_lib.ViewPager;
-
+//Todo fix rotation
+//Todo fix audio disabling
+//Todo fix store
+//Todo fix texture width
+//Todo fix particles
+//Todo add sprite 1x1 image of rain particles and walls sheet
+//Todo add leader board
+//Todo fix store click propagation
 
 public class Player extends GameObject {
     private static final Color c = new Color(0xffbb00ff);
     // Color
     public static int paintIndex;
     public static PlayerShape playerShape;
-    public static int paintTrailOffset;
-    private static int[] points;
-    // Michael's quick fix
-    private static int cx, cy, l, angleOffSet, initRotation, rotationStep;
+    // OTHER:
+    static int speed, right1, right2, bottom1, bottom2;
+    private static int cx, cy;
     private static double playerJumpDistance, playerJumpPercentage;
     // TMP till final fix
-    private static int xOffset;
-    private static boolean isStarShape;
     private static TextureRegion region;
     private static Sprite playerTexture;
     private static String regionName = "4";
@@ -61,8 +64,6 @@ public class Player extends GameObject {
     public int gamesHund; // Games over 100;
     // PAINT TRAIL
     public ArrayList<PaintParticle> paintTrail;
-    // OTHER:
-    int speed, right1, right2, bottom1, bottom2;
 //    private static boolean isTextureLoaded;
 
 
@@ -76,141 +77,15 @@ public class Player extends GameObject {
         for (int i = 0; i < 12; i++) {
             splashParticles2.add(new Particle());
         }
-        playerJumpDistance = Game.w - (GameValues.PLATFORM_WIDTH * 2) + GameValues.PAINT_THICKNESS;
+        playerJumpDistance = Game.w - (GameValues.PLATFORM_WIDTH * 2) + GameValues.PAINT_THICKNESS - scale;
         Utility.equipShape(Utility.getEquippedShape());
     }
 
     public static void setPlayerShape(PlayerShape playerShape) {
+        //Todo
         Player.playerShape = playerShape;
-        l = Math.round((GameValues.PLAYER_SCALE / 2) / 0.7071f)
-                - ((GameValues.PAINT_THICKNESS + 16) / 2);
-        xOffset = 0;
-        switch (playerShape) {
-            case RECT:
-                initRectAngle();
-                break;
-            case TRIANGLE:
-                initTriangle();
-                break;
-            case PENTAGON:
-                initPentagon();
-                break;
-            case HEXAGON:
-                initHexagon();
-                break;
-            case CIRCLE:
-                // l = (GameValues.PLAYER_SCALE / 2) - GameValues.PAINT_THICKNESS;
-                break;
-            case SHURIKEN_STAR:
-                initShurikenStar();
-                break;
-            case PENTAGON_STAR:
-                initPentagonStar();
-                break;
-        }
-        //todo paint.setStrokeWidth((GameValues.PAINT_THICKNESS + 16));
     }
 
-    private static void initRectAngle() {
-        isStarShape = false;
-        points = new int[8];
-        initRotation = 45;
-        rotationStep = 90;
-        angleOffSet = 0;
-        // calcPolyL();
-    }
-
-    private static void initTriangle() {
-        isStarShape = false;
-        points = new int[6];
-        initRotation = 90;
-        rotationStep = 120;
-        angleOffSet = 30;
-        // calcPolyL();
-        xOffset = (int) (GameValues.PLAYER_SCALE * 0.1f);
-    }
-
-    private static void initPentagon() {
-        isStarShape = false;
-        points = new int[10];
-        initRotation = 0;
-        rotationStep = 72;
-        angleOffSet = 72;
-        // calcPolyL();
-    }
-
-    // private static void calcPolyL() {
-    // final int n = points.length / 2;
-    // final int cosAngle = ((n - 2) * 180) / (n * 2);
-    // l = (int) ((GameValues.PLAYER_SCALE * 0.5f) /
-    // Math.cos(Math.toRadians(cosAngle)));
-    // }
-
-    private static void initShurikenStar() {
-        isStarShape = true;
-        points = new int[12];
-        initRotation = 90;
-        rotationStep = 120;
-        angleOffSet = 30;
-        l = Math.round((GameValues.PLAYER_SCALE / 2));
-        xOffset = (int) (GameValues.PLAYER_SCALE * 0.1f);
-    }
-
-    private static void initPentagonStar() {
-        isStarShape = true;
-        points = new int[20];
-        initRotation = 0;
-        rotationStep = 72;
-        angleOffSet = 72;
-    }
-
-    private static void initHexagon() {
-        isStarShape = false;
-        points = new int[12];
-        initRotation = 30;
-        rotationStep = 60;
-        angleOffSet = 0;
-        // calcPolyL();
-    }
-
-    public static void setShapeRotation(double rotation) {
-        if (points == null || points.length <= 5)
-            return;
-        rotation += angleOffSet;
-
-        if (isStarShape) {
-            for (int i = 0; i < points.length; i += 4) {
-                points[(i) % points.length] = cx
-                        + (int) (l * Math.cos(Math.toRadians(initRotation
-                        + (rotationStep * i / 2) + rotation)));
-                points[(i + 1) % points.length] = cy
-                        + (int) (l * Math.sin(Math.toRadians(initRotation
-                        + (rotationStep * i / 2) + rotation)));
-
-                points[(i + 2) % points.length] = cx
-                        + (int) ((l / 3) * Math.cos(Math.toRadians(initRotation
-                        + (rotationStep * i / 2) + rotation
-                        + (rotationStep / 2))));
-                points[(i + 3) % points.length] = cy
-                        + (int) ((l / 3) * Math.sin(Math.toRadians(initRotation
-                        + (rotationStep * i / 2) + rotation
-                        + (rotationStep / 2))));
-            }
-        } else {
-            for (int i = 0; i < points.length; i += 2) {
-                points[(i) % points.length] = cx
-                        + (int) (l * Math.cos(Math.toRadians(initRotation
-                        + (rotationStep * i / 2) + rotation)));
-                points[(i + 1) % points.length] = cy
-                        + (int) (l * Math.sin(Math.toRadians(initRotation
-                        + (rotationStep * i / 2) + rotation)));
-            }
-        }
-    }
-
-    public static void circle(ShapeRenderer canvas) {
-        canvas.circle(cx, cy, l - ((GameValues.PAINT_THICKNESS + 16) / 2));
-    }
 
     public static void setRegionName(String regionName) {
         Player.regionName = regionName;
@@ -230,6 +105,7 @@ public class Player extends GameObject {
     }
 
     public static void reloadPlayerTexture() {
+        Utility.print("reloading");
         dispose();
         final Texture tmpTexture = new Texture(Gdx.files.internal("sprites.png"));
         final TextureData data = tmpTexture.getTextureData();
@@ -250,6 +126,7 @@ public class Player extends GameObject {
             }
         }
         playerTexture = new Sprite(new Texture(player));
+        playerTexture.setOriginCenter();
         data.disposePixmap();
         tmpTexture.dispose();
         p.dispose();
@@ -536,8 +413,9 @@ public class Player extends GameObject {
         Game.alphaM = 255; // BLITZ
         score += 1;
         xPos = xPos < GameValues.PLATFORM_WIDTH ? GameValues.PLATFORM_WIDTH : xPos;
-        xPos = xPos > Game.w - GameValues.PLATFORM_WIDTH + GameValues.PAINT_THICKNESS ? Game.w - GameValues.PLATFORM_WIDTH + GameValues.PAINT_THICKNESS : xPos;
-        playerJumpPercentage = (xPos - GameValues.PLATFORM_WIDTH) / playerJumpDistance;
+        xPos = xPos > Game.w - GameValues.PLATFORM_WIDTH + GameValues.PAINT_THICKNESS - scale ?
+                Game.w - GameValues.PLATFORM_WIDTH + GameValues.PAINT_THICKNESS - scale : xPos;
+        playerJumpPercentage = (xPos - GameValues.PLATFORM_WIDTH - scale) / playerJumpDistance;
 
         // COIN BONUS:
         if (score >= 50) {
@@ -567,11 +445,9 @@ public class Player extends GameObject {
 
         // TEXT
         if (right)
-            Game.showAnimatedText("+" + coinPluser, xPos, getYCenter(),
-                    (Game.h / 100), 12, 255, 0);
+            Game.showAnimatedText("+" + coinPluser, xPos, getYCenter(), (Game.h / 100), 12, 255, 0);
         else
-            Game.showAnimatedText("+" + coinPluser, xPos
-                            + GameValues.PLAYER_SCALE, getYCenter(),
+            Game.showAnimatedText("+" + coinPluser, xPos + GameValues.PLAYER_SCALE, getYCenter(),
                     (Game.h / 100), 12, 255, 0);
     }
 
@@ -585,20 +461,6 @@ public class Player extends GameObject {
         return cy;
     }
 
-    public boolean IsInBox(int x1, int y1, int width1, int height1, int x2,
-                           int y2, int width2, int height2) {
-        right1 = x1 + width1;
-        right2 = x2 + width2;
-        bottom1 = y1 + height1;
-        bottom2 = y2 + height2;
-
-        // Check if top-left point is in box chexk && y2 >= y2
-        if (x2 >= x1 && x2 <= right1 && y2 <= bottom1)
-            return true;
-        // Check if bottom-right point is in box
-        return (right2 >= x1 && right2 <= right1 && bottom2 >= y2 && bottom2 <= bottom1);
-    }
-
     public void showParticles() {
         if (goingRight) {
             for (int i = 0; i < splashParticles1.size(); i++) {
@@ -606,26 +468,27 @@ public class Player extends GameObject {
             }
         } else {
             for (int i = 0; i < splashParticles2.size(); i++) {
-                splashParticles2.get(i)
-                        .setup(xPos + scale, getYCenter(), false);
+                splashParticles2.get(i).setup(xPos + scale, getYCenter(), false);
             }
         }
     }
 
     public void draw(SpriteBatch canvas) {
+
         //Todo fix rotation
         final float rotation = (float) (playerJumpPercentage * 180);
+        Utility.print("xp: " + rotation);
+        playerTexture.setOriginCenter();
         playerTexture.setRotation(rotation);
-        playerTexture.setColor(0, 0, 0, 0);
-        canvas.draw(playerTexture, xPos, Game.h - yPos, scale, scale);
-        canvas.setColor(1, 1, 1, 1);
+        playerTexture.setSize(scale, scale);
+        playerTexture.setPosition(xPos, Game.h - yPos);
+        playerTexture.draw(canvas);
         //todo DRAW GLOW:
 //        if (Game.alphaM > 0) {
 //            c.set(0xffe5e4a0);
 //            c.a = (Game.alphaM / 255f);
 //            playerTexture.setColor(c);
-//            canvas.draw(playerTexture, xPos, Game.h - yPos, scale, scale);
-//            canvas.setColor(1, 1, 1, 1);
+//            playerTexture.draw(canvas);
 //        }
     }
 
