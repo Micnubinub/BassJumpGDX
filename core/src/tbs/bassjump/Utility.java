@@ -6,13 +6,13 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.utils.Disposable;
 
 import java.util.ArrayList;
 import java.util.Random;
 
 import tbs.bassjump.objects.Player;
-import tbs.bassjump.ui.ColorView;
-import tbs.bassjump.ui.ShapeView;
 import tbs.bassjump.utility.StoreItem;
 
 /**
@@ -28,53 +28,20 @@ public class Utility {
     public static final int COLOR_PRICE = 100;
     public static final String SEP = "//,/,//";
 
-    public static final String COLOR_RED_DARK = "COLOR_RED_DARK";
-    public static final String COLOR_PINK_DARK = "COLOR_PINK_DARK";
-    public static final String COLOR_BLUE_DARK = "COLOR_BLUE_DARK";
-    public static final String COLOR_INDIGO_DARK = "COLOR_INDIGO_DARK";
-    public static final String COLOR_GREEN_DARK = "COLOR_GREEN_DARK";
-    public static final String COLOR_YELLOW_DARK = "COLOR_YELLOW_DARK";
-    public static final String COLOR_ORANGE_DARK = "COLOR_ORANGE_DARK";
-    public static final String COLOR_PURPLE_DARK = "COLOR_PURPLE_DARK";
-
-    public static final String COLOR_RED_LIGHT = "COLOR_RED_LIGHT";
-    public static final String COLOR_PINK_LIGHT = "COLOR_PINK_LIGHT";
-    public static final String COLOR_BLUE_LIGHT = "COLOR_BLUE_LIGHT";
-    public static final String COLOR_INDIGO_LIGHT = "COLOR_INDIGO_LIGHT";
-    public static final String COLOR_GREEN_LIGHT = "COLOR_GREEN_LIGHT";
-    public static final String COLOR_YELLOW_LIGHT = "COLOR_YELLOW_LIGHT";
-    public static final String COLOR_ORANGE_LIGHT = "COLOR_ORANGE_LIGHT";
-    public static final String COLOR_PURPLE_LIGHT = "COLOR_PURPLE_LIGHT";
-
-    public static final String COLOR_RED = "COLOR_RED";
-    public static final String COLOR_PINK = "COLOR_PINK";
-    public static final String COLOR_BLUE = "COLOR_BLUE";
-    public static final String COLOR_INDIGO = "COLOR_INDIGO";
-    public static final String COLOR_GREEN = "COLOR_GREEN";
-    public static final String COLOR_YELLOW = "COLOR_YELLOW";
-    public static final String COLOR_ORANGE = "COLOR_ORANGE";
-    public static final String COLOR_PURPLE = "COLOR_PURPLE";
-    public static final String COLOR_WHITE = "COLOR_WHITE";
-    public static final String COLOR_BLACK = "COLOR_BLACK";
-    public static final String COLOR_METALLIC = "COLOR_METALLIC";
-    public static final String COLOR_INCOG = "COLOR_INCOG";
-    public static final String COLOR_TWENTY = "COLOR_TWENTY";
-    public static final String COLOR_CHOC = "COLOR_CHOC";
-    public static final String COLOR_LIME = "COLOR_LIME";
-
-    public static final String SHAPE_RECTANGLE = "SHAPE_RECTANGLE";
-    public static final String SHAPE_TRIANGLE = "SHAPE_TRIANGLE";
-    public static final String SHAPE_CIRCLE = "SHAPE_CIRCLE";
-    public static final String SHAPE_PENTAGON = "SHAPE_PENTAGON";
-    public static final String SHAPE_HEXAGON = "SHAPE_HEXAGON";
-    public static final String SHAPE_SHURIKEN_STAR = "SHAPE_SHURIKEN_STAR";
-    public static final String SHAPE_PENTAGON_STAR = "SHAPE_PENTAGON_STAR";
     public static final String CHECKOUT_OUR_OTHER_APPS = "CHECKOUT_OUR_OTHER_APPS";
 
     public static final Random rand = new Random();
+    public static final int[] colors = new int[]{0xff292929, 0xffe84e40, 0xffe51c23, 0xffd01716, 0xfff06292, 0xffe91e63, 0xffc2185b, 0xff738ffe, 0xff5677fc, 0xff455ede, 0xff5c6bc0, 0xff3f51b5, 0xff303f9f, 0xff42bd41, 0xff259b24, 0xff0a7e07, 0xff32cd32, 0xfffff176, 0xffffeb3b, 0xfffdd835, 0xffffa726, 0xfffb8c00, 0xffe65100, 0xffab47bc, 0xff9c27b0, 0xff7b1fa2, 0xff000000, 0xff535353, 0xff292929, 0xff69661d, 0xff53461a, 0xffffffff};
+    public static final int[] shapePrices = new int[]{0, 600, 1500, 2500, 10000, 12000, 15000};
+    public static final String[] shapeNames = new String[]{"Rectangle", "Circle", "Hexagon", "Triangle", "Pentagon", "Shuriken", "Pentagram"};
+    public static final String[] colorNames = new String[]{"White", "Light red", "Red", "Dark red", "Light pink", "Pink", "Dark pink", "Light Blue", "Blue", "Dark blue", "Light indigo", "Indigo", "Dark indigo", "Light green", "Green", "Dark green", "Lime Green", "Light yellow", "Yellow", "Dark yellow", "Light orange", "Orange", "Dark orange", "Light Purple", "Purple", "Dark Purple", "Vortex Black", "Tesla", "Incog", "21", "Chocolate"};
     private static final int[] ints = new int[2];
     private static final GlyphLayout glyphLayout = new GlyphLayout();
+    private static final Color c = new Color();
     private static final float[] textSize = new float[2];
+    private static final String vertexShader = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\nattribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\nattribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\nuniform mat4 u_projTrans;\n"
+            + "varying vec4 v_color;\nvarying vec2 v_texCoords;\nvoid main() {\nv_color = " + ShaderProgram.COLOR_ATTRIBUTE + ";\nv_texCoords = " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n"
+            + "   gl_Position =  u_projTrans * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n}";
     private static boolean isFontInit;
     private static BitmapFont font;
 
@@ -135,30 +102,6 @@ public class Utility {
         return coins;
     }
 
-    public static ArrayList<StoreItem> getColorStoreItems() {
-
-        final String boughtColors = getBoughtColors();
-        final String equippedColors = getEquippedColors();
-        final String[] colors = {COLOR_WHITE, COLOR_RED_LIGHT, COLOR_RED,
-                COLOR_RED_DARK, COLOR_PINK_LIGHT, COLOR_PINK, COLOR_PINK_DARK,
-                COLOR_BLUE_LIGHT, COLOR_BLUE, COLOR_BLUE_DARK,
-                COLOR_INDIGO_LIGHT, COLOR_INDIGO, COLOR_INDIGO_DARK,
-                COLOR_GREEN_LIGHT, COLOR_GREEN, COLOR_GREEN_DARK, COLOR_LIME,
-                COLOR_YELLOW_LIGHT, COLOR_YELLOW, COLOR_YELLOW_DARK,
-                COLOR_ORANGE_LIGHT, COLOR_ORANGE, COLOR_ORANGE_DARK,
-                COLOR_PURPLE_LIGHT, COLOR_PURPLE, COLOR_PURPLE_DARK,
-                COLOR_TWENTY, COLOR_CHOC, COLOR_INCOG, COLOR_METALLIC,
-                COLOR_BLACK};
-        final ArrayList<StoreItem> items = new ArrayList<StoreItem>(colors.length);
-        for (String color : colors) {
-            final StoreItem storeItem = getColorStoreItem(boughtColors, color);
-            storeItem.equipped = equippedColors.contains(storeItem.tag);
-            items.add(storeItem);
-        }
-
-        return items;
-    }
-
     public static ArrayList<StoreItem> getEquippedColorStoreItems() {
         final String[] colors = Utility.getEquippedColors().split(SEP);
         final ArrayList<StoreItem> items = new ArrayList<StoreItem>(colors.length);
@@ -166,103 +109,6 @@ public class Utility {
             items.add(getColorStoreItem("", color));
         }
         return items;
-    }
-
-    public static ArrayList<StoreItem> getShapeStoreItems() {
-        final String boughtShapes = getBoughtShapes();
-        final String[] shapes = {SHAPE_RECTANGLE, SHAPE_TRIANGLE,
-                SHAPE_CIRCLE, SHAPE_PENTAGON, SHAPE_HEXAGON, SHAPE_PENTAGON_STAR, SHAPE_SHURIKEN_STAR};
-        final ArrayList<StoreItem> items = new ArrayList<StoreItem>(shapes.length);
-        for (String shape : shapes) {
-            items.add(getShapeStoreItem(boughtShapes, shape));
-        }
-
-        return items;
-    }
-
-    public static ColorView getColorView(String tag) {
-        return new ColorView(getColor(tag));
-    }
-
-    public static int getColor(String tag) {
-        int color = 0xff292929;
-
-        if (tag.equals(COLOR_RED_LIGHT))
-            color = 0xffe84e40;
-        else if (tag.equals(COLOR_RED))
-            color = 0xffe51c23;
-        else if (tag.equals(COLOR_RED_DARK))
-            color = 0xffd01716;
-        else if (tag.equals(COLOR_PINK_LIGHT))
-            color = 0xfff06292;
-        else if (tag.equals(COLOR_PINK))
-            color = 0xffe91e63;
-        else if (tag.equals(COLOR_PINK_DARK))
-            color = 0xffc2185b;
-        else if (tag.equals(COLOR_BLUE_LIGHT))
-            color = 0xff738ffe;
-        else if (tag.equals(COLOR_BLUE))
-            color = 0xff5677fc;
-        else if (tag.equals(COLOR_BLUE_DARK))
-            color = 0xff455ede;
-        else if (tag.equals(COLOR_INDIGO_LIGHT))
-            color = 0xff5c6bc0;
-        else if (tag.equals(COLOR_INDIGO))
-            color = 0xff3f51b5;
-        else if (tag.equals(COLOR_INDIGO_DARK))
-            color = 0xff303f9f;
-        else if (tag.equals(COLOR_GREEN_LIGHT))
-            color = 0xff42bd41;
-        else if (tag.equals(COLOR_GREEN))
-            color = 0xff259b24;
-        else if (tag.equals(COLOR_GREEN_DARK))
-            color = 0xff0a7e07;
-        else if (tag.equals(COLOR_LIME))
-            color = 0xff32cd32;
-        else if (tag.equals(COLOR_YELLOW_LIGHT))
-            color = 0xfffff176;
-        else if (tag.equals(COLOR_YELLOW))
-            color = 0xffffeb3b;
-        else if (tag.equals(COLOR_YELLOW_DARK))
-            color = 0xfffdd835;
-        else if (tag.equals(COLOR_ORANGE_LIGHT))
-            color = 0xffffa726;
-        else if (tag.equals(COLOR_ORANGE))
-            color = 0xfffb8c00;
-        else if (tag.equals(COLOR_ORANGE_DARK))
-            color = 0xffe65100;
-        else if (tag.equals(COLOR_PURPLE_LIGHT))
-            color = 0xffab47bc;
-        else if (tag.equals(COLOR_PURPLE))
-            color = 0xff9c27b0;
-        else if (tag.equals(COLOR_PURPLE_DARK))
-            color = 0xff7b1fa2;
-        else if (tag.equals(COLOR_BLACK))
-            color = 0xff000000;
-        else if (tag.equals(COLOR_METALLIC))
-            color = 0xff535353;
-        else if (tag.equals(COLOR_INCOG))
-            color = 0xff292929;
-        else if (tag.equals(COLOR_TWENTY))
-            color = 0xff69661d;
-        else if (tag.equals(COLOR_CHOC))
-            color = 0xff53461a;
-        else if (tag.equals(COLOR_WHITE))
-            color = 0xffffffff;
-//        else if (tag.equals(BACKGROUND_HUNNID))
-//            color = 0xffdcdcdc;
-//        else if (tag.equals(BACKGROUND_MIDNIGHT))
-//            color = 0xff0000a0;
-//        else if (tag.equals(BACKGROUND_ROAD))
-//            color = 0xff525866;
-//        else if (tag.equals(BACKGROUND_SKY))
-//            color = 0xff3bb9ff;
-        return color;
-    }
-
-
-    public static ShapeView getShape(String tag) {
-        return new ShapeView(getShapeType(tag));
     }
 
 
@@ -378,10 +224,6 @@ public class Utility {
         final StringBuilder builder = new StringBuilder();
         builder.append(getEquippedColors());
 
-        if (tag.equals(COLOR_RED)) {
-
-        }
-
         if (builder.toString().contains(tag))
             return;
 
@@ -397,136 +239,6 @@ public class Utility {
     public static void madePurchase() {
 //    todo    MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQEw");
     }
-
-    public static StoreItem getShapeStoreItem(String boughtShapes, String tag) {
-        return new StoreItem(StoreItem.Type.SHAPE, tag, getShapeName(tag),
-                "Shape", getShapePrice(tag), boughtShapes.contains(tag));
-    }
-
-    private static String getShapeName(String tag) {
-        String shape = "Rectangle";
-
-        if (tag.equals(SHAPE_CIRCLE))
-            shape = "Circle";
-        else if (tag.equals(SHAPE_HEXAGON))
-            shape = "Hexagon";
-        else if (tag.equals(SHAPE_TRIANGLE))
-            shape = "Triangle";
-        else if (tag.equals(SHAPE_PENTAGON))
-            shape = "Pentagon";
-        else if (tag.equals(SHAPE_SHURIKEN_STAR))
-            shape = "Shuriken";
-        else if (tag.equals(SHAPE_PENTAGON_STAR))
-            shape = "Pentagram";
-
-        return shape;
-    }
-
-    private static int getShapePrice(String tag) {
-        int price = 0;
-        if (tag.equals(SHAPE_TRIANGLE))
-            price = 600;
-        else if (tag.equals(SHAPE_CIRCLE))
-            price = 1500;
-        else if (tag.equals(SHAPE_PENTAGON))
-            price = 2500;
-        else if (tag.equals(SHAPE_HEXAGON))
-            price = 10000;
-        else if (tag.equals(SHAPE_PENTAGON_STAR))
-            price = 12000;
-        else if (tag.equals(SHAPE_SHURIKEN_STAR))
-            price = 15000;
-        return price;
-    }
-
-    public static StoreItem getColorStoreItem(String boughtColors, String tag) {
-        if (tag.equals(COLOR_BLACK)) {
-            return new StoreItem(StoreItem.Type.COLOR, tag, getColorName(tag),
-                    "Color", 100000, boughtColors.contains(tag));
-        } else if (tag.equals(COLOR_METALLIC)) {
-            return new StoreItem(StoreItem.Type.COLOR, tag, getColorName(tag),
-                    "Color", 50000, boughtColors.contains(tag));
-        } else if (tag.equals(COLOR_INCOG)) {
-            return new StoreItem(StoreItem.Type.COLOR, tag, getColorName(tag),
-                    "Color", 10000, boughtColors.contains(tag));
-        } else if (tag.equals(COLOR_TWENTY)) {
-            return new StoreItem(StoreItem.Type.COLOR, tag, getColorName(tag),
-                    "Color", 21, boughtColors.contains(tag));
-        } else if (tag.equals(COLOR_CHOC)) {
-            return new StoreItem(StoreItem.Type.COLOR, tag, getColorName(tag),
-                    "Color", 5000, boughtColors.contains(tag));
-        } else {
-            return new StoreItem(StoreItem.Type.COLOR, tag, getColorName(tag),
-                    "Color", COLOR_PRICE, boughtColors.contains(tag));
-        }
-    }
-
-    private static String getColorName(String tag) {
-        String color = "White";
-
-        if (tag.equals(COLOR_RED_LIGHT))
-            color = "Light red";
-        else if (tag.equals(COLOR_RED))
-            color = "Red";
-        else if (tag.equals(COLOR_RED_DARK))
-            color = "Dark red";
-        else if (tag.equals(COLOR_PINK_LIGHT))
-            color = "Light pink";
-        else if (tag.equals(COLOR_PINK))
-            color = "Pink";
-        else if (tag.equals(COLOR_PINK_DARK))
-            color = "Dark pink";
-        else if (tag.equals(COLOR_BLUE_LIGHT))
-            color = "Light Blue";
-        else if (tag.equals(COLOR_BLUE))
-            color = "Blue";
-        else if (tag.equals(COLOR_BLUE_DARK))
-            color = "Dark blue";
-        else if (tag.equals(COLOR_INDIGO_LIGHT))
-            color = "Light indigo";
-        else if (tag.equals(COLOR_INDIGO))
-            color = "Indigo";
-        else if (tag.equals(COLOR_INDIGO_DARK))
-            color = "Dark indigo";
-        else if (tag.equals(COLOR_GREEN_LIGHT))
-            color = "Light green";
-        else if (tag.equals(COLOR_GREEN))
-            color = "Green";
-        else if (tag.equals(COLOR_GREEN_DARK))
-            color = "Dark green";
-        else if (tag.equals(COLOR_LIME))
-            color = "Lime Green";
-        else if (tag.equals(COLOR_YELLOW_LIGHT))
-            color = "Light yellow";
-        else if (tag.equals(COLOR_YELLOW))
-            color = "Yellow";
-        else if (tag.equals(COLOR_YELLOW_DARK))
-            color = "Dark yellow";
-        else if (tag.equals(COLOR_ORANGE_LIGHT))
-            color = "Light orange";
-        else if (tag.equals(COLOR_ORANGE))
-            color = "Orange";
-        else if (tag.equals(COLOR_ORANGE_DARK))
-            color = "Dark orange";
-        else if (tag.equals(COLOR_PURPLE_LIGHT))
-            color = "Light Purple";
-        else if (tag.equals(COLOR_PURPLE))
-            color = "Purple";
-        else if (tag.equals(COLOR_PURPLE_DARK))
-            color = "Dark Purple";
-        else if (tag.equals(COLOR_BLACK))
-            color = "Vortex Black";
-        else if (tag.equals(COLOR_METALLIC))
-            color = "Tesla";
-        else if (tag.equals(COLOR_INCOG))
-            color = "Incog";
-        else if (tag.equals(COLOR_TWENTY))
-            color = "21";
-        else if (tag.equals(COLOR_CHOC))
-            color = "Chocolate";
-        return color;
-    }
-
 
     public static int[] getAnglePos(double angle, float distFromCenter, float x, float y) {
         ints[0] = (int) (Math.round(distFromCenter * Math.sin(angle)) + x);
@@ -625,4 +337,89 @@ public class Utility {
         getFont().getData().setScale(scale);
         return measureText(text);
     }
+
+
+    public static ShaderProgram getCircleViewShaderProgram(int color) {
+        c.set(color);
+        final String fragmentShader = String.format("#ifdef GL_ES\n"
+                        + "#define LOWP lowp\n"
+                        + "precision mediump float;\n"
+                        + "#else\n"
+                        + "#define LOWP \n"
+                        + "#endif\n"
+                        + "varying LOWP vec4 v_color;\n"
+                        + "varying vec2 v_texCoords;\n"
+                        + "uniform sampler2D u_texture;\n"
+                        + "void main() {\n"
+                        + "  vec4 v_c = v_color * texture2D(u_texture, v_texCoords);\n"
+                        + "  if (v_c.a > 0.95) { \n"
+                        + " if ((v_c.r + 0.3 > 0.0 && v_c.r - 0.3 < 0.0)"
+                        + "&& (v_c.g + 0.3 > 0.0 && v_c.g - 0.3 < 0.0)"
+                        + "&& (v_c.b + 0.3 > 0.0 && v_c.b - 0.3 < 0.0)){\n"
+                        + "           v_c.r = %f;\n"
+                        + "           v_c.g = %f;\n"
+                        + "           v_c.b = %f;\n"
+                        + "         } \n"
+                        + "  } \n"
+                        + "  gl_FragColor = v_c;\n"
+                        + "}"
+                //Todo all colors are argb instead of rgba, so this is special >> its equivalent to
+                //todo : c.r, c.g, c.b, c2.r, c2.g, c2.b
+                , c.r, c.g, c.b);
+
+        final ShaderProgram p = new ShaderProgram(vertexShader, fragmentShader);
+        if (!p.isCompiled()) {
+            Gdx.app.error("getCarShaderProgram failed", p.getLog());
+            dispose(p);
+            return null;
+        }
+        return p;
+    }
+
+    public static ShaderProgram getBuyButtonShaderProgram(int color) {
+        c.set(color);
+        final String fragmentShader = String.format("#ifdef GL_ES\n"
+                        + "#define LOWP lowp\n"
+                        + "precision mediump float;\n"
+                        + "#else\n"
+                        + "#define LOWP \n"
+                        + "#endif\n"
+                        + "varying LOWP vec4 v_color;\n"
+                        + "varying vec2 v_texCoords;\n"
+                        + "uniform sampler2D u_texture;\n"
+                        + "void main() {\n"
+                        + "  vec4 v_c = v_color * texture2D(u_texture, v_texCoords);\n"
+                        + "  if (v_c.a > 0.95) { \n"
+                        + "           v_c.r = %f;\n"
+                        + "           v_c.g = %f;\n"
+                        + "           v_c.b = %f;\n"
+                        + "   }\n"
+                        + "  gl_FragColor = v_c;\n"
+                        + "}"
+                //Todo all colors are argb instead of rgba, so this is special >> its equivalent to
+                //todo : c.r, c.g, c.b, c2.r, c2.g, c2.b
+                , c.r, c.g, c.b);
+
+        final ShaderProgram p = new ShaderProgram(vertexShader, fragmentShader);
+        if (!p.isCompiled()) {
+            Gdx.app.error("getCarShaderProgram failed", p.getLog());
+            dispose(p);
+            return null;
+        }
+        return p;
+    }
+
+    public static void dispose(Object o) {
+        if (o != null && o instanceof Disposable) {
+            try {
+                ((Disposable) o).dispose();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        else {
+//            Gdx.app.error("Util: ", "Not dosposable");
+//        }
+    }
+
 }

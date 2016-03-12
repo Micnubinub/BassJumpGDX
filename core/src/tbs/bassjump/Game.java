@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -17,10 +17,29 @@ import tbs.bassjump.levels.Level;
 import tbs.bassjump.managers.BitmapLoader;
 import tbs.bassjump.objects.AnimCircle;
 import tbs.bassjump.objects.Player;
+import tbs.bassjump.ui.Dialog;
 import tbs.bassjump.utility.GameObject;
-import tbs.bassjump.view_lib.HUDManager;
+import tbs.bassjump.view_lib.ValueAnimator;
 
 public class Game extends ApplicationAdapter {
+    /* Todo 'security find-identity -v -p codesigning' for iosSignIdentity
+
+  robovm {
+ Configure robovm
+iosSignIdentity = "LZU8BZAM9B.the.bigshots.lostplanet"
+iosProvisioningProfile = "path/to/profile"
+iosSkipSigning = false
+stdoutFifo = ""
+stderrFifo = ""
+}
+ packaging for any platform navigate to the root
+ packaging desktop version>> gradlew desktop:dist
+ packaging android version>> gradlew android:assembleRelease
+ linux/ios chmod 755 gradlew
+ packaging ios version>> gradlew ios:createIPA
+ packaging web version>> gradlew html:dist
+ TextureAtlas.AtlasRegion region = new TextureAtlas.AtlasRegion(colorTexture, x, y, width, height)
+ bring for the following classes > Screen, Utility*/
     //Todo make everything a texture >> walls > 1x1 opaque, 'rain particles' 1x1 translucent ** group with sprites.png
     //Todo make order of drawing 1) walls, player, rain particle 2)menu, text >> group textures
     // PAINTER:
@@ -65,9 +84,10 @@ public class Game extends ApplicationAdapter {
     public static boolean showAds;
     //    private static final ArrayList<ValueAnimator> animations = new ArrayList<ValueAnimator>(10);
     public static int w, h;
-    public static SpriteBatch batch;
-    public static ShapeRenderer renderer;
+    public static SpriteBatch spriteBatch;
     public static short delta;
+    public static Dialog shop;
+    public static OrthographicCamera camera;
     private static String currSong;
     // MOVING TEXTS:
     private static ArrayList<MovingText> animatedTexts; // ANIMATED TEXT LIST
@@ -77,24 +97,8 @@ public class Game extends ApplicationAdapter {
     // GLOBAL PARTICLES:
     private static ArrayList<AnimCircle> circles;
     private static int circleIndex;
-    /* Todo 'security find-identity -v -p codesigning' for iosSignIdentity
-
-      robovm {
-     Configure robovm
-    iosSignIdentity = "LZU8BZAM9B.the.bigshots.lostplanet"
-    iosProvisioningProfile = "path/to/profile"
-    iosSkipSigning = false
-    stdoutFifo = ""
-    stderrFifo = ""
-}
-     packaging for any platform navigate to the root
-     packaging desktop version>> gradlew desktop:dist
-     packaging android version>> gradlew android:assembleRelease
-     linux/ios chmod 755 gradlew
-     packaging ios version>> gradlew ios:createIPA
-     packaging web version>> gradlew html:dist
-     TextureAtlas.AtlasRegion region = new TextureAtlas.AtlasRegion(colorTexture, x, y, width, height)
-     bring for the following classes > Screen, Utility*/
+    private static ArrayList<ShaderProgram> shaderPrograms;
+    private static ArrayList<ValueAnimator> animators = new ArrayList<ValueAnimator>();
     // ANIMATION
 //    private static String songName;
     // INTRO
@@ -104,14 +108,37 @@ public class Game extends ApplicationAdapter {
     // RANKING:
 //    private static LeaderboardScore leaderboard;
     private static BitmapLoader bitmapLoader;
-    private static OrthographicCamera camera;
+
 
     public static void initDisposables() {
-        batch = new SpriteBatch();
-        renderer = new ShapeRenderer();
+        spriteBatch = new SpriteBatch();
         bitmapLoader = new BitmapLoader();
         ambientMusic = Gdx.audio.newMusic(Gdx.files.internal("song1.mp3"));
         ambientMusic.setLooping(true);
+    }
+
+    public static void addAnimator(ValueAnimator animator) {
+        if (animator == null)
+            return;
+
+        if (!animators.contains(animator))
+            try {
+                animators.add(animator);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+    }
+
+    public static void removeAnimator(ValueAnimator animator) {
+        if (animator == null)
+            return;
+
+        if (animators.contains(animator))
+            try {
+                animators.remove(animator);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
     }
 
     public static void setup() {
@@ -204,7 +231,7 @@ public class Game extends ApplicationAdapter {
         checkAchievements();
     }
 
-    private static void rectangle(ShapeRenderer renderer, int x, int y, int w,
+    private static void rectangle(int x, int y, int w,
                                   int h, boolean drawLeft, boolean drawRight, boolean drawTop,
                                   boolean drawBottom) {
         //Test
@@ -357,29 +384,11 @@ public class Game extends ApplicationAdapter {
         }
     }
 
-    public static void setColor(int color) {
-        c.set(color);
-        renderer.setColor(c);
-    }
-
-    public static void beginRenderer() {
-        if (batch.isDrawing())
-            batch.end();
-
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-
-        if (!renderer.isDrawing())
-            renderer.begin(ShapeRenderer.ShapeType.Filled);
-    }
 
     public static void beginSpriteBatch() {
-        if (renderer.isDrawing())
-            renderer.end();
 
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-
-        if (!batch.isDrawing())
-            batch.begin();
+        if (!spriteBatch.isDrawing())
+            spriteBatch.begin();
     }
 
     @Override
@@ -530,18 +539,14 @@ public class Game extends ApplicationAdapter {
     public void render() {
         clear();
         camera.update();
-        renderer.setProjectionMatrix(camera.combined);
         update();
         onDraw();
-        drawHUD();
-
     }
 
     public void onDraw() {
         // DRAW EVERYTHING IN ORDER:
         // c.set(0x000000); // DEFAULT
 
-        beginRenderer();
         setColor(0xffffff55);
         for (int i = 0; i < level.speedParticles.size(); ++i) {
             renderer.rect(level.speedParticles.get(i).xPos,
@@ -569,7 +574,7 @@ public class Game extends ApplicationAdapter {
                 drawBottom = false;
             }
 
-            rectangle(renderer, level.platformsRight.get(i).xPos,
+            rectangle(level.platformsRight.get(i).xPos,
                     level.platformsRight.get(i).yPos,
                     GameValues.PLATFORM_WIDTH, GameValues.PLATFORM_HEIGHT,
                     false, true, drawTop, drawBottom);
@@ -578,7 +583,7 @@ public class Game extends ApplicationAdapter {
                 c.set(0xe5e4a0ff);
                 c.a = alphaM / 255f;
                 renderer.setColor(c);
-                rectangle(renderer, level.platformsRight.get(i).xPos,
+                rectangle(level.platformsRight.get(i).xPos,
                         level.platformsRight.get(i).yPos,
                         GameValues.PLATFORM_WIDTH, GameValues.PLATFORM_HEIGHT,
                         false, true, drawTop, drawBottom);
@@ -598,7 +603,7 @@ public class Game extends ApplicationAdapter {
                     || state != GameState.Playing) {
                 drawBottom = false;
             }
-            rectangle(renderer, level.platformsLeft.get(i).xPos,
+            rectangle(level.platformsLeft.get(i).xPos,
                     level.platformsLeft.get(i).yPos, GameValues.PLATFORM_WIDTH,
                     GameValues.PLATFORM_HEIGHT, true, false, drawTop,
                     drawBottom);
@@ -606,7 +611,7 @@ public class Game extends ApplicationAdapter {
                 c.set(0xe5e4a0ff);
                 c.a = alphaM / 255f;
                 renderer.setColor(c);
-                rectangle(renderer, level.platformsLeft.get(i).xPos,
+                rectangle(level.platformsLeft.get(i).xPos,
                         level.platformsLeft.get(i).yPos,
                         GameValues.PLATFORM_WIDTH, GameValues.PLATFORM_HEIGHT,
                         true, false, drawTop, drawBottom);
@@ -645,16 +650,16 @@ public class Game extends ApplicationAdapter {
 
         // PLAYER:
         beginSpriteBatch();
-        player.draw(batch);
+        player.draw(spriteBatch);
         for (int i = 0; i < animatedTexts.size(); ++i) {
             if (animatedTexts.get(i).active) {
                 c.a = animatedTexts.get(i).alpha / 255f;
-                Utility.drawCenteredText(batch, c, animatedTexts.get(i).text,
+                Utility.drawCenteredText(spriteBatch, c, animatedTexts.get(i).text,
                         animatedTexts.get(i).xPos, h - animatedTexts.get(i).yPos, Utility.getScale(w / 11));
             }
         }
 
-        beginRenderer();
+
         // CIRCLES
         for (int i = 0; i < circles.size(); ++i) {
             if (circles.get(i).active) {
@@ -669,30 +674,30 @@ public class Game extends ApplicationAdapter {
         if (state == GameState.Menu) {
             c.set(Color.WHITE);
             beginSpriteBatch();
-            batch.draw(BitmapLoader.leader, leaderBtn.xPos,
+            spriteBatch.draw(BitmapLoader.leader, leaderBtn.xPos,
                     h - leaderBtn.yPos - leaderBtn.scale, leaderBtn.scale, leaderBtn.scale);
-            batch.draw(BitmapLoader.achiv, rateBtn.xPos, h - rateBtn.yPos - rateBtn.scale, rateBtn.scale, rateBtn.scale);
-            batch.draw(BitmapLoader.store, storeBtn.xPos, h - storeBtn.yPos - storeBtn.scale, storeBtn.scale, storeBtn.scale);
-            batch.draw(BitmapLoader.achievm, achievBtn.xPos,
+            spriteBatch.draw(BitmapLoader.achiv, rateBtn.xPos, h - rateBtn.yPos - rateBtn.scale, rateBtn.scale, rateBtn.scale);
+            spriteBatch.draw(BitmapLoader.store, storeBtn.xPos, h - storeBtn.yPos - storeBtn.scale, storeBtn.scale, storeBtn.scale);
+            spriteBatch.draw(BitmapLoader.achievm, achievBtn.xPos,
                     h - achievBtn.yPos - achievBtn.scale, achievBtn.scale, achievBtn.scale);
-            batch.draw(BitmapLoader.share, shareBtn.xPos, h - shareBtn.yPos - shareBtn.scale, shareBtn.scale, shareBtn.scale);
-            batch.draw(isMusicEnabled ? BitmapLoader.sound : BitmapLoader.soundO, soundBtn.xPos,
+            spriteBatch.draw(BitmapLoader.share, shareBtn.xPos, h - shareBtn.yPos - shareBtn.scale, shareBtn.scale, shareBtn.scale);
+            spriteBatch.draw(isMusicEnabled ? BitmapLoader.sound : BitmapLoader.soundO, soundBtn.xPos,
                     h - soundBtn.yPos - soundBtn.scale, soundBtn.scale, soundBtn.scale);
 
             if (mode == GameMode.Arcade)
-                batch.draw(BitmapLoader.modeArcade, modeBtn.xPos,
+                spriteBatch.draw(BitmapLoader.modeArcade, modeBtn.xPos,
                         h - modeBtn.yPos - modeBtn.scale, modeBtn.scale, modeBtn.scale);
             else if (mode == GameMode.Recruit)
-                batch.draw(BitmapLoader.modeRecruit, modeBtn.xPos,
+                spriteBatch.draw(BitmapLoader.modeRecruit, modeBtn.xPos,
                         h - modeBtn.yPos - modeBtn.scale, modeBtn.scale, modeBtn.scale);
             else if (mode == GameMode.Ultra)
-                batch.draw(BitmapLoader.modeUltra, modeBtn.xPos,
+                spriteBatch.draw(BitmapLoader.modeUltra, modeBtn.xPos,
                         h - modeBtn.yPos - modeBtn.scale, modeBtn.scale, modeBtn.scale);
             else if (mode == GameMode.Singularity)
-                batch.draw(BitmapLoader.modeSingular, modeBtn.xPos,
+                spriteBatch.draw(BitmapLoader.modeSingular, modeBtn.xPos,
                         h - modeBtn.yPos - modeBtn.scale, modeBtn.scale, modeBtn.scale);
             else
-                batch.draw(BitmapLoader.modeSpeed, modeBtn.xPos,
+                spriteBatch.draw(BitmapLoader.modeSpeed, modeBtn.xPos,
                         h - modeBtn.yPos - modeBtn.scale, modeBtn.scale, modeBtn.scale);
 
             // TEXT
@@ -700,14 +705,14 @@ public class Game extends ApplicationAdapter {
 
             float textH = w / 4.5f;
             float[] textSize = Utility.measureText("BASS", Utility.getScale(textH));
-            Utility.drawCenteredText(batch, c, "BASS", (w / 2) - GameValues.BUTTON_PADDING,
+            Utility.drawCenteredText(spriteBatch, c, "BASS", (w / 2) - GameValues.BUTTON_PADDING,
                     h - (textSize[1] * 1.25f), Utility.getScale(textH));
-            Utility.drawCenteredText(batch, c, "JUMP", (w / 2) - GameValues.BUTTON_PADDING,
+            Utility.drawCenteredText(spriteBatch, c, "JUMP", (w / 2) - GameValues.BUTTON_PADDING,
                     h - (textSize[1] * 2.25f) - GameValues.BUTTON_PADDING, Utility.getScale(textH));
 
             textH = w / 15f;
 
-            Utility.drawCenteredText(batch, c, "Tap anywhere to start", w / 2, h / 2, Utility.getScale(textH));
+            Utility.drawCenteredText(spriteBatch, c, "Tap anywhere to start", w / 2, h / 2, Utility.getScale(textH));
 
 
             c.set(0xffffffff);
@@ -717,10 +722,10 @@ public class Game extends ApplicationAdapter {
             textSize = Utility.measureText(txt, 0.3f);
 
             final float coinsY = h - storeBtn.yPos - storeBtn.scale + (textSize[1] / 2);
-            Utility.drawCenteredText(batch, c, txt, storeBtn.xPos - GameValues.BUTTON_PADDING - (textSize[0] / 2),
+            Utility.drawCenteredText(spriteBatch, c, txt, storeBtn.xPos - GameValues.BUTTON_PADDING - (textSize[0] / 2),
                     coinsY, 0.3f);
 
-            batch.draw(BitmapLoader.coin, (storeBtn.xPos - w / 8)
+            spriteBatch.draw(BitmapLoader.coin, (storeBtn.xPos - w / 8)
                             - (GameValues.COIN_SCALE + GameValues.BUTTON_PADDING * 1.45f),
                     coinsY - (GameValues.COIN_SCALE * 0.7f), GameValues.COIN_SCALE * 2, GameValues.COIN_SCALE * 2);
 
@@ -744,8 +749,8 @@ public class Game extends ApplicationAdapter {
             textSize = Utility.measureText(scoreText, 0.3f);
 
             final float left = achievBtn.xPos + GameValues.BUTTON_SCALE + GameValues.BUTTON_PADDING;
-            Utility.drawLeftText(batch, c, txt, left, h - achievBtn.yPos - GameValues.BUTTON_SCALE + textSize[1] + (GameValues.BUTTON_PADDING), 0.3f);
-            Utility.drawLeftText(batch, c, scoreText, left, h - achievBtn.yPos - GameValues.BUTTON_SCALE, 0.3f);
+            Utility.drawLeftText(spriteBatch, c, txt, left, h - achievBtn.yPos - GameValues.BUTTON_SCALE + textSize[1] + (GameValues.BUTTON_PADDING), 0.3f);
+            Utility.drawLeftText(spriteBatch, c, scoreText, left, h - achievBtn.yPos - GameValues.BUTTON_SCALE, 0.3f);
 
             // MODE:
             if (mode == GameMode.Recruit) {
@@ -759,7 +764,7 @@ public class Game extends ApplicationAdapter {
             } else {
                 txt = "Arcade";
             }
-            Utility.drawCenteredText(batch, c, txt, modeBtn.xPos + (GameValues.BUTTON_SCALE / 2),
+            Utility.drawCenteredText(spriteBatch, c, txt, modeBtn.xPos + (GameValues.BUTTON_SCALE / 2),
                     h - ((modeBtn.yPos + GameValues.BUTTON_SCALE)
                             + (GameValues.BUTTON_PADDING * 1.15f)), Utility.getScale(w / 27));
             // RANK:
@@ -770,10 +775,10 @@ public class Game extends ApplicationAdapter {
             final float scale = Utility.getScale((w / 4.1f) * scoreTextMult);
             float[] scoreTextSize = Utility.measureText("1", scale);
             if (player.score > 0) {
-                Utility.drawCenteredText(batch, c, String.valueOf(player.score),
+                Utility.drawCenteredText(spriteBatch, c, String.valueOf(player.score),
                         (w / 2), h - scoreDisplay.yPos, scale);
             } else {
-                Utility.drawCenteredText(batch, c, "1", (w / 2),
+                Utility.drawCenteredText(spriteBatch, c, "1", (w / 2),
                         h - scoreDisplay.yPos, scale);
             }
             txt = "";
@@ -801,23 +806,23 @@ public class Game extends ApplicationAdapter {
 
             txt = txt + " fps: " + Gdx.graphics.getFramesPerSecond();
             c.set(0xe5e4a0ff);
-            Utility.drawCenteredText(batch, c, txt, (w / 2), h - scoreDisplay.yPos - scoreTextSize[1], Utility.getScale(w / 15.5f));
+            Utility.drawCenteredText(spriteBatch, c, txt, (w / 2), h - scoreDisplay.yPos - scoreTextSize[1], Utility.getScale(w / 15.5f));
         }
 
         // INTRO
         if (introShowing) {
-            beginRenderer();
+
             setColor(0x3e3e3eff);
             renderer.rect(0, 0, w, h);
             c.set(0xe5e4a0ff);
 
             beginSpriteBatch();
-            Utility.drawCenteredText(batch, c, "The Big Shots", (w / 2),
+            Utility.drawCenteredText(spriteBatch, c, "The Big Shots", (w / 2),
                     h - (h / 2), Utility.getScale(w / 8));
-            Utility.drawCenteredText(batch, c, "Thank you for Playing!", (w / 2),
+            Utility.drawCenteredText(spriteBatch, c, "Thank you for Playing!", (w / 2),
                     h - (h - GameValues.BUTTON_PADDING - GameValues.BUTTON_PADDING), Utility.getScale(w / 20));
 
-            beginRenderer();
+
             setColor(0xe532cdff);
 
             renderer.rect((w / 2) - (GameValues.LOADING_BAR_WIDTH / 2),
@@ -842,12 +847,16 @@ public class Game extends ApplicationAdapter {
         }
 
         try {
-            batch.dispose();
+            spriteBatch.dispose();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        renderer.dispose();
+        if (shaderPrograms != null) {
+            for (ShaderProgram shaderProgram : shaderPrograms) {
+                Utility.dispose(shaderProgram);
+            }
+        }
 
         Utility.disposeFont();
     }
@@ -860,7 +869,5 @@ public class Game extends ApplicationAdapter {
         initDisposables();
     }
 
-    public void drawHUD() {
-        HUDManager.getHUDManager().draw(batch, renderer);
-    }
+
 }
