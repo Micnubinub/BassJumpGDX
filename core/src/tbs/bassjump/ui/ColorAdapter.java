@@ -7,6 +7,7 @@ import java.util.Arrays;
 import tbs.bassjump.Game;
 import tbs.bassjump.GameValues;
 import tbs.bassjump.Utility;
+import tbs.bassjump.managers.BitmapLoader;
 
 /**
  * Created by mike on 3/7/16
@@ -27,9 +28,9 @@ public class ColorAdapter extends Adapter {
 
     public static void refreshRegions() {
         dispose();
-        shaderPrograms = new ShaderProgram[Utility.dark.length];
-        for (int i = 0; i < Utility.dark.length; i++) {
-            shaderPrograms[i] = Utility.getCircleViewShaderProgram(Utility.light[i], Utility.dark[i]);
+        shaderPrograms = new ShaderProgram[Utility.colors.length];
+        for (int i = 0; i < Utility.colors.length; i++) {
+            shaderPrograms[i] = Utility.getCircleViewShaderProgram(Utility.colors[i]);
         }
     }
 
@@ -62,7 +63,7 @@ public class ColorAdapter extends Adapter {
 
     @Override
     public int getCount() {
-        return Utility.dark.length;
+        return Utility.colors.length;
     }
 
     @Override
@@ -72,16 +73,15 @@ public class ColorAdapter extends Adapter {
                 final int position = buyButton.position;
                 if (itemsBought[position]) {
                     Utility.equipColor(position);
-                    Game.shaderProgram = Utility.getCarShaderProgram(Utility.light[position], Utility.dark[position]);
+//                    Game.shaderProgram = Utility.getCarShaderProgram(Utility.light[position], Utility.dark[position]);
                     equippedItem = position;
                 } else {
-                    if (Game.numCoins < Utility.COLOR_PRICE) {
+                    if (Game.player.tmpCoins < Utility.COLOR_PRICE) {
 
                     } else {
                         Utility.addBoughtColors(position);
                         itemsBought[position] = true;
-                        Game.numCoins -= Utility.COLOR_PRICE;
-                        Utility.saveCoins(Game.numCoins);
+                        Utility.saveCoins(Utility.getCoins() - Utility.COLOR_PRICE);
                     }
                 }
                 return true;
@@ -108,7 +108,7 @@ public class ColorAdapter extends Adapter {
                 }
             } else {
                 buyButton.setText("BUY");
-                buyButton.setButtonMode((Game.numCoins < Utility.COLOR_PRICE) ? BuyButton.CANNOT_BUY : BuyButton.BUY);
+                buyButton.setButtonMode((Utility.getCoins() < Utility.COLOR_PRICE) ? BuyButton.CANNOT_BUY : BuyButton.BUY);
             }
             ColorView.buyButton = buyButton;
         } catch (Exception e) {
@@ -144,11 +144,11 @@ public class ColorAdapter extends Adapter {
             final float priceX = w - price.w;
 
             price.draw(priceX, priceY, parentRight, parentTop);
-            Game.spriteBatch.draw(BitmapLoader.diamond, priceX - (GameValues.TITLE_HEIGHT * 0.7f), priceY + (GameValues.TITLE_HEIGHT * 0.26f), GameValues.TITLE_HEIGHT * 0.52f, GameValues.TITLE_HEIGHT * 0.46f);
+            Game.spriteBatch.draw(BitmapLoader.coin, priceX - (GameValues.TITLE_HEIGHT * 0.7f), priceY + (GameValues.TITLE_HEIGHT * 0.26f), GameValues.TITLE_HEIGHT * 0.52f, GameValues.TITLE_HEIGHT * 0.46f);
             buyButton.draw(w - buyButton.w, priceY - (pad) - (buyButton.h / 2) - GameValues.CORNER_SCALE, parentRight, parentTop);
 
             Game.spriteBatch.setShader(shaderProgram);
-            Utility.drawTextureWithRotation(BitmapLoader.storeItemTestMix, pad + relX + x, pad + relY + y, scale, scale, 45);
+            Game.spriteBatch.draw(BitmapLoader.colorView, pad + relX + x, pad + relY + y, scale, scale);
             Game.spriteBatch.setShader(null);
         }
 

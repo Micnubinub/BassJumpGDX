@@ -1,47 +1,229 @@
 sprites.png
-size: 1212, 202
+size: 1804, 1028
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 0
   rotate: false
-  xy: 1, 1
+  xy: 763, 775
   size: 200, 200
   orig: 200, 200
   offset: 0, 0
   index: -1
 3
   rotate: false
-  xy: 203, 1
+  xy: 965, 775
   size: 200, 200
   orig: 200, 200
   offset: 0, 0
   index: -1
 4
   rotate: false
-  xy: 405, 1
+  xy: 1167, 775
   size: 200, 200
   orig: 200, 200
   offset: 0, 0
   index: -1
 40
   rotate: false
-  xy: 607, 1
+  xy: 1369, 775
   size: 200, 200
   orig: 200, 200
   offset: 0, 0
   index: -1
 5
   rotate: false
-  xy: 809, 1
+  xy: 1547, 517
   size: 200, 200
   orig: 200, 200
   offset: 0, 0
   index: -1
 6
   rotate: false
-  xy: 1011, 1
+  xy: 1571, 719
   size: 200, 200
   orig: 200, 200
+  offset: 0, 0
+  index: -1
+achiv
+  rotate: false
+  xy: 515, 1
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+achiv2
+  rotate: false
+  xy: 1, 1
+  size: 512, 512
+  orig: 512, 512
+  offset: 0, 0
+  index: -1
+close
+  rotate: false
+  xy: 515, 259
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+coin
+  rotate: false
+  xy: 515, 775
+  size: 246, 247
+  orig: 256, 256
+  offset: 0, 4
+  index: -1
+corner
+  rotate: false
+  xy: 1571, 921
+  size: 72, 72
+  orig: 72, 72
+  offset: 0, 0
+  index: -1
+icon
+  rotate: false
+  xy: 1, 515
+  size: 512, 512
+  orig: 512, 512
+  offset: 0, 0
+  index: -1
+intro
+  rotate: false
+  xy: 515, 1024
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+leader
+  rotate: false
+  xy: 515, 517
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+loadingBar
+  rotate: false
+  xy: 518, 1024
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+modearcade
+  rotate: false
+  xy: 773, 1
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+moderecruit
+  rotate: false
+  xy: 773, 259
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+modesingul
+  rotate: false
+  xy: 773, 517
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+modespeed
+  rotate: false
+  xy: 1031, 1
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+modeultra
+  rotate: false
+  xy: 1031, 259
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+paintFlash
+  rotate: false
+  xy: 521, 1024
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+particle
+  rotate: false
+  xy: 524, 1024
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+platform
+  rotate: false
+  xy: 527, 1024
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+platformFlash
+  rotate: false
+  xy: 530, 1024
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+rect
+  rotate: false
+  xy: 533, 1024
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+share
+  rotate: false
+  xy: 1031, 517
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+song1
+  rotate: false
+  xy: 1289, 1
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+song2
+  rotate: false
+  xy: 1547, 1
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+sound
+  rotate: false
+  xy: 1289, 259
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+soundoff
+  rotate: false
+  xy: 1289, 517
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+speedParticle
+  rotate: false
+  xy: 536, 1024
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+store
+  rotate: false
+  xy: 1547, 259
+  size: 256, 256
+  orig: 256, 256
   offset: 0, 0
   index: -1

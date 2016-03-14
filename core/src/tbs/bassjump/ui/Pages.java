@@ -17,7 +17,7 @@ public class Pages extends ViewPager {
     public void init() {
         if (colors.getAdapter() == null || cars.getAdapter() == null) {
             colors.setAdapter(new ColorAdapter());
-            cars.setAdapter(new CarsAdapter());
+            cars.setAdapter(new ShapesAdapter());
         }
     }
 

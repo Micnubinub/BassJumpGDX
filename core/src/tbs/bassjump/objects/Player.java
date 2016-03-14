@@ -1,13 +1,8 @@
 package tbs.bassjump.objects;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import java.util.ArrayList;
 
@@ -19,7 +14,6 @@ import tbs.bassjump.levels.Level;
 import tbs.bassjump.levels.Platform;
 import tbs.bassjump.managers.BitmapLoader;
 import tbs.bassjump.utility.GameObject;
-import tbs.bassjump.view_lib.ViewPager;
 //Todo fix rotation
 //Todo fix audio disabling
 //Todo fix store
@@ -33,13 +27,11 @@ public class Player extends GameObject {
     private static final Color c = new Color(0xffbb00ff);
     // Color
     public static int paintIndex;
-    public static PlayerShape playerShape;
     // OTHER:
-    static int speed, right1, right2, bottom1, bottom2;
+    static int speed;
     private static int cx, cy;
     private static double playerJumpDistance, playerJumpPercentage;
     // TMP till final fix
-    private static TextureRegion region;
     private static Sprite playerTexture;
     private static String regionName = "4";
     // PARTICLES
@@ -81,64 +73,12 @@ public class Player extends GameObject {
         Utility.equipShape(Utility.getEquippedShape());
     }
 
-    public static void setPlayerShape(PlayerShape playerShape) {
-        //Todo
-        Player.playerShape = playerShape;
-    }
-
-
-    public static void setRegionName(String regionName) {
-        Player.regionName = regionName;
-        reloadPlayerTexture();
-    }
-
-    public static void setPlayerSprite(String regionName) {
-        Player.regionName = regionName;
-        region = BitmapLoader.sprites.findRegion(regionName);
-        reloadPlayerTexture();
-    }
-
-    //Todo copy to store
-    public static void setTextureColor(int color) {
-        c.set(color);
-        reloadPlayerTexture();
-    }
-
-    public static void reloadPlayerTexture() {
-        Utility.print("reloading");
-        dispose();
-        final Texture tmpTexture = new Texture(Gdx.files.internal("sprites.png"));
-        final TextureData data = tmpTexture.getTextureData();
-        data.prepare();
-        while (!data.isPrepared()) {
-
-        }
-        final Pixmap p = data.consumePixmap();
-        //Todo check database for the right on, default is 4>> do the same for color
-        region = BitmapLoader.sprites.findRegion("4");
-        final Pixmap player = new Pixmap(region.getRegionWidth(), region.getRegionHeight(), Pixmap.Format.RGBA8888);
-        final int color = c.toIntBits();
-        for (int i = region.getRegionX(); i < region.getRegionX() + region.getRegionWidth(); i++) {
-            for (int j = region.getRegionY(); j < region.getRegionY() + region.getRegionHeight(); j++) {
-                if (p.getPixel(i, j) != 0x00000000) {
-                    player.drawPixel(i - region.getRegionX(), j - region.getRegionY(), color);
-                }
-            }
-        }
-        playerTexture = new Sprite(new Texture(player));
-        playerTexture.setOriginCenter();
-        data.disposePixmap();
-        tmpTexture.dispose();
-        p.dispose();
-        player.dispose();
+    public static void setPlayerSprite() {
+        playerTexture = new Sprite(BitmapLoader.shapes[Utility.getEquippedShape()]);
     }
 
     public static void dispose() {
-        try {
-            playerTexture.getTexture().dispose();
-        } catch (Exception e) {
-//            e.printStackTrace();
-        }
+
     }
 
     @Override
@@ -166,8 +106,9 @@ public class Player extends GameObject {
         }
         activatePaint(true);
 
-        Utility.equipShape(Utility.getEquippedShape());
         tmpCoins = 0;
+
+        setPlayerSprite();
     }
 
     public void update() {
@@ -315,9 +256,7 @@ public class Player extends GameObject {
         }
 
         // SAVE COINS
-        Utility.saveCoins(Utility.getCoins()
-                + tmpCoins);
-        ViewPager.setNumCoins(Utility.getCoins());
+        Utility.saveCoins(Utility.getCoins() + tmpCoins);
     }
 
     public boolean isAlive(boolean j) {
@@ -441,7 +380,6 @@ public class Player extends GameObject {
         }
         // / PARTICLES:
         showParticles();
-        Game.showCircle(getXCenter(), getYCenter());
 
         // TEXT
         if (right)
@@ -490,10 +428,15 @@ public class Player extends GameObject {
 //            playerTexture.setColor(c);
 //            playerTexture.draw(canvas);
 //        }
+
+        // SPLASH
+        for (int i = 0; i < splashParticles1.size(); i++) {
+            splashParticles1.get(i).draw(Game.spriteBatch);
+        }
+        for (int i = 0; i < splashParticles2.size(); i++) {
+            splashParticles2.get(i).draw(Game.spriteBatch);
+        }
     }
 
 
-    public enum PlayerShape {
-        CIRCLE, RECT, TRIANGLE, HEXAGON, PENTAGON, SHURIKEN_STAR, PENTAGON_STAR
-    }
 }

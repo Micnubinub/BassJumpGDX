@@ -13,20 +13,21 @@ import tbs.bassjump.managers.BitmapLoader;
 /**
  * Created by mike on 3/7/16.
  */
-public class CarsAdapter extends Adapter {
+public class ShapesAdapter extends Adapter {
     public static BuyButton[] buyButtons;
     private static CarView carView = new CarView();
-    private static TextureRegion[] regions = new TextureRegion[Utility.cars.length];
+    private static TextureRegion[] regions = new TextureRegion[Utility.shapePrices.length];
     private static boolean[] itemsBought;
     private static int equippedItem;
 
     public static void getItemBought() {
-        equippedItem = Utility.getEquippedCar();
+        equippedItem = Utility.getEquippedShape();
 
         if (itemsBought == null)
             itemsBought = new boolean[Utility.colorNames.length];
 
-        final String[] boughtCars = Utility.getBoughtCars();
+        //Todo convert int int[] later
+        final String[] boughtCars = Utility.getBoughtShapes();
         buyButtons = new BuyButton[Utility.colorNames.length];
         for (int i = 0; i < Utility.colorNames.length; i++) {
             itemsBought[i] = Utility.contains(boughtCars, String.valueOf(i));
@@ -38,14 +39,14 @@ public class CarsAdapter extends Adapter {
     }
 
     public static void refreshRegions() {
-        for (int i = 0; i < Utility.cars.length; i++) {
-            regions[i] = BitmapLoader.atlas.findRegion(Utility.cars[i]);
+        for (int i = 0; i < Utility.shapeNames.length; i++) {
+            regions[i] = BitmapLoader.atlas.findRegion(Utility.shapeNames[i]);
         }
     }
 
     @Override
     public int getCount() {
-        return Utility.cars.length;
+        return Utility.shapeNames.length;
     }
 
     @Override
@@ -54,16 +55,16 @@ public class CarsAdapter extends Adapter {
             if (buyButton.click(x, y)) {
                 final int position = buyButton.position;
                 if (itemsBought[position]) {
-                    Utility.equipCar(position);
+                    Utility.equipShape(position);
                     equippedItem = position;
                 } else {
-                    if (Game.numCoins < Utility.carPrices[position]) {
+                    if (Utility.getCoins() < Utility.shapePrices[position]) {
 
                     } else {
-                        Utility.addBoughtCar(position);
+                        Utility.addBoughtShapes(position);
                         itemsBought[position] = true;
-                        Game.numCoins -= Utility.carPrices[position];
-                        Utility.saveCoins(Game.numCoins);
+
+                        Utility.saveCoins(Utility.getCoins() - Utility.shapePrices[position]);
                     }
                 }
                 return true;
@@ -74,8 +75,8 @@ public class CarsAdapter extends Adapter {
 
     @Override
     public View getView(int position) {
-        CarView.text.setText(Utility.carNames[position]);
-        CarView.price.setText(Utility.carPricesS[position]);
+        CarView.text.setText(Utility.shapeNames[position]);
+        CarView.price.setText(Utility.shapePricesS[position]);
         CarView.region = regions[position];
         if (CarView.region == null) {
             refreshRegions();
@@ -94,7 +95,7 @@ public class CarsAdapter extends Adapter {
                 }
             } else {
                 buyButton.setText("BUY");
-                buyButton.setButtonMode((Game.numCoins < Utility.COLOR_PRICE) ? BuyButton.CANNOT_BUY : BuyButton.BUY);
+                buyButton.setButtonMode((Utility.getCoins() < Utility.COLOR_PRICE) ? BuyButton.CANNOT_BUY : BuyButton.BUY);
             }
             CarView.buyButton = buyButton;
         } catch (Exception e) {
@@ -117,7 +118,7 @@ public class CarsAdapter extends Adapter {
         public CarView() {
             text.setTextColor(0xffffffff);
             pad = (int) (GameValues.COLOR_CAR_SCALE * 0.08f);
-            h = GameValues.CAR_HEIGHT + pad + pad;
+            h = GameValues.SHAPE_WIDTH + pad + pad;
             scale = GameValues.COLOR_CAR_SCALE;
 
             text.setTextScale(Utility.getScale(GameValues.TITLE_HEIGHT * 0.7f));
@@ -127,17 +128,17 @@ public class CarsAdapter extends Adapter {
         @Override
         public void draw(float relX, float relY, float parentRight, float parentTop) {
             final float textY = relY + (h / 2);
-            text.draw(relX + pad + pad + GameValues.CAR_WIDTH, textY, parentRight, parentTop);
+            text.draw(relX + pad + pad + GameValues.SHAPE_WIDTH, textY, parentRight, parentTop);
 
             final float center = relY + (h / 2);
             final float priceY = center + (pad / 2);
             final float priceX = w - price.w;
             price.draw(priceX, priceY, parentRight, parentTop);
-            Game.spriteBatch.draw(BitmapLoader.diamond, priceX - (GameValues.TITLE_HEIGHT * 0.7f), priceY + (GameValues.TITLE_HEIGHT * 0.26f), GameValues.TITLE_HEIGHT * 0.52f, GameValues.TITLE_HEIGHT * 0.46f);
+            Game.spriteBatch.draw(BitmapLoader.coin, priceX - (GameValues.TITLE_HEIGHT * 0.7f), priceY + (GameValues.TITLE_HEIGHT * 0.26f), GameValues.TITLE_HEIGHT * 0.52f, GameValues.TITLE_HEIGHT * 0.46f);
             buyButton.draw(w - buyButton.w, priceY - (pad / 2) - (buyButton.h / 2) - GameValues.CORNER_SCALE, parentRight, parentTop);
 
             Game.spriteBatch.setShader(Game.shaderProgram);
-            Game.spriteBatch.draw(region, relX + x + pad, relY + y + pad, GameValues.CAR_WIDTH, GameValues.CAR_HEIGHT);
+            Game.spriteBatch.draw(region, relX + x + pad, relY + y + pad, GameValues.SHAPE_WIDTH, GameValues.SHAPE_WIDTH);
             Game.spriteBatch.setShader(null);
         }
 

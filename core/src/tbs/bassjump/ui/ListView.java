@@ -116,8 +116,8 @@ public class ListView extends ScrollView {
 
         if (adapter instanceof ColorAdapter) {
             ColorAdapter.dispose();
-        } else if (adapter instanceof CarsAdapter) {
-            ((CarsAdapter) adapter).dispose();
+        } else if (adapter instanceof ShapesAdapter) {
+            ((ShapesAdapter) adapter).dispose();
         }
 
     }

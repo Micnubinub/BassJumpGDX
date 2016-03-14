@@ -9,11 +9,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.Disposable;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import tbs.bassjump.objects.Player;
-import tbs.bassjump.utility.StoreItem;
 
 /**
  * Created by Riley on 6/05/15.
@@ -21,11 +19,12 @@ import tbs.bassjump.utility.StoreItem;
 public class Utility {
 
     public static final String EQUIPPED_SHAPE = "EQUIPPED_SHAPE";
-    public static final String EQUIPPED_COLORS = "EQUIPPED_COLORS";
+    public static final String EQUIPPED_COLOR = "EQUIPPED_COLOR";
     public static final String BOUGHT_COLORS = "BOUGHT_COLORS";
     public static final String BOUGHT_SHAPES = "BOUGHT_SHAPES";
     public static final String COINS = "COINS";
     public static final int COLOR_PRICE = 100;
+    public static final String COLOR_PRICE_S = "100";
     public static final String SEP = "//,/,//";
 
     public static final String CHECKOUT_OUR_OTHER_APPS = "CHECKOUT_OUR_OTHER_APPS";
@@ -33,10 +32,11 @@ public class Utility {
     public static final Random rand = new Random();
     public static final int[] colors = new int[]{0xff292929, 0xffe84e40, 0xffe51c23, 0xffd01716, 0xfff06292, 0xffe91e63, 0xffc2185b, 0xff738ffe, 0xff5677fc, 0xff455ede, 0xff5c6bc0, 0xff3f51b5, 0xff303f9f, 0xff42bd41, 0xff259b24, 0xff0a7e07, 0xff32cd32, 0xfffff176, 0xffffeb3b, 0xfffdd835, 0xffffa726, 0xfffb8c00, 0xffe65100, 0xffab47bc, 0xff9c27b0, 0xff7b1fa2, 0xff000000, 0xff535353, 0xff292929, 0xff69661d, 0xff53461a, 0xffffffff};
     public static final int[] shapePrices = new int[]{0, 600, 1500, 2500, 10000, 12000, 15000};
+    public static final String[] shapePricesS = new String[]{"0", "600", "1500", "2500", "10000", "12000", "15000"};
     public static final String[] shapeNames = new String[]{"Rectangle", "Circle", "Hexagon", "Triangle", "Pentagon", "Shuriken", "Pentagram"};
     public static final String[] colorNames = new String[]{"White", "Light red", "Red", "Dark red", "Light pink", "Pink", "Dark pink", "Light Blue", "Blue", "Dark blue", "Light indigo", "Indigo", "Dark indigo", "Light green", "Green", "Dark green", "Lime Green", "Light yellow", "Yellow", "Dark yellow", "Light orange", "Orange", "Dark orange", "Light Purple", "Purple", "Dark Purple", "Vortex Black", "Tesla", "Incog", "21", "Chocolate"};
+    public static final GlyphLayout glyphLayout = new GlyphLayout();
     private static final int[] ints = new int[2];
-    private static final GlyphLayout glyphLayout = new GlyphLayout();
     private static final Color c = new Color();
     private static final float[] textSize = new float[2];
     private static final String vertexShader = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\nattribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\nattribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\nuniform mat4 u_projTrans;\n"
@@ -74,15 +74,6 @@ public class Utility {
         font = null;
     }
 
-    public static void addGameColors() {
-        final ArrayList<StoreItem> colors = Utility.getEquippedColorStoreItems();
-        print("addingColors" + colors.toString());
-        Game.colors = new int[colors.size()];
-        for (int i = 0; i < colors.size(); i++) {
-            Game.colors[i] = Utility.getColor(colors.get(i).tag);
-        }
-
-    }
 
     public static int generateRange(int num) {
         return Utility.randInt(-num / 3, num / 3);
@@ -102,103 +93,43 @@ public class Utility {
         return coins;
     }
 
-    public static ArrayList<StoreItem> getEquippedColorStoreItems() {
-        final String[] colors = Utility.getEquippedColors().split(SEP);
-        final ArrayList<StoreItem> items = new ArrayList<StoreItem>(colors.length);
-        for (String color : colors) {
-            items.add(getColorStoreItem("", color));
+    public static int getEquippedShape() {
+        return getInt(EQUIPPED_SHAPE);
+    }
+
+    public static void equipShape(int tag) {
+        saveInt(EQUIPPED_SHAPE, tag);
+        Player.setPlayerSprite();
+    }
+
+
+    public static String[] getBoughtShapes() {
+        return getString(BOUGHT_SHAPES).split(SEP);
+    }
+
+    public static String[] getBoughtColors() {
+        return getString(BOUGHT_COLORS).split(SEP);
+    }
+
+    public static void equipColor(int index) {
+        saveInt(EQUIPPED_COLOR, index);
+//        dispose(Game.shaderProgram);
+//        Game.shaderProgram = getCarShaderProgram(light[index], dark[index]);
+    }
+
+    public static boolean contains(String[] array, String item) {
+        for (String s : array) {
+            if (s.equals(item))
+                return true;
         }
-        return items;
+        return false;
     }
 
-
-    public static Player.PlayerShape getShapeType(String tag) {
-        Player.PlayerShape shape = Player.PlayerShape.RECT;
-
-        if (tag.equals(SHAPE_CIRCLE))
-            shape = Player.PlayerShape.CIRCLE;
-        else if (tag.equals(SHAPE_PENTAGON))
-            shape = Player.PlayerShape.PENTAGON;
-        else if (tag.equals(SHAPE_TRIANGLE))
-            shape = Player.PlayerShape.TRIANGLE;
-        else if (tag.equals(SHAPE_HEXAGON))
-            shape = Player.PlayerShape.HEXAGON;
-        else if (tag.equals(SHAPE_PENTAGON_STAR)) shape =
-                Player.PlayerShape.PENTAGON_STAR;
-        else if (tag.equals(SHAPE_SHURIKEN_STAR)) shape =
-                Player.PlayerShape.SHURIKEN_STAR;
-        return shape;
+    public static int getEquippedColor() {
+        return getInt(EQUIPPED_COLOR);
     }
 
-    public static String getEquippedShape() {
-        String out = getString(EQUIPPED_SHAPE);
-        out = out == null ? "" : out;
-        return out;
-    }
-
-    public static void removeEquippedColors(String tag) {
-        String equippedColors = getEquippedColors();
-        if (equippedColors.startsWith(tag)) {
-            equippedColors.replace(tag + SEP, "");
-        } else {
-            equippedColors.replace(SEP + tag, "");
-        }
-
-        saveString(EQUIPPED_COLORS, equippedColors);
-        addGameColors();
-    }
-
-
-    public static void equipShape(String tag) {
-        saveString(EQUIPPED_SHAPE, tag);
-        Player.setPlayerShape(getShapeType(tag));
-    }
-
-
-    public static String getBoughtShapes() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(SHAPE_RECTANGLE);
-
-        String out = getString(BOUGHT_SHAPES);
-        out = out == null ? "" : out;
-
-        if (out.length() < 2)
-            return builder.toString();
-
-        builder.append(SEP);
-        builder.append(out);
-        return builder.toString();
-    }
-
-    public static String getBoughtColors() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append(COLOR_RED);
-
-        String out = getString(BOUGHT_COLORS);
-        out = (out == null) ? "" : out;
-
-        if (out.length() < 2)
-            return builder.toString();
-        builder.append(SEP);
-        builder.append(out);
-        return builder.toString();
-    }
-
-
-    public static String getEquippedColors() {
-        final StringBuilder builder = new StringBuilder();
-        String out = getString(EQUIPPED_COLORS);
-        out = out == null ? "" : out;
-
-        if (out.length() < 4) {
-            builder.append(COLOR_RED);
-            return builder.toString();
-        }
-
-        return out;
-    }
-
-    public static void addBoughtShapes(String tag) {
+    public static void addBoughtShapes(int tag) {
         final StringBuilder builder = new StringBuilder();
         builder.append(getBoughtShapes());
         if (builder.toString().length() > 1)
@@ -208,33 +139,15 @@ public class Utility {
         madePurchase();
     }
 
-
-    public static void addBoughtColors(String tag) {
+    public static void addBoughtColors(int tag) {
         final StringBuilder builder = new StringBuilder();
         builder.append(getBoughtColors());
         if (builder.toString().length() > 1)
             builder.append(SEP);
         builder.append(tag);
         saveString(BOUGHT_COLORS, builder.toString());
-        addGameColors();
         madePurchase();
     }
-
-    public static void addEquippedColors(final String tag) {
-        final StringBuilder builder = new StringBuilder();
-        builder.append(getEquippedColors());
-
-        if (builder.toString().contains(tag))
-            return;
-
-        if (builder.toString().length() > 1)
-            builder.append(SEP);
-        builder.append(tag);
-        saveString(EQUIPPED_COLORS, builder.toString());
-        addGameColors();
-        madePurchase();
-    }
-
 
     public static void madePurchase() {
 //    todo    MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQEw");

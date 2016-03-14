@@ -2,7 +2,7 @@ package tbs.bassjump.ui;
 
 import com.badlogic.gdx.math.Rectangle;
 
-import tbs.switchylanes.utility.GameObject;
+import tbs.bassjump.utility.GameObject;
 
 
 public class Button extends GameObject {

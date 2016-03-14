@@ -6,7 +6,9 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
 import java.util.ArrayList;
@@ -15,11 +17,11 @@ import java.util.Random;
 import tbs.bassjump.animation.MovingText;
 import tbs.bassjump.levels.Level;
 import tbs.bassjump.managers.BitmapLoader;
-import tbs.bassjump.objects.AnimCircle;
+import tbs.bassjump.objects.Particle;
 import tbs.bassjump.objects.Player;
 import tbs.bassjump.ui.Dialog;
 import tbs.bassjump.utility.GameObject;
-import tbs.bassjump.view_lib.ValueAnimator;
+import tbs.bassjump.utility.ValueAnimator;
 
 public class Game extends ApplicationAdapter {
     /* Todo 'security find-identity -v -p codesigning' for iosSignIdentity
@@ -87,6 +89,7 @@ stderrFifo = ""
     public static SpriteBatch spriteBatch;
     public static short delta;
     public static Dialog shop;
+    public static ShaderProgram shaderProgram;
     public static OrthographicCamera camera;
     private static String currSong;
     // MOVING TEXTS:
@@ -95,7 +98,6 @@ stderrFifo = ""
     // INTERFACE:
     private static GameObject scoreDisplay;
     // GLOBAL PARTICLES:
-    private static ArrayList<AnimCircle> circles;
     private static int circleIndex;
     private static ArrayList<ShaderProgram> shaderPrograms;
     private static ArrayList<ValueAnimator> animators = new ArrayList<ValueAnimator>();
@@ -115,6 +117,8 @@ stderrFifo = ""
         bitmapLoader = new BitmapLoader();
         ambientMusic = Gdx.audio.newMusic(Gdx.files.internal("song1.mp3"));
         ambientMusic.setLooping(true);
+        Player.setPlayerSprite();
+        Particle.particle = new Sprite(BitmapLoader.particle);
     }
 
     public static void addAnimator(ValueAnimator animator) {
@@ -151,13 +155,6 @@ stderrFifo = ""
         GameValues.SPEED_FACTOR_ORIGINAL = ((float) h / 600);
 
         player = new Player();
-
-        String shape = Utility.getString(
-                Utility.EQUIPPED_SHAPE);
-        if (shape == null || shape.length() < 2)
-            shape = Utility.SHAPE_RECTANGLE;
-        Player.setPlayerShape(Utility.getShapeType(shape));
-
         level = new Level();
         setupGame();
 
@@ -231,21 +228,21 @@ stderrFifo = ""
         checkAchievements();
     }
 
-    private static void rectangle(int x, int y, int w,
+    private static void rectangle(final TextureRegion region, int x, int y, int w,
                                   int h, boolean drawLeft, boolean drawRight, boolean drawTop,
                                   boolean drawBottom) {
         //Test
         if (drawLeft)
-            renderer.rect(x, y, GameValues.STROKE_WIDTH, h);
+            spriteBatch.draw(region, x, y, GameValues.STROKE_WIDTH, h);
 
         if (drawRight)
-            renderer.rect(x + w, y, GameValues.STROKE_WIDTH, h);
+            spriteBatch.draw(region, x + w, y, GameValues.STROKE_WIDTH, h);
 
         if (drawTop)
-            renderer.rect(x, y, w, GameValues.STROKE_WIDTH);
+            spriteBatch.draw(region, x, y, w, GameValues.STROKE_WIDTH);
 
         if (drawBottom)
-            renderer.rect(x, (y + h), w, GameValues.STROKE_WIDTH);
+            spriteBatch.draw(region, x, (y + h), w, GameValues.STROKE_WIDTH);
     }
 
     private static void checkAchievements() {
@@ -349,13 +346,6 @@ stderrFifo = ""
         }
     }
 
-    public static void showCircle(int x, int y) {
-        circleIndex += 1;
-        if (circleIndex == circles.size())
-            circleIndex = 0;
-        circles.get(circleIndex).activate(x, y);
-    }
-
     // FAKE LOADER:
     private static void loadProg(int loadProg) {
         float pcrn = loadProg * 100 / 150;
@@ -384,11 +374,19 @@ stderrFifo = ""
         }
     }
 
-
     public static void beginSpriteBatch() {
 
         if (!spriteBatch.isDrawing())
             spriteBatch.begin();
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        w = width;
+        h = height;
+        GameValues.init();
+        camera.setToOrtho(false, width, height);
+        super.resize(width, height);
     }
 
     @Override
@@ -419,9 +417,7 @@ stderrFifo = ""
         for (int i = 0; i < animatedTexts.size(); ++i) {
             animatedTexts.get(i).update();
         }
-        for (int i = 0; i < circles.size(); ++i) {
-            circles.get(i).update();
-        }
+
         // M:
         if (alphaM > 0) {
             alphaM -= 15;
@@ -516,16 +512,6 @@ stderrFifo = ""
             player.gamesPlayed = 0;
         }
 
-
-        circles = new ArrayList<AnimCircle>();
-        circleIndex = 0;
-        for (int i = 0; i < 2; ++i) {
-            circles.add(new AnimCircle());
-        }
-
-        // LOAD IMAGES ONCE
-
-
         introDelay = 150;
         loadProg = 0;
         loadWidth = 0;
@@ -540,18 +526,18 @@ stderrFifo = ""
         clear();
         camera.update();
         update();
+        spriteBatch.begin();
         onDraw();
+        spriteBatch.end();
     }
 
     public void onDraw() {
         // DRAW EVERYTHING IN ORDER:
         // c.set(0x000000); // DEFAULT
 
-        setColor(0xffffff55);
         for (int i = 0; i < level.speedParticles.size(); ++i) {
-            renderer.rect(level.speedParticles.get(i).xPos,
-                    level.speedParticles.get(i).yPos,
-                    GameValues.SPEED_PARTICLE_WIDTH,
+            spriteBatch.draw(BitmapLoader.speedParticle, level.speedParticles.get(i).xPos,
+                    level.speedParticles.get(i).yPos, GameValues.SPEED_PARTICLE_WIDTH,
                     GameValues.SPEED_PARTICLE_HEIGHT);
         }
 
@@ -561,7 +547,6 @@ stderrFifo = ""
 //                LOW_F_HEIGHT * 1.15f);
 
         // PLATFORMS:
-        setColor(0x6f6f6fff);
         for (int i = 0; i < level.platformsRight.size(); ++i) {
             drawTop = true;
             drawBottom = true;
@@ -574,23 +559,20 @@ stderrFifo = ""
                 drawBottom = false;
             }
 
-            rectangle(level.platformsRight.get(i).xPos,
+            rectangle(BitmapLoader.platform, level.platformsRight.get(i).xPos,
                     level.platformsRight.get(i).yPos,
                     GameValues.PLATFORM_WIDTH, GameValues.PLATFORM_HEIGHT,
                     false, true, drawTop, drawBottom);
 
             if (player.goingRight && alphaM > 0) {
-                c.set(0xe5e4a0ff);
+                //Todo flash
                 c.a = alphaM / 255f;
-                renderer.setColor(c);
-                rectangle(level.platformsRight.get(i).xPos,
+                rectangle(BitmapLoader.platformFlash, level.platformsRight.get(i).xPos,
                         level.platformsRight.get(i).yPos,
                         GameValues.PLATFORM_WIDTH, GameValues.PLATFORM_HEIGHT,
                         false, true, drawTop, drawBottom);
             }
         }
-
-        setColor(0x5b5b5bff);
 
         for (int i = 0; i < level.platformsLeft.size(); ++i) {
             drawTop = true;
@@ -603,27 +585,25 @@ stderrFifo = ""
                     || state != GameState.Playing) {
                 drawBottom = false;
             }
-            rectangle(level.platformsLeft.get(i).xPos,
+            rectangle(BitmapLoader.platform, level.platformsLeft.get(i).xPos,
                     level.platformsLeft.get(i).yPos, GameValues.PLATFORM_WIDTH,
                     GameValues.PLATFORM_HEIGHT, true, false, drawTop,
                     drawBottom);
             if (!player.goingRight && alphaM > 0) {
-                c.set(0xe5e4a0ff);
+                //Todo flash
                 c.a = alphaM / 255f;
-                renderer.setColor(c);
-                rectangle(level.platformsLeft.get(i).xPos,
+                rectangle(BitmapLoader.platformFlash, level.platformsLeft.get(i).xPos,
                         level.platformsLeft.get(i).yPos,
                         GameValues.PLATFORM_WIDTH, GameValues.PLATFORM_HEIGHT,
                         true, false, drawTop, drawBottom);
             }
         }
 
-
         // PAINT
         for (int i = 0; i < player.paintTrail.size(); ++i) {
-            setColor(color);
+            spriteBatch.setShader(shaderProgram);
             if (player.paintTrail.get(i).active) {
-                renderer.rect(player.paintTrail.get(i).xPos,
+                spriteBatch.draw(BitmapLoader.particle, player.paintTrail.get(i).xPos,
                         player.paintTrail.get(i).yPos,
                         GameValues.PAINT_THICKNESS,
                         player.paintTrail.get(i).height);
@@ -631,21 +611,14 @@ stderrFifo = ""
 
             if (player.paintTrail.get(i).isRight() != player.goingRight
                     && alphaM > 0) {
-                c.set(0xe5e475ff);
+
+                //Todo flash
                 c.a = alphaM / 255f;
-                renderer.rect(player.paintTrail.get(i).xPos,
+                spriteBatch.draw(BitmapLoader.paintFlash, player.paintTrail.get(i).xPos,
                         player.paintTrail.get(i).yPos,
                         GameValues.PAINT_THICKNESS,
                         player.paintTrail.get(i).height);
             }
-        }
-
-        // SPLASH
-        for (int i = 0; i < player.splashParticles1.size(); i++) {
-            player.splashParticles1.get(i).draw(renderer);
-        }
-        for (int i = 0; i < player.splashParticles2.size(); i++) {
-            player.splashParticles2.get(i).draw(renderer);
         }
 
         // PLAYER:
@@ -656,18 +629,6 @@ stderrFifo = ""
                 c.a = animatedTexts.get(i).alpha / 255f;
                 Utility.drawCenteredText(spriteBatch, c, animatedTexts.get(i).text,
                         animatedTexts.get(i).xPos, h - animatedTexts.get(i).yPos, Utility.getScale(w / 11));
-            }
-        }
-
-
-        // CIRCLES
-        for (int i = 0; i < circles.size(); ++i) {
-            if (circles.get(i).active) {
-                c.set(0xffffffff);
-                c.a = circles.get(i).a;
-                renderer.setColor(c);
-                renderer.circle(circles.get(i).xPos, circles.get(i).yPos,
-                        circles.get(i).scale);
             }
         }
 
@@ -811,9 +772,7 @@ stderrFifo = ""
 
         // INTRO
         if (introShowing) {
-
-            setColor(0x3e3e3eff);
-            renderer.rect(0, 0, w, h);
+            spriteBatch.draw(BitmapLoader.intro, 0, 0, w, h);
             c.set(0xe5e4a0ff);
 
             beginSpriteBatch();
@@ -822,10 +781,7 @@ stderrFifo = ""
             Utility.drawCenteredText(spriteBatch, c, "Thank you for Playing!", (w / 2),
                     h - (h - GameValues.BUTTON_PADDING - GameValues.BUTTON_PADDING), Utility.getScale(w / 20));
 
-
-            setColor(0xe532cdff);
-
-            renderer.rect((w / 2) - (GameValues.LOADING_BAR_WIDTH / 2),
+            spriteBatch.draw(BitmapLoader.loadingBar, (w / 2) - (GameValues.LOADING_BAR_WIDTH / 2),
                     h - GameValues.LOADING_BAR_WIDTH / 2f,
                     loadWidth, GameValues.LOADING_BAR_WIDTH / 10);
         }
@@ -857,15 +813,13 @@ stderrFifo = ""
                 Utility.dispose(shaderProgram);
             }
         }
-
+        Particle.particle = null;
         Utility.disposeFont();
     }
 
     @Override
     public void resume() {
         super.resume();
-
-        System.out.println("resume");
         initDisposables();
     }
 

@@ -2,7 +2,7 @@ package tbs.bassjump.ui;
 
 
 import tbs.bassjump.Game;
-import tbs.bassjump.view_lib.ValueAnimator;
+import tbs.bassjump.utility.ValueAnimator;
 
 /**
  * Created by Michael on 2/11/2015.

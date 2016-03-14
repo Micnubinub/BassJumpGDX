@@ -3,10 +3,9 @@ package tbs.bassjump.ui;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import tbs.switchylanes.Game;
-import tbs.switchylanes.GameValues;
-import tbs.switchylanes.utility.Utility;
-
+import tbs.bassjump.Game;
+import tbs.bassjump.GameValues;
+import tbs.bassjump.Utility;
 
 /**
  * Created by Michael on 2/9/2015.

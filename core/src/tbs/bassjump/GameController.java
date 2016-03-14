@@ -4,8 +4,6 @@ package tbs.bassjump;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 
-import tbs.bassjump.managers.StoreManager;
-
 public class GameController implements InputProcessor {
 
 
@@ -87,8 +85,7 @@ public class GameController implements InputProcessor {
                         && y >= Game.storeBtn.yPos
                         && y <= Game.storeBtn.yPos + GameValues.BUTTON_SCALE) {
                     // STORE:
-                    final StoreManager manager = new StoreManager();
-                    manager.showStore();
+                    Game.shop.show();
                 } else {
                     // PLAY:
                     Game.state = GameState.Playing;

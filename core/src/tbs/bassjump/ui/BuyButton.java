@@ -3,10 +3,10 @@ package tbs.bassjump.ui;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
-import tbs.switchylanes.Game;
-import tbs.switchylanes.GameValues;
-import tbs.switchylanes.managers.BitmapLoader;
-import tbs.switchylanes.utility.Utility;
+import tbs.bassjump.Game;
+import tbs.bassjump.GameValues;
+import tbs.bassjump.Utility;
+import tbs.bassjump.managers.BitmapLoader;
 
 /**
  * Created by mike on 3/7/16.
