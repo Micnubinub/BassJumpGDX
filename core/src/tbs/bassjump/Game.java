@@ -437,9 +437,8 @@ stderrFifo = ""
         log("initCalled");
         w = Gdx.graphics.getWidth();
         h = Gdx.graphics.getHeight();
-        camera = new OrthographicCamera(w, h);
-        camera.translate(w / 2, h / 2);
-        camera.setToOrtho(true);
+        camera = new OrthographicCamera();
+
         // ACHIEVEMENT:
 //        unlockAchievement("CgkIvYbi1pMMEAIQDA");
 
@@ -447,7 +446,6 @@ stderrFifo = ""
         setup();
         // LOAD AD:
 // Todo       adManager.loadFullscreenAd();
-        long tic = System.currentTimeMillis();
 
         // LOAD DATA:
         showAds = Utility.getString("nerUds") == null;
@@ -526,6 +524,7 @@ stderrFifo = ""
         clear();
         camera.update();
         update();
+        spriteBatch.setProjectionMatrix(camera.combined);
         spriteBatch.begin();
         onDraw();
         spriteBatch.end();
