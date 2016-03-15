@@ -92,9 +92,10 @@ public class GameValues {
         // INTRO
         LOADING_BAR_WIDTH = (int) (Game.w / 1.75f);
         // GENERAL
-        SPEED_FACTOR_ORIGINAL = 0;
+        SPEED_FACTOR_ORIGINAL = ((float) Game.h / 600);
         SPEED_FACTOR = (int) SPEED_FACTOR_ORIGINAL;
         SPEED_BONUS = 1;
+        PLAYER_JUMP_SPEED_MULT = 3;
         PLAYER_JUMP_SPEED = 0;
 
         DIALOG_PADDING = Game.w / 20;

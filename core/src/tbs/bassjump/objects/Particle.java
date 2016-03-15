@@ -42,8 +42,7 @@ public class Particle {
         if (!right)
             this.xv *= -1;
 
-        this.yv = (Utility.randInt(-GameValues.SPEED_FACTOR,
-                GameValues.SPEED_FACTOR));
+        this.yv = (Utility.randInt(-GameValues.SPEED_FACTOR, GameValues.SPEED_FACTOR));
         // smoothing out the diagonal speed
         xv *= 0.85;
         yv *= 0.85;

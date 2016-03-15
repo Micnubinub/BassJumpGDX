@@ -87,7 +87,7 @@ stderrFifo = ""
     //    private static final ArrayList<ValueAnimator> animations = new ArrayList<ValueAnimator>(10);
     public static int w, h;
     public static SpriteBatch spriteBatch;
-    public static short delta;
+    public static float delta;
     public static Dialog shop;
     public static ShaderProgram shaderProgram;
     public static OrthographicCamera camera;
@@ -117,6 +117,7 @@ stderrFifo = ""
         bitmapLoader = new BitmapLoader();
         ambientMusic = Gdx.audio.newMusic(Gdx.files.internal("song1.mp3"));
         ambientMusic.setLooping(true);
+        GameController.init();
         Player.setPlayerSprite();
         Particle.particle = new Sprite(BitmapLoader.particle);
     }
@@ -152,12 +153,11 @@ stderrFifo = ""
         // menuTextAlpha = 255;
 
         // SPEED CALC
-        GameValues.SPEED_FACTOR_ORIGINAL = ((float) h / 600);
 
+        shop = new Dialog();
         player = new Player();
         level = new Level();
         setupGame();
-
         setupInterface();
 //        Log.e("setUp ticToc = ", String.valueOf(System.currentTimeMillis() - tic));
     }
@@ -385,6 +385,7 @@ stderrFifo = ""
         w = width;
         h = height;
         GameValues.init();
+        init();
         camera.setToOrtho(false, width, height);
         super.resize(width, height);
     }
@@ -392,11 +393,10 @@ stderrFifo = ""
     @Override
     public void create() {
         initDisposables();
-        init();
     }
 
     public void update() {
-        delta = (short) (Gdx.graphics.getDeltaTime() * 1000);
+        delta = (Gdx.graphics.getDeltaTime() * 1000);
         GameValues.SPEED_FACTOR = (int) ((GameValues.SPEED_FACTOR_ORIGINAL * GameValues.SPEED_BONUS) * delta);
         if (GameValues.SPEED_FACTOR < 1)
             GameValues.SPEED_FACTOR = 1;
@@ -774,7 +774,6 @@ stderrFifo = ""
         if (introShowing) {
             spriteBatch.draw(BitmapLoader.intro, 0, 0, w, h);
             c.set(0xe5e4a0ff);
-
             beginSpriteBatch();
             Utility.drawCenteredText(spriteBatch, c, "The Big Shots", (w / 2),
                     h - (h / 2), Utility.getScale(w / 8));
@@ -782,31 +781,20 @@ stderrFifo = ""
                     h - (h - GameValues.BUTTON_PADDING - GameValues.BUTTON_PADDING), Utility.getScale(w / 20));
 
             spriteBatch.draw(BitmapLoader.loadingBar, (w / 2) - (GameValues.LOADING_BAR_WIDTH / 2),
-                    h - GameValues.LOADING_BAR_WIDTH / 2f,
+                    GameValues.LOADING_BAR_WIDTH / 2f,
                     loadWidth, GameValues.LOADING_BAR_WIDTH / 10);
+        }
+
+        if (shop.isShowing()) {
+            shop.draw(0, 0, w, h);
         }
     }
 
     @Override
     public void dispose() {
-        super.dispose();
-        try {
-            bitmapLoader.dispose();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try {
-            ambientMusic.dispose();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try {
-            spriteBatch.dispose();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Utility.dispose(bitmapLoader);
+        Utility.dispose(ambientMusic);
+        Utility.dispose(spriteBatch);
 
         if (shaderPrograms != null) {
             for (ShaderProgram shaderProgram : shaderPrograms) {
@@ -815,6 +803,7 @@ stderrFifo = ""
         }
         Particle.particle = null;
         Utility.disposeFont();
+        super.dispose();
     }
 
     @Override

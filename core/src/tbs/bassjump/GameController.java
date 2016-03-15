@@ -1,27 +1,128 @@
 package tbs.bassjump;
 
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.math.Vector2;
 
-public class GameController implements InputProcessor {
+public class GameController {
+    private static final GestureDetector.GestureListener gestureListener = new GestureDetector.GestureListener() {
+        @Override
+        public boolean touchDown(float x, float y, int pointer, int button) {
+            return false;
+        }
 
+        @Override
+        public boolean tap(float x, float y, int count, int button) {
+//            GameController.click((int) x, (int) y);
+            return false;
+        }
 
-    public static void pressed(int x, int y, int index) {
+        @Override
+        public boolean longPress(float x, float y) {
+            return longPress(x, y);
+        }
 
-    }
+        @Override
+        public boolean fling(float velocityX, float velocityY, int button) {
+            GameController.fling(velocityX, velocityY);
+            return false;
+        }
 
-    public static void released(int x, int y, int index) {
+        @Override
+        public boolean pan(float x, float y, float deltaX, float deltaY) {
+            return false;
+        }
 
-    }
+        @Override
+        public boolean panStop(float x, float y, int pointer, int button) {
+            return false;
+        }
 
-    public static void pressScreen(int x, int y) {
+        @Override
+        public boolean zoom(float initialDistance, float distance) {
+            GameController.zoom(initialDistance / distance);
+            return false;
+        }
+
+        @Override
+        public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+            //Todo calculate zoom
+            return false;
+        }
+    };
+    private static int startX, startY;
+    private static int lastTouchX, lastTouchY;
+    private static final InputProcessor inputProcessor = new InputProcessor() {
+        @Override
+        public boolean keyDown(int keycode) {
+            keyPress(keycode);
+            return false;
+        }
+
+        @Override
+        public boolean keyUp(int keycode) {
+            GameController.keyRelease(keycode);
+            return false;
+        }
+
+        @Override
+        public boolean keyTyped(char character) {
+            return false;
+        }
+
+        @Override
+        public boolean touchDown(int x, int y, int pointer, int button) {
+            click(x, y);
+            return false;
+        }
+
+        @Override
+        public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+            return false;
+        }
+
+        @Override
+        public boolean touchDragged(int screenX, int screenY, int pointer) {
+            Game.shop.drag(startX, startY, screenX - lastTouchX, screenY - lastTouchY);
+            lastTouchX = screenX;
+            lastTouchY = screenY;
+            return false;
+        }
+
+        @Override
+        public boolean mouseMoved(int screenX, int screenY) {
+            return false;
+        }
+
+        @Override
+        public boolean scrolled(int amount) {
+            scroll(amount);
+            return false;
+        }
+    };
+    private static InputMultiplexer multiplexer = new InputMultiplexer();
+    private static GestureDetector gestureDetector;
+
+    private static void click(int x, int y) {
+        startX = x;
+        startY = y;
+
+        lastTouchX = x;
+        lastTouchY = y;
+
         if (!Game.introShowing) {
-            if (Game.state == GameState.Menu) {
+            if (Game.shop.isShowing()) {
+                Game.shop.click(x, y);
+            } else if (Game.state == GameState.Menu) {
                 if (x >= Game.soundBtn.xPos
                         && x <= Game.soundBtn.xPos + GameValues.BUTTON_SCALE
                         && y >= Game.soundBtn.yPos
                         && y <= Game.soundBtn.yPos + GameValues.BUTTON_SCALE) {
+
                     // SOUND:
                     if (Game.isMusicEnabled) {
                         // TURN OFF
@@ -31,7 +132,6 @@ public class GameController implements InputProcessor {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-
                         Utility.saveString("musicOn", "off");
                     } else {
                         // TURN ON
@@ -50,10 +150,12 @@ public class GameController implements InputProcessor {
                     // FB PAGE:
                     Utility.openLink("https://www.facebook.com/AndroidHackerApp");
 
+
                 } else if (x >= Game.modeBtn.xPos
                         && x <= Game.modeBtn.xPos + GameValues.BUTTON_SCALE
                         && y >= Game.modeBtn.yPos
                         && y <= Game.modeBtn.yPos + GameValues.BUTTON_SCALE) {
+
                     // STORE:
                     if (Game.mode == GameMode.Recruit) {
                         Game.mode = GameMode.Arcade;
@@ -77,6 +179,7 @@ public class GameController implements InputProcessor {
                         && x <= Game.shareBtn.xPos + GameValues.BUTTON_SCALE
                         && y >= Game.shareBtn.yPos
                         && y <= Game.shareBtn.yPos + GameValues.BUTTON_SCALE) {
+
                     // SHARE:
                     Utility.openLink("http://thebigshots.net");
                     // tbs.bassjump.Utility.showToast("Share Coming Soon!", tbs.bassjump.reference.);
@@ -85,8 +188,10 @@ public class GameController implements InputProcessor {
                         && y >= Game.storeBtn.yPos
                         && y <= Game.storeBtn.yPos + GameValues.BUTTON_SCALE) {
                     // STORE:
+
                     Game.shop.show();
                 } else {
+
                     // PLAY:
                     Game.state = GameState.Playing;
                     Game.player.jump();
@@ -102,49 +207,44 @@ public class GameController implements InputProcessor {
         }
     }
 
-    @Override
-    public boolean keyUp(int keycode) {
-        return false;
+    private static void scroll(float dy) {
+        Game.shop.drag(Game.w / 2, Game.h / 2, 0, dy);
     }
 
-    @Override
-    public boolean keyTyped(char character) {
-        return false;
+    private static void fling(float vx, float vy) {
+        Game.shop.fling(vx, vy);
     }
 
-    @Override
-    public boolean touchDown(int x, int y, int pointer, int button) {
-        pressScreen(x, y);
-        return false;
+    private static void zoom(float scale) {
+
     }
 
-    @Override
-    public boolean keyDown(int keycode) {
-        switch (keycode) {
+    private static void longClick(float scale) {
+
+    }
+
+    private static void keyPress(int keyCode) {
+        switch (keyCode) {
             case Input.Keys.SPACE:
-                pressScreen(0, 0);
+                click(0, 0);
                 break;
         }
-        return false;
     }
 
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return false;
+    private static void keyRelease(int keyCode) {
+
     }
 
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
+    public static void init() {
+        //Todo call this in every resume
+        multiplexer.clear();
+        if (gestureDetector == null) {
+            gestureDetector = new GestureDetector(gestureListener);
+        }
+        multiplexer.addProcessor(gestureDetector);
+        multiplexer.addProcessor(inputProcessor);
+
+        Gdx.input.setInputProcessor(multiplexer);
     }
 
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-        return false;
-    }
-
-    @Override
-    public boolean scrolled(int amount) {
-        return false;
-    }
 }

@@ -180,6 +180,7 @@ public class Player extends GameObject {
 
                 break;
             case JUMPING:
+                Utility.print("Jumping : " + GameValues.PLAYER_JUMP_SPEED_MULT);
                 if (goingRight) { // RIGHT
                     xPos += GameValues.PLAYER_JUMP_SPEED;
 
@@ -372,8 +373,8 @@ public class Player extends GameObject {
         Game.color = Game.colors[Utility.randInt(0, Game.colors.length - 1)];
         state = PlayerState.ON_GROUND;
 
-        if (score % 2 == 0)
-            GameValues.SPEED_BONUS += .005f;
+//        if (score % 2 == 0)
+//            GameValues.SPEED_BONUS += .005f;
 
         if (score % 18 == 0) {
             Level.powerCountdown = 4;
@@ -415,7 +416,8 @@ public class Player extends GameObject {
 
         //Todo fix rotation
         final float rotation = (float) (playerJumpPercentage * 180);
-        Utility.print("xp: " + rotation);
+        if (Utility.customBool(8))
+            Utility.print("xp: " + rotation);
         playerTexture.setOriginCenter();
         playerTexture.setRotation(rotation);
         playerTexture.setSize(scale, scale);
