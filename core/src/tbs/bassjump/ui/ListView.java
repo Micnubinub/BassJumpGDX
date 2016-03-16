@@ -76,8 +76,8 @@ public class ListView extends ScrollView {
             //Todo not meant to be here
             v.setWidth(w);
 
-            if (cullView(v))
-                v.draw(relX + x, viewTop - cumulative - scrollY, Math.min(relX + x + scrollX + w, parentRight), Math.min(viewTop - cumulative - scrollY + h, parentTop));
+//            if (cullView(v))
+            v.draw(relX + x, viewTop - cumulative - scrollY, Math.min(relX + x + scrollX + w, parentRight), Math.min(viewTop - cumulative - scrollY + h, parentTop));
 
         }
         lastMeasuredHeight = cumulative;

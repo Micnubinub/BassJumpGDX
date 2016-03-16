@@ -86,7 +86,7 @@ public class BitmapLoader {
 
         rectangle = atlas.findRegion("4");
         circle = atlas.findRegion("0");
-        hexagon = atlas.findRegion("60");
+        hexagon = atlas.findRegion("6");
         triangle = atlas.findRegion("3");
         pentagon = atlas.findRegion("5");
         rhombus = atlas.findRegion("40");

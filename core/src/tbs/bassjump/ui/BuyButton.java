@@ -62,9 +62,6 @@ public class BuyButton extends TextView {
     public boolean click(int xPos, int yPos) {
         yPos = Game.h - yPos;
         rect.set(buttonX, buttonY, buttonW, buttonH);
-        if (rect.contains(xPos, yPos)) {
-            Utility.print("click: " + position + " > " + text);
-        }
         return rect.contains(xPos, yPos);
     }
 

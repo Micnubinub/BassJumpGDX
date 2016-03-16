@@ -53,7 +53,6 @@ public class GameValues {
     public static int DIALOG_PADDING;
     public static int DIALOG_CLOSE_BUTTON_SCALE;
     public static int TITLE_HEIGHT;
-    public static int COLOR_CAR_SCALE;
     public static int CORNER_SCALE;
     public static int SHAPE_WIDTH;
 
@@ -101,8 +100,9 @@ public class GameValues {
         DIALOG_PADDING = Game.w / 20;
         DIALOG_CLOSE_BUTTON_SCALE = Game.w / 12;
         TITLE_HEIGHT = Game.w / 13;
-        COLOR_CAR_SCALE = (int) (SHAPE_WIDTH * 1.4f);
+        SHAPE_WIDTH = Game.h / 8;
         CORNER_SCALE = Game.w / 42;
+
     }
 
 }

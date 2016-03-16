@@ -38,11 +38,11 @@ public class ColorAdapter extends Adapter {
         equippedItem = Utility.getEquippedColor();
 
         if (itemsBought == null)
-            itemsBought = new boolean[Utility.colorNames.length];
+            itemsBought = new boolean[Utility.colors.length];
 
         final String[] boughtColors = Utility.getBoughtColors();
-        buyButtons = new BuyButton[Utility.colorNames.length];
-        for (int i = 0; i < Utility.colorNames.length; i++) {
+        buyButtons = new BuyButton[Utility.colors.length];
+        for (int i = 0; i < Utility.colors.length; i++) {
             itemsBought[i] = Utility.contains(boughtColors, String.valueOf(i));
             final BuyButton buyButton = new BuyButton(i);
             buyButton.setTextScale(Utility.getScale(GameValues.TITLE_HEIGHT * 0.7f));
@@ -92,7 +92,7 @@ public class ColorAdapter extends Adapter {
 
     @Override
     public View getView(int position) {
-        ColorView.text.setText(Utility.colorNames[position]);
+        ColorView.text.setText(Utility.colorNames[position % Utility.colorNames.length]);
         ColorView.price.setText(Utility.COLOR_PRICE_S);
         ColorView.shaderProgram = shaderPrograms[position];
 
@@ -127,9 +127,9 @@ public class ColorAdapter extends Adapter {
         public ColorView() {
             ColorView.text.setTextScale(Utility.getScale(GameValues.TITLE_HEIGHT * 0.7f));
             text.setTextColor(0xffffffff);
-            h = GameValues.COLOR_CAR_SCALE * 1.16f;
-            scale = GameValues.COLOR_CAR_SCALE;
-            pad = (int) (GameValues.COLOR_CAR_SCALE * 0.08f);
+            h = GameValues.SHAPE_WIDTH * 1.16f;
+            scale = GameValues.SHAPE_WIDTH;
+            pad = (int) (GameValues.SHAPE_WIDTH * 0.08f);
             text.setTextScale(Utility.getScale(GameValues.TITLE_HEIGHT * 0.7f));
             price.setTextScale(Utility.getScale(GameValues.TITLE_HEIGHT * 0.7f));
         }
@@ -144,7 +144,7 @@ public class ColorAdapter extends Adapter {
             final float priceX = w - price.w;
 
             price.draw(priceX, priceY, parentRight, parentTop);
-            Game.spriteBatch.draw(BitmapLoader.coin, priceX - (GameValues.TITLE_HEIGHT * 0.7f), priceY + (GameValues.TITLE_HEIGHT * 0.26f), GameValues.TITLE_HEIGHT * 0.52f, GameValues.TITLE_HEIGHT * 0.46f);
+            Game.spriteBatch.draw(BitmapLoader.coin, priceX - (GameValues.TITLE_HEIGHT * 0.7f), priceY + (GameValues.TITLE_HEIGHT * 0.26f), GameValues.TITLE_HEIGHT * 0.52f, GameValues.TITLE_HEIGHT * 0.52f);
             buyButton.draw(w - buyButton.w, priceY - (pad) - (buyButton.h / 2) - GameValues.CORNER_SCALE, parentRight, parentTop);
 
             Game.spriteBatch.setShader(shaderProgram);

@@ -17,7 +17,7 @@ public class Dialog extends View {
     //Todo somehow make it draw over other objects
     private static TextView title = new TextView("STORE");
     private static TextView colorTitle = new TextView("COLORS");
-    private static TextView carTitle = new TextView("CARS");
+    private static TextView shapeTitle = new TextView("SHAPES");
     private static boolean showDialog = false;
     private static int pad;
 
@@ -67,7 +67,7 @@ public class Dialog extends View {
 
         title.draw(relX + x, relY + y, w, h);
         colorTitle.draw(relX + x, relY + y, w, h);
-        carTitle.draw(relX + x, relY + y, w, h);
+        shapeTitle.draw(relX + x, relY + y, w, h);
 
         Game.spriteBatch.draw(BitmapLoader.close, close.xPos, close.yPos, GameValues.DIALOG_CLOSE_BUTTON_SCALE, GameValues.DIALOG_CLOSE_BUTTON_SCALE);
     }
@@ -89,7 +89,7 @@ public class Dialog extends View {
             return true;
         } else if (colorTitle.click(xPos, yPos)) {
             pages.setCurrentPage(0);
-        } else if (carTitle.click(xPos, yPos)) {
+        } else if (shapeTitle.click(xPos, yPos)) {
             pages.setCurrentPage(1);
         }
         return pages.click(xPos, yPos);
@@ -141,22 +141,22 @@ public class Dialog extends View {
 
         title.setPosition(pad, top - GameValues.TITLE_HEIGHT - GameValues.TITLE_HEIGHT);
         colorTitle.setPosition(pad, top - GameValues.TITLE_HEIGHT - GameValues.TITLE_HEIGHT - GameValues.TITLE_HEIGHT);
-        carTitle.setPosition(pad + (int) (w / 2), top - GameValues.TITLE_HEIGHT - GameValues.TITLE_HEIGHT - GameValues.TITLE_HEIGHT);
+        shapeTitle.setPosition(pad + (int) (w / 2), top - GameValues.TITLE_HEIGHT - GameValues.TITLE_HEIGHT - GameValues.TITLE_HEIGHT);
 
         title.setSize((int) w, GameValues.TITLE_HEIGHT);
         colorTitle.setSize((int) w / 2, GameValues.TITLE_HEIGHT);
-        carTitle.setSize((int) w / 2, GameValues.TITLE_HEIGHT);
+        shapeTitle.setSize((int) w / 2, GameValues.TITLE_HEIGHT);
 
         title.setTextScale(Utility.getScale(GameValues.TITLE_HEIGHT * 0.95f));
         colorTitle.setTextScale(Utility.getScale(GameValues.TITLE_HEIGHT * 0.75f));
-        carTitle.setTextScale(Utility.getScale(GameValues.TITLE_HEIGHT * 0.75f));
+        shapeTitle.setTextScale(Utility.getScale(GameValues.TITLE_HEIGHT * 0.75f));
 
-        final int padding = (int) (GameValues.COLOR_CAR_SCALE * 0.08f);
+        final int padding = (int) (GameValues.SHAPE_WIDTH * 0.08f);
         pages.setSize(w, h - GameValues.TITLE_HEIGHT - GameValues.TITLE_HEIGHT - (3 * padding));
         pages.setPosition(pad, pad);
 
         //set pad for inner dialog
-        pad = (int) (GameValues.COLOR_CAR_SCALE * 0.08f);
+        pad = (int) (GameValues.SHAPE_WIDTH * 0.08f);
     }
 
     private void drawBackground() {
@@ -170,7 +170,7 @@ public class Dialog extends View {
         h = top - pad + scale;
 
         colorTitle.setTextColor((pages.getCurrentPage() == 0) ? 0xffffffff : 0xaaaaaaff);
-        carTitle.setTextColor((pages.getCurrentPage() == 1) ? 0xffffffff : 0xaaaaaaff);
+        shapeTitle.setTextColor((pages.getCurrentPage() == 1) ? 0xffffffff : 0xaaaaaaff);
 
         setCornerVals(pad, top, 0);
         corner.draw(Game.spriteBatch);

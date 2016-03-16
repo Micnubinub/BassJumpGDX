@@ -19,6 +19,7 @@ import tbs.bassjump.levels.Level;
 import tbs.bassjump.managers.BitmapLoader;
 import tbs.bassjump.objects.Particle;
 import tbs.bassjump.objects.Player;
+import tbs.bassjump.ui.BuyButton;
 import tbs.bassjump.ui.Dialog;
 import tbs.bassjump.utility.GameObject;
 import tbs.bassjump.utility.ValueAnimator;
@@ -118,6 +119,7 @@ stderrFifo = ""
         ambientMusic = Gdx.audio.newMusic(Gdx.files.internal("song1.mp3"));
         ambientMusic.setLooping(true);
         GameController.init();
+        BuyButton.init();
         Player.setPlayerSprite();
         Particle.particle = new Sprite(BitmapLoader.particle);
     }
@@ -792,7 +794,7 @@ stderrFifo = ""
         Utility.dispose(bitmapLoader);
         Utility.dispose(ambientMusic);
         Utility.dispose(spriteBatch);
-
+        BuyButton.disposeShaders();
         if (shaderPrograms != null) {
             for (ShaderProgram shaderProgram : shaderPrograms) {
                 Utility.dispose(shaderProgram);
