@@ -94,7 +94,7 @@ public class Level {
 
 		// SPEED PARTICLES
 		for (int i = 0; i < speedParticles.size(); ++i) {
-			speedParticles.get(i).yPos = Utility.randInt(-(Game.h / 3),
+			speedParticles.get(i).yPos = Utility.randInt(-(Game.h / 2),
 					Game.h);
 		}
 	}

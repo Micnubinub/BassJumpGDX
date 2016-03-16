@@ -81,6 +81,7 @@ public class Utility {
 
     public static void saveCoins(int coins) {
         saveInt(COINS, coins);
+        Game.coins = coins;
     }
 
     public static int getCoins() {
@@ -90,6 +91,8 @@ public class Utility {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+
         return coins;
     }
 

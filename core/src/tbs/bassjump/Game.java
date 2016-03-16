@@ -91,6 +91,7 @@ stderrFifo = ""
     public static Dialog shop;
     public static ShaderProgram shaderProgram;
     public static OrthographicCamera camera;
+    public static int coins;
     private static String currSong;
     // MOVING TEXTS:
     private static ArrayList<MovingText> animatedTexts; // ANIMATED TEXT LIST
@@ -110,7 +111,6 @@ stderrFifo = ""
     // RANKING:
 //    private static LeaderboardScore leaderboard;
     private static BitmapLoader bitmapLoader;
-
 
     public static void initDisposables() {
         spriteBatch = new SpriteBatch();
@@ -153,7 +153,7 @@ stderrFifo = ""
         // menuTextAlpha = 255;
 
         // SPEED CALC
-
+        coins = Utility.getCoins();
         shop = new Dialog();
         player = new Player();
         level = new Level();
@@ -446,7 +446,6 @@ stderrFifo = ""
         setup();
         // LOAD AD:
 // Todo       adManager.loadFullscreenAd();
-
         // LOAD DATA:
         showAds = Utility.getString("nerUds") == null;
 
@@ -536,7 +535,7 @@ stderrFifo = ""
 
         for (int i = 0; i < level.speedParticles.size(); ++i) {
             spriteBatch.draw(BitmapLoader.speedParticle, level.speedParticles.get(i).xPos,
-                    level.speedParticles.get(i).yPos, GameValues.SPEED_PARTICLE_WIDTH,
+                    h - level.speedParticles.get(i).yPos, GameValues.SPEED_PARTICLE_WIDTH,
                     GameValues.SPEED_PARTICLE_HEIGHT);
         }
 
@@ -678,17 +677,16 @@ stderrFifo = ""
             c.set(0xffffffff);
             // COINS:
 
-            txt = Utility.formatNumber(Utility.getCoins());
+            txt = Utility.formatNumber(coins);
             textSize = Utility.measureText(txt, 0.3f);
 
             final float coinsY = h - storeBtn.yPos - storeBtn.scale + (textSize[1] / 2);
-            Utility.drawCenteredText(spriteBatch, c, txt, storeBtn.xPos - GameValues.BUTTON_PADDING - (textSize[0] / 2),
+            final float coinTextPosCenterX = storeBtn.xPos - GameValues.BUTTON_PADDING - (textSize[0] / 2);
+            Utility.drawCenteredText(spriteBatch, c, txt, coinTextPosCenterX,
                     coinsY, 0.3f);
 
-            spriteBatch.draw(BitmapLoader.coin, (storeBtn.xPos - w / 8)
-                            - (GameValues.COIN_SCALE + GameValues.BUTTON_PADDING * 1.45f),
+            spriteBatch.draw(BitmapLoader.coin, coinTextPosCenterX - (Utility.glyphLayout.width / 2) - (GameValues.COIN_SCALE * 2.4f),
                     coinsY - (GameValues.COIN_SCALE * 0.7f), GameValues.COIN_SCALE * 2, GameValues.COIN_SCALE * 2);
-
 
             // SCORE & STATS:
             txt = ("Played: " + player.gamesPlayed);

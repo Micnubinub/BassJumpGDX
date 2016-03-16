@@ -58,13 +58,13 @@ public class ShapesAdapter extends Adapter {
                     Utility.equipShape(position);
                     equippedItem = position;
                 } else {
-                    if (Utility.getCoins() < Utility.shapePrices[position]) {
+                    if (Game.coins < Utility.shapePrices[position]) {
 
                     } else {
                         Utility.addBoughtShapes(position);
                         itemsBought[position] = true;
 
-                        Utility.saveCoins(Utility.getCoins() - Utility.shapePrices[position]);
+                        Utility.saveCoins(Game.coins - Utility.shapePrices[position]);
                     }
                 }
                 return true;
@@ -95,7 +95,7 @@ public class ShapesAdapter extends Adapter {
                 }
             } else {
                 buyButton.setText("BUY");
-                buyButton.setButtonMode((Utility.getCoins() < Utility.COLOR_PRICE) ? BuyButton.CANNOT_BUY : BuyButton.BUY);
+                buyButton.setButtonMode((Game.coins < Utility.COLOR_PRICE) ? BuyButton.CANNOT_BUY : BuyButton.BUY);
             }
             CarView.buyButton = buyButton;
         } catch (Exception e) {

@@ -81,7 +81,7 @@ public class ColorAdapter extends Adapter {
                     } else {
                         Utility.addBoughtColors(position);
                         itemsBought[position] = true;
-                        Utility.saveCoins(Utility.getCoins() - Utility.COLOR_PRICE);
+                        Utility.saveCoins(Game.coins - Utility.COLOR_PRICE);
                     }
                 }
                 return true;
@@ -108,7 +108,7 @@ public class ColorAdapter extends Adapter {
                 }
             } else {
                 buyButton.setText("BUY");
-                buyButton.setButtonMode((Utility.getCoins() < Utility.COLOR_PRICE) ? BuyButton.CANNOT_BUY : BuyButton.BUY);
+                buyButton.setButtonMode((Game.coins < Utility.COLOR_PRICE) ? BuyButton.CANNOT_BUY : BuyButton.BUY);
             }
             ColorView.buyButton = buyButton;
         } catch (Exception e) {
