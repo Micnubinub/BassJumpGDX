@@ -69,7 +69,7 @@ public class Player extends GameObject {
         for (int i = 0; i < 12; i++) {
             splashParticles2.add(new Particle());
         }
-        playerJumpDistance = Game.w - (GameValues.PLATFORM_WIDTH * 2) + GameValues.PAINT_THICKNESS - scale;
+        playerJumpDistance = Game.w - (GameValues.PLATFORM_WIDTH * 2) + GameValues.STROKE_WIDTH - scale;
         Utility.equipShape(Utility.getEquippedShape());
     }
 
@@ -93,6 +93,7 @@ public class Player extends GameObject {
         scale = GameValues.PLAYER_SCALE;
         yPos = Game.h; // START OFF SCREEN
         xPos = GameValues.PLATFORM_WIDTH;
+        playerJumpPercentage = 0;
 
         // OTHER
         state = PlayerState.ON_GROUND;
@@ -161,7 +162,6 @@ public class Player extends GameObject {
                     paintTrail.get(paintIndex).height += speed;
                     paintTrail.get(paintIndex).yPos = (yPos + (scale / 11));
                 }
-
                 break;
             case DYING:
                 if (goingRight) {
@@ -177,9 +177,9 @@ public class Player extends GameObject {
                         Game.setupGame();
                     }
                 }
-
                 break;
             case JUMPING:
+                playerJumpPercentage = (xPos - GameValues.PLATFORM_WIDTH - scale) / playerJumpDistance;
                 Utility.print("Jumping : " + GameValues.PLAYER_JUMP_SPEED_MULT);
                 if (goingRight) { // RIGHT
                     xPos += GameValues.PLAYER_JUMP_SPEED;
@@ -335,14 +335,12 @@ public class Player extends GameObject {
         paintTrail.get(moveIndex).yPos = yPos;
         if (!start) {
             if (!goingRight) {
-                paintTrail.get(moveIndex).xPos = GameValues.PLATFORM_WIDTH
-                        - GameValues.PAINT_THICKNESS;
+                paintTrail.get(moveIndex).xPos = GameValues.PLATFORM_WIDTH;
             } else {
                 paintTrail.get(moveIndex).xPos = (Game.w - GameValues.PLATFORM_WIDTH);
             }
         } else {
-            paintTrail.get(moveIndex).xPos = GameValues.PLATFORM_WIDTH
-                    - GameValues.PAINT_THICKNESS;
+            paintTrail.get(moveIndex).xPos = GameValues.PLATFORM_WIDTH;
         }
         paintIndex = moveIndex;
     }
@@ -354,8 +352,8 @@ public class Player extends GameObject {
         score += 1;
         xPos = xPos < GameValues.PLATFORM_WIDTH ? GameValues.PLATFORM_WIDTH : xPos;
         xPos = xPos > Game.w - GameValues.PLATFORM_WIDTH + GameValues.PAINT_THICKNESS - scale ?
-                Game.w - GameValues.PLATFORM_WIDTH + GameValues.PAINT_THICKNESS - scale : xPos;
-        playerJumpPercentage = (xPos - GameValues.PLATFORM_WIDTH - scale) / playerJumpDistance;
+                Game.w - GameValues.PLATFORM_WIDTH + GameValues.STROKE_WIDTH - scale : xPos;
+
 
         // COIN BONUS:
         if (score >= 50) {
@@ -383,11 +381,14 @@ public class Player extends GameObject {
         showParticles();
 
         // TEXT
-        if (right)
+        if (right) {
+            playerJumpPercentage = 1;
             Game.showAnimatedText("+" + coinPluser, xPos, getYCenter(), (Game.h / 100), 12, 255, 0);
-        else
+        } else {
+            playerJumpPercentage = 0;
             Game.showAnimatedText("+" + coinPluser, xPos + GameValues.PLAYER_SCALE, getYCenter(),
                     (Game.h / 100), 12, 255, 0);
+        }
     }
 
     public int getXCenter() {
@@ -416,8 +417,8 @@ public class Player extends GameObject {
 
         //Todo fix rotation
         final float rotation = (float) (playerJumpPercentage * 180);
-        if (Utility.customBool(8))
-            Utility.print("xp: " + rotation);
+//        if (Utility.customBool(8))
+        Utility.print("ro: " + rotation);
         playerTexture.setOriginCenter();
         playerTexture.setRotation(rotation);
         playerTexture.setSize(scale, scale);

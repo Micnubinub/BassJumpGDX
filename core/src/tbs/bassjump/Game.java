@@ -382,6 +382,12 @@ stderrFifo = ""
             spriteBatch.begin();
     }
 
+    private static void updateCamera(boolean yDown) {
+        camera.setToOrtho(yDown);
+        camera.update();
+        spriteBatch.setProjectionMatrix(camera.combined);
+    }
+
     @Override
     public void resize(int width, int height) {
         w = width;
@@ -523,28 +529,15 @@ stderrFifo = ""
     @Override
     public void render() {
         clear();
-        camera.update();
         update();
-        spriteBatch.setProjectionMatrix(camera.combined);
+
         spriteBatch.begin();
         onDraw();
         spriteBatch.end();
     }
 
     public void onDraw() {
-        // DRAW EVERYTHING IN ORDER:
-        // c.set(0x000000); // DEFAULT
-
-        for (int i = 0; i < level.speedParticles.size(); ++i) {
-            spriteBatch.draw(BitmapLoader.speedParticle, level.speedParticles.get(i).xPos,
-                    h - level.speedParticles.get(i).yPos, GameValues.SPEED_PARTICLE_WIDTH,
-                    GameValues.SPEED_PARTICLE_HEIGHT);
-        }
-
-//        c.set(0x42453aff);
-//        renderer.setColor(c);
-//        renderer.circle(player.getXCenter(), player.getYCenter(),
-//                LOW_F_HEIGHT * 1.15f);
+        updateCamera(true);
 
         // PLATFORMS:
         for (int i = 0; i < level.platformsRight.size(); ++i) {
@@ -605,7 +598,7 @@ stderrFifo = ""
             if (player.paintTrail.get(i).active) {
                 spriteBatch.draw(BitmapLoader.particle, player.paintTrail.get(i).xPos,
                         player.paintTrail.get(i).yPos,
-                        GameValues.PAINT_THICKNESS,
+                        GameValues.STROKE_WIDTH,
                         player.paintTrail.get(i).height);
             }
 
@@ -620,6 +613,15 @@ stderrFifo = ""
                         player.paintTrail.get(i).height);
             }
         }
+
+        // SPEED PARTICLES
+        for (int i = 0; i < level.speedParticles.size(); ++i) {
+            spriteBatch.draw(BitmapLoader.speedParticle, level.speedParticles.get(i).xPos,
+                    level.speedParticles.get(i).yPos, GameValues.SPEED_PARTICLE_WIDTH,
+                    GameValues.SPEED_PARTICLE_HEIGHT);
+        }
+
+        updateCamera(false);
 
         // PLAYER:
         beginSpriteBatch();
