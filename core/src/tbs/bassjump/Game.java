@@ -84,7 +84,7 @@ stderrFifo = ""
     public static Music ambientMusic;
     public static int numberOfPlayNextSongRetries;
     public static float scoreTextMult;
-    public static boolean showAds;
+    public static boolean showAds, disposeCalled = true;
     //    private static final ArrayList<ValueAnimator> animations = new ArrayList<ValueAnimator>(10);
     public static int w, h;
     public static SpriteBatch spriteBatch;
@@ -114,6 +114,8 @@ stderrFifo = ""
     private static BitmapLoader bitmapLoader;
 
     public static void initDisposables() {
+        if (!disposeCalled)
+            return;
         spriteBatch = new SpriteBatch();
         bitmapLoader = new BitmapLoader();
         ambientMusic = Gdx.audio.newMusic(Gdx.files.internal("song1.mp3"));
@@ -122,6 +124,7 @@ stderrFifo = ""
         BuyButton.init();
         Player.setPlayerSprite();
         Particle.particle = new Sprite(BitmapLoader.particle);
+        disposeCalled = false;
     }
 
     public static void addAnimator(ValueAnimator animator) {
@@ -793,6 +796,7 @@ stderrFifo = ""
 
     @Override
     public void dispose() {
+        disposeCalled = true;
         Utility.dispose(bitmapLoader);
         Utility.dispose(ambientMusic);
         Utility.dispose(spriteBatch);
@@ -810,6 +814,7 @@ stderrFifo = ""
     @Override
     public void resume() {
         super.resume();
+
         initDisposables();
     }
 

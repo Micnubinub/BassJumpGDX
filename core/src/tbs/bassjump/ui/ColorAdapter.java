@@ -2,8 +2,6 @@ package tbs.bassjump.ui;
 
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
-import java.util.Arrays;
-
 import tbs.bassjump.Game;
 import tbs.bassjump.GameValues;
 import tbs.bassjump.Utility;
@@ -48,7 +46,6 @@ public class ColorAdapter extends Adapter {
             buyButton.setTextScale(Utility.getScale(GameValues.TITLE_HEIGHT * 0.7f));
             buyButtons[i] = buyButton;
         }
-        Utility.print("colors > " + Arrays.toString(itemsBought));
     }
 
     public static void dispose() {
@@ -76,8 +73,8 @@ public class ColorAdapter extends Adapter {
 //                    Game.shaderProgram = Utility.getCarShaderProgram(Utility.light[position], Utility.dark[position]);
                     equippedItem = position;
                 } else {
-                    if (Game.player.tmpCoins < Utility.COLOR_PRICE) {
-
+                    if (Utility.getCoins() < Utility.COLOR_PRICE) {
+                        Utility.print("cant buy");
                     } else {
                         Utility.addBoughtColors(position);
                         itemsBought[position] = true;
@@ -92,7 +89,6 @@ public class ColorAdapter extends Adapter {
 
     @Override
     public View getView(int position) {
-        ColorView.text.setText(Utility.colorNames[position % Utility.colorNames.length]);
         ColorView.price.setText(Utility.COLOR_PRICE_S);
         ColorView.shaderProgram = shaderPrograms[position];
 
@@ -136,9 +132,6 @@ public class ColorAdapter extends Adapter {
 
         @Override
         public void draw(float relX, float relY, float parentRight, float parentTop) {
-            final float textY = relY + (h / 2);
-            text.draw(relX + pad + pad + scale, textY, parentRight, parentTop);
-
             final float center = relY + (h / 2);
             final float priceY = center + (pad / 2);
             final float priceX = w - price.w;

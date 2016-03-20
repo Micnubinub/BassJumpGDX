@@ -30,11 +30,10 @@ public class Utility {
     public static final String CHECKOUT_OUR_OTHER_APPS = "CHECKOUT_OUR_OTHER_APPS";
 
     public static final Random rand = new Random();
-    public static final int[] colors = new int[]{0xff292929, 0xffe84e40, 0xffe51c23, 0xffd01716, 0xfff06292, 0xffe91e63, 0xffc2185b, 0xff738ffe, 0xff5677fc, 0xff455ede, 0xff5c6bc0, 0xff3f51b5, 0xff303f9f, 0xff42bd41, 0xff259b24, 0xff0a7e07, 0xff32cd32, 0xfffff176, 0xffffeb3b, 0xfffdd835, 0xffffa726, 0xfffb8c00, 0xffe65100, 0xffab47bc, 0xff9c27b0, 0xff7b1fa2, 0xff000000, 0xff535353, 0xff292929, 0xff69661d, 0xff53461a, 0xffffffff};
+    public static final int[] colors = new int[]{0xff738ffe, 0xff5677fc, 0xff455ede, 0xff303f9f, 0xff535353, 0xff53461a, 0xff292929, 0xff000000, 0xffe51c23, 0xffd01716, 0xffc2185b, 0xff32cd32, 0xff42bd41, 0xff259b24, 0xff0a7e07, 0xffe65100, 0xffab47bc, 0xff9c27b0, 0xff7b1fa2, 0xffffffff};
     public static final int[] shapePrices = new int[]{0, 600, 1500, 2500, 10000, 12000, 15000};
     public static final String[] shapePricesS = new String[]{"0", "600", "1500", "2500", "10000", "12000", "15000"};
     public static final String[] shapeNames = new String[]{"Rectangle", "Circle", "Hexagon", "Triangle", "Pentagon", "Shuriken", "Pentagram"};
-    public static final String[] colorNames = new String[]{"White", "Light red", "Red", "Dark red", "Light pink", "Pink", "Dark pink", "Light Blue", "Blue", "Dark blue", "Light indigo", "Indigo", "Dark indigo", "Light green", "Green", "Dark green", "Lime Green", "Light yellow", "Yellow", "Dark yellow", "Light orange", "Orange", "Dark orange", "Light Purple", "Purple", "Dark Purple", "Vortex Black", "Tesla", "Incog", "21", "Chocolate"};
     public static final GlyphLayout glyphLayout = new GlyphLayout();
     private static final int[] ints = new int[2];
     private static final Color c = new Color();
@@ -143,6 +142,7 @@ public class Utility {
     }
 
     public static void addBoughtColors(int tag) {
+        print("addBoughtC");
         final StringBuilder builder = new StringBuilder();
         builder.append(getBoughtColors());
         if (builder.toString().length() > 1)
@@ -228,7 +228,10 @@ public class Utility {
     }
 
     public static void openLink(String link) {
-        Gdx.net.openURI(link);
+        try {
+            Gdx.net.openURI(link);
+        } catch (Exception e) {
+        }
     }
 
     public static String formatNumber(int i) {

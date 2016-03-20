@@ -27,9 +27,9 @@ public class BuyButton extends TextView {
     public static void init() {
         if (isInit)
             return;
-        buy = Utility.getBuyButtonShaderProgram(0xffbb00ff);
-        cannotBuy = Utility.getBuyButtonShaderProgram(0xff00bbff);
-        equip = Utility.getBuyButtonShaderProgram(0x00ffbbff);
+        buy = Utility.getBuyButtonShaderProgram(0x4CAF50ff);
+        cannotBuy = Utility.getBuyButtonShaderProgram(0xF44336ff);
+        equip = Utility.getBuyButtonShaderProgram(0x2196F3ff);
 
         isInit = true;
     }

@@ -2,8 +2,6 @@ package tbs.bassjump.ui;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-import java.util.Arrays;
-
 import tbs.bassjump.Game;
 import tbs.bassjump.GameValues;
 import tbs.bassjump.Utility;
@@ -36,7 +34,6 @@ public class ShapesAdapter extends Adapter {
             buyButton.setTextScale(Utility.getScale(GameValues.TITLE_HEIGHT * 0.7f));
             buyButtons[i] = buyButton;
         }
-        Utility.print("shapes > " + Arrays.toString(itemsBought));
     }
 
     public static void refreshRegions() {

@@ -179,8 +179,8 @@ public class Player extends GameObject {
                 }
                 break;
             case JUMPING:
-                playerJumpPercentage = (xPos - GameValues.PLATFORM_WIDTH - scale) / playerJumpDistance;
-                Utility.print("Jumping : " + GameValues.PLAYER_JUMP_SPEED_MULT);
+                playerJumpPercentage = (xPos) / playerJumpDistance;
+                Utility.print("jumpPerc: " + playerJumpPercentage);
                 if (goingRight) { // RIGHT
                     xPos += GameValues.PLAYER_JUMP_SPEED;
 
@@ -201,6 +201,8 @@ public class Player extends GameObject {
                             startDying();
                     }
                 }
+
+
                 break;
         }
     }
@@ -417,8 +419,6 @@ public class Player extends GameObject {
 
         //Todo fix rotation
         final float rotation = (float) (playerJumpPercentage * 180);
-//        if (Utility.customBool(8))
-        Utility.print("ro: " + rotation);
         playerTexture.setOriginCenter();
         playerTexture.setRotation(rotation);
         playerTexture.setSize(scale, scale);

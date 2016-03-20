@@ -102,7 +102,6 @@ public class GameValues {
         TITLE_HEIGHT = Game.w / 13;
         SHAPE_WIDTH = Game.h / 8;
         CORNER_SCALE = Game.w / 42;
-
     }
 
 }
