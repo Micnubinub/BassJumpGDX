@@ -76,7 +76,7 @@ public class GameValues {
         SPLASH_MIN_SCALE = PLAYER_SCALE / 26;
         SPLASH_MAX_SCALE = (int) (SPLASH_MIN_SCALE * 5.25f);
         DEATH_GAP = Game.w;
-        STROKE_WIDTH = Game.w / 50;
+        STROKE_WIDTH = Game.w / 52;
         // INTERFACE:
         BUTTON_SCALE = (int) (Game.w / 6.0f);
         BUTTON_PADDING = (int) (BUTTON_SCALE / 4.5f);

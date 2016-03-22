@@ -2,6 +2,8 @@ package tbs.bassjump.ui;
 
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
+import java.util.Arrays;
+
 import tbs.bassjump.Game;
 import tbs.bassjump.GameValues;
 import tbs.bassjump.Utility;
@@ -38,10 +40,11 @@ public class ColorAdapter extends Adapter {
         if (itemsBought == null)
             itemsBought = new boolean[Utility.colors.length];
 
-        final String[] boughtColors = Utility.getBoughtColors();
+        final String[] boughtColors = Utility.getBoughtColors().split(Utility.SEP);
+        Utility.print(Arrays.toString(boughtColors));
         buyButtons = new BuyButton[Utility.colors.length];
         for (int i = 0; i < Utility.colors.length; i++) {
-            itemsBought[i] = Utility.contains(boughtColors, String.valueOf(i));
+            itemsBought[i] = i == 0 || Utility.contains(boughtColors, String.valueOf(i));
             final BuyButton buyButton = new BuyButton(i);
             buyButton.setTextScale(Utility.getScale(GameValues.TITLE_HEIGHT * 0.7f));
             buyButtons[i] = buyButton;

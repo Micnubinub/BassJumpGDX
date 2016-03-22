@@ -80,10 +80,9 @@ public class TextView extends View {
 
     @Override
     public boolean click(int xPos, int yPos) {
-        yPos = Game.h - yPos;
         //Todo
         rect.set(x, y, w, GameValues.TITLE_HEIGHT);
-        return rect.contains(xPos, yPos - h);
+        return rect.contains(xPos, Game.h - yPos - GameValues.TITLE_HEIGHT);
     }
 
     @Override

@@ -48,6 +48,7 @@ public class Pages extends ViewPager {
             case 0:
                 return colors;
             case 1:
+                Game.spriteBatch.setShader(Game.shaderProgram);
                 return cars;
         }
         return null;

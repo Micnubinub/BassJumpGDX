@@ -6,7 +6,6 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -88,7 +87,7 @@ stderrFifo = ""
     //    private static final ArrayList<ValueAnimator> animations = new ArrayList<ValueAnimator>(10);
     public static int w, h;
     public static SpriteBatch spriteBatch;
-    public static float delta;
+    public static float delta, coinTextTop;
     public static Dialog shop;
     public static ShaderProgram shaderProgram;
     public static OrthographicCamera camera;
@@ -121,9 +120,9 @@ stderrFifo = ""
         ambientMusic = Gdx.audio.newMusic(Gdx.files.internal("song1.mp3"));
         ambientMusic.setLooping(true);
         GameController.init();
+        Utility.equipColor(Utility.getEquippedColor());
         BuyButton.init();
         Player.setPlayerSprite();
-        Particle.particle = new Sprite(BitmapLoader.particle);
         disposeCalled = false;
     }
 
@@ -238,7 +237,7 @@ stderrFifo = ""
                                   boolean drawBottom) {
         //Test
         if (drawLeft)
-            spriteBatch.draw(region, x, y, GameValues.STROKE_WIDTH, h);
+            spriteBatch.draw(region, x, y - GameValues.STROKE_WIDTH, GameValues.STROKE_WIDTH, h);
 
         if (drawRight)
             spriteBatch.draw(region, x + w, y, GameValues.STROKE_WIDTH, h);
@@ -247,7 +246,7 @@ stderrFifo = ""
             spriteBatch.draw(region, x, y, w, GameValues.STROKE_WIDTH);
 
         if (drawBottom)
-            spriteBatch.draw(region, x, (y + h), w, GameValues.STROKE_WIDTH);
+            spriteBatch.draw(region, x, (y + h - GameValues.STROKE_WIDTH), w, GameValues.STROKE_WIDTH);
     }
 
     private static void checkAchievements() {
@@ -533,7 +532,6 @@ stderrFifo = ""
     public void render() {
         clear();
         update();
-
         spriteBatch.begin();
         onDraw();
         spriteBatch.end();
@@ -600,19 +598,15 @@ stderrFifo = ""
             spriteBatch.setShader(shaderProgram);
             if (player.paintTrail.get(i).active) {
                 spriteBatch.draw(BitmapLoader.particle, player.paintTrail.get(i).xPos,
-                        player.paintTrail.get(i).yPos,
-                        GameValues.STROKE_WIDTH,
+                        player.paintTrail.get(i).yPos, GameValues.STROKE_WIDTH,
                         player.paintTrail.get(i).height);
             }
 
-            if (player.paintTrail.get(i).isRight() != player.goingRight
-                    && alphaM > 0) {
-
+            if (player.paintTrail.get(i).isRight() != player.goingRight && alphaM > 0) {
                 //Todo flash
                 c.a = alphaM / 255f;
                 spriteBatch.draw(BitmapLoader.paintFlash, player.paintTrail.get(i).xPos,
-                        player.paintTrail.get(i).yPos,
-                        GameValues.PAINT_THICKNESS,
+                        player.paintTrail.get(i).yPos, GameValues.PAINT_THICKNESS,
                         player.paintTrail.get(i).height);
             }
         }
@@ -687,10 +681,12 @@ stderrFifo = ""
             txt = Utility.formatNumber(coins);
             textSize = Utility.measureText(txt, 0.3f);
 
-            final float coinsY = h - storeBtn.yPos - storeBtn.scale + (textSize[1] / 2);
-            final float coinTextPosCenterX = storeBtn.xPos - GameValues.BUTTON_PADDING - (textSize[0] / 2);
+            final float coinsY = h - soundBtn.yPos - soundBtn.scale + (textSize[1] / 2);
+            final float coinTextPosCenterX = (w / 2) + (textSize[0] / 2);
             Utility.drawCenteredText(spriteBatch, c, txt, coinTextPosCenterX,
                     coinsY, 0.3f);
+
+            coinTextTop = coinsY + textSize[1];
 
             spriteBatch.draw(BitmapLoader.coin, coinTextPosCenterX - (Utility.glyphLayout.width / 2) - (GameValues.COIN_SCALE * 2.4f),
                     coinsY - (GameValues.COIN_SCALE * 0.7f), GameValues.COIN_SCALE * 2, GameValues.COIN_SCALE * 2);

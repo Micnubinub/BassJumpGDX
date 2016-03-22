@@ -127,7 +127,7 @@ public class Dialog extends View {
 
         final int top = Game.h - pad - scale - pad;
         x = pad;
-        y = pad;
+        y = Game.coinTextTop + (pad / 8);
         w = Game.w - pad - pad;
         h = top - pad;
 
@@ -164,10 +164,6 @@ public class Dialog extends View {
         final int scale = GameValues.CORNER_SCALE;
 
         final int top = Game.h - pad - scale - pad;
-        x = pad;
-        y = pad;
-        w = Game.w - pad - pad;
-        h = top - pad + scale;
 
         colorTitle.setTextColor((pages.getCurrentPage() == 0) ? 0xffffffff : 0xaaaaaaff);
         shapeTitle.setTextColor((pages.getCurrentPage() == 1) ? 0xffffffff : 0xaaaaaaff);
@@ -175,17 +171,17 @@ public class Dialog extends View {
         setCornerVals(pad, top, 0);
         corner.draw(Game.spriteBatch);
 
-        setCornerVals(pad, pad, 90);
+        setCornerVals(pad, y, 90);
         corner.draw(Game.spriteBatch);
 
         setCornerVals(Game.w - pad - scale, top, 270);
         corner.draw(Game.spriteBatch);
 
-        setCornerVals(Game.w - pad - scale, pad, 180);
+        setCornerVals(Game.w - pad - scale, y, 180);
         corner.draw(Game.spriteBatch);
 
-        Game.spriteBatch.draw(BitmapLoader.rect, pad, pad + scale, Game.w - pad - pad, top - pad - scale);
-        Game.spriteBatch.draw(BitmapLoader.rect, pad + scale, pad, Game.w - pad - scale - pad - scale, top - pad + scale);
+        Game.spriteBatch.draw(BitmapLoader.rect, pad, y + scale, Game.w - pad - pad, top - y - scale);
+        Game.spriteBatch.draw(BitmapLoader.rect, pad + scale, y, Game.w - pad - scale - pad - scale, top - y + scale);
         close.xPos = Game.w - pad - (GameValues.DIALOG_CLOSE_BUTTON_SCALE / 2);
         close.yPos = top - (scale / 2) - pad + (GameValues.DIALOG_CLOSE_BUTTON_SCALE / 2);
     }

@@ -13,7 +13,7 @@ import tbs.bassjump.managers.BitmapLoader;
  */
 public class ShapesAdapter extends Adapter {
     public static BuyButton[] buyButtons;
-    private static CarView carView = new CarView();
+    private static ShapeView shapeView = new ShapeView();
     private static TextureRegion[] regions;
     private static boolean[] itemsBought;
     private static int equippedItem;
@@ -26,10 +26,10 @@ public class ShapesAdapter extends Adapter {
 
         refreshRegions();
         //Todo convert int int[] later
-        final String[] boughtCars = Utility.getBoughtShapes();
+        final String[] boughtCars = Utility.getBoughtShapes().split(Utility.SEP);
         buyButtons = new BuyButton[regions.length];
         for (int i = 0; i < regions.length; i++) {
-            itemsBought[i] = Utility.contains(boughtCars, String.valueOf(i));
+            itemsBought[i] = i == 0 || Utility.contains(boughtCars, String.valueOf(i));
             final BuyButton buyButton = new BuyButton(i);
             buyButton.setTextScale(Utility.getScale(GameValues.TITLE_HEIGHT * 0.7f));
             buyButtons[i] = buyButton;
@@ -71,15 +71,12 @@ public class ShapesAdapter extends Adapter {
 
     @Override
     public View getView(int position) {
-        CarView.text.setText(Utility.shapeNames[position]);
-        CarView.price.setText(Utility.shapePricesS[position]);
-        if (regions == null) {
-        }
-        CarView.region = regions[position];
+        ShapeView.text.setText(Utility.shapeNames[position]);
+        ShapeView.price.setText(Utility.shapePricesS[position]);
+        ShapeView.region = regions[position];
         final BuyButton buyButton = buyButtons[position];
         try {
             if (itemsBought[position]) {
-
                 if (equippedItem == position) {
                     buyButton.setText("EQUIPPED");
                     buyButton.setButtonMode(BuyButton.EQUIPPED);
@@ -91,30 +88,31 @@ public class ShapesAdapter extends Adapter {
                 buyButton.setText("BUY");
                 buyButton.setButtonMode((Game.coins < Utility.shapePrices[position]) ? BuyButton.CANNOT_BUY : BuyButton.BUY);
             }
-            CarView.buyButton = buyButton;
+            ShapeView.buyButton = buyButton;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return carView;
+        return shapeView;
     }
 
     public void dispose() {
 
     }
 
-    private static class CarView extends View {
+    private static class ShapeView extends View {
         public static final TextView price = new TextView();
         public static final TextView text = new TextView(TextView.Gravity.LEFT);
         public static BuyButton buyButton;
         public static TextureRegion region;
-        private static int pad, scale;
+        private static float pad, scale, shapeScale, shapeXY;
 
-        public CarView() {
+        public ShapeView() {
             text.setTextColor(0xffffffff);
             pad = (int) (GameValues.SHAPE_WIDTH * 0.08f);
-            h = GameValues.SHAPE_WIDTH + pad + pad;
-
-            scale = GameValues.SHAPE_WIDTH;
+            scale = (GameValues.SHAPE_WIDTH);
+            shapeScale = scale * 0.72f;
+            shapeXY = (scale - shapeScale) / 2;
+            h = scale + pad + pad;
 
             text.setTextScale(Utility.getScale(GameValues.TITLE_HEIGHT * 0.7f));
             price.setTextScale(Utility.getScale(GameValues.TITLE_HEIGHT * 0.7f));
@@ -123,7 +121,7 @@ public class ShapesAdapter extends Adapter {
         @Override
         public void draw(float relX, float relY, float parentRight, float parentTop) {
             final float textY = relY + (h / 2);
-            text.draw(relX + pad + pad + GameValues.SHAPE_WIDTH, textY, parentRight, parentTop);
+            text.draw(relX + pad + pad + scale, textY, parentRight, parentTop);
 
             final float center = relY + (h / 2);
             final float priceY = center + (pad / 2);
@@ -133,7 +131,7 @@ public class ShapesAdapter extends Adapter {
             buyButton.draw(w - buyButton.w, priceY - (pad) - (buyButton.h / 2) - GameValues.CORNER_SCALE, parentRight, parentTop);
             Game.spriteBatch.setShader(Game.shaderProgram);
 
-            Game.spriteBatch.draw(region, relX + x + pad, relY + y + pad, GameValues.SHAPE_WIDTH, GameValues.SHAPE_WIDTH);
+            Game.spriteBatch.draw(region, relX + x + pad + shapeXY, relY + y + pad + shapeXY, shapeScale, shapeScale);
             Game.spriteBatch.setShader(null);
         }
 

@@ -69,7 +69,7 @@ public class Player extends GameObject {
         for (int i = 0; i < 12; i++) {
             splashParticles2.add(new Particle());
         }
-        playerJumpDistance = Game.w - (GameValues.PLATFORM_WIDTH * 2) + GameValues.STROKE_WIDTH - scale;
+        playerJumpDistance = Game.w - (GameValues.PLATFORM_WIDTH * 2) - scale;
         Utility.equipShape(Utility.getEquippedShape());
     }
 
@@ -179,8 +179,8 @@ public class Player extends GameObject {
                 }
                 break;
             case JUMPING:
-                playerJumpPercentage = (xPos) / playerJumpDistance;
-                Utility.print("jumpPerc: " + playerJumpPercentage);
+                playerJumpPercentage = (xPos - GameValues.PLATFORM_WIDTH) / playerJumpDistance;
+
                 if (goingRight) { // RIGHT
                     xPos += GameValues.PLAYER_JUMP_SPEED;
 
@@ -299,18 +299,14 @@ public class Player extends GameObject {
     public boolean canPaint() {
         boolean fine = false;
         if (goingRight) {
-            for (Platform p : Game.level.platformsRight) {
-                if (yPos >= p.yPos
-                        && yPos + scale <= p.yPos + GameValues.PLATFORM_HEIGHT
-                        * 1.15f) {
+            for (final Platform p : Game.level.platformsRight) {
+                if (yPos >= p.yPos && yPos + scale <= p.yPos + GameValues.PLATFORM_HEIGHT * 1.15f) {
                     fine = true;
                 }
             }
         } else {
-            for (Platform p : Game.level.platformsLeft) {
-                if (yPos >= p.yPos
-                        && yPos + scale <= p.yPos + GameValues.PLATFORM_HEIGHT
-                        * 1.15f) {
+            for (final Platform p : Game.level.platformsLeft) {
+                if (yPos >= p.yPos && yPos + scale <= p.yPos + GameValues.PLATFORM_HEIGHT * 1.15f) {
                     fine = true;
                 }
             }
@@ -355,7 +351,6 @@ public class Player extends GameObject {
         xPos = xPos < GameValues.PLATFORM_WIDTH ? GameValues.PLATFORM_WIDTH : xPos;
         xPos = xPos > Game.w - GameValues.PLATFORM_WIDTH + GameValues.PAINT_THICKNESS - scale ?
                 Game.w - GameValues.PLATFORM_WIDTH + GameValues.STROKE_WIDTH - scale : xPos;
-
 
         // COIN BONUS:
         if (score >= 50) {
@@ -416,7 +411,6 @@ public class Player extends GameObject {
     }
 
     public void draw(SpriteBatch canvas) {
-
         //Todo fix rotation
         final float rotation = (float) (playerJumpPercentage * 180);
         playerTexture.setOriginCenter();
@@ -431,10 +425,10 @@ public class Player extends GameObject {
 //            playerTexture.setColor(c);
 //            playerTexture.draw(canvas);
 //        }
-
         // SPLASH
         for (int i = 0; i < splashParticles1.size(); i++) {
             splashParticles1.get(i).draw(Game.spriteBatch);
+
         }
         for (int i = 0; i < splashParticles2.size(); i++) {
             splashParticles2.get(i).draw(Game.spriteBatch);

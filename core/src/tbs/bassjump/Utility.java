@@ -30,7 +30,14 @@ public class Utility {
     public static final String CHECKOUT_OUR_OTHER_APPS = "CHECKOUT_OUR_OTHER_APPS";
 
     public static final Random rand = new Random();
-    public static final int[] colors = new int[]{0xff738ffe, 0xff5677fc, 0xff455ede, 0xff303f9f, 0xff535353, 0xff53461a, 0xff292929, 0xff000000, 0xffe51c23, 0xffd01716, 0xffc2185b, 0xff32cd32, 0xff42bd41, 0xff259b24, 0xff0a7e07, 0xffe65100, 0xffab47bc, 0xff9c27b0, 0xff7b1fa2, 0xffffffff};
+    //    public static final int[] colors = new int[]{0xff738ffe, 0xff5677fc, 0xff455ede, 0xff303f9f, 0xff535353, 0xff53461a, 0xff292929, 0xff000000, 0xffe51c23, 0xffd01716, 0xffc2185b, 0xff32cd32, 0xff42bd41, 0xff259b24, 0xff0a7e07, 0xffe65100, 0xffab47bc, 0xff9c27b0, 0xff7b1fa2, 0xffffffff};
+    public static final int[] colors = new int[]{0xEF5350ff, 0xF44336ff, 0xE53935ff, 0xEC407Aff, 0xE91E63ff, 0xD81B60ff,
+            0xAB47BCff, 0x9C27B0ff, 0x8E24AAff, 0x7E57C2ff, 0x673AB7ff, 0x5E35B1ff,
+            0x5C6BC0ff, 0x3F51B5ff, 0x3949ABff, 0x42A5F5ff, 0x2196F3ff, 0x1E88E5ff,
+            0x26A69Aff, 0x009688ff, 0x00897Bff, 0x66BB6Aff, 0x4CAF50ff, 0x43A047ff,
+            0xD4E157ff, 0xCDDC39ff, 0xC0CA33ff, 0xFFEE58ff, 0xFFEB3Bff, 0xFDD835ff,
+            0xFFCA28ff, 0xFFC107ff, 0xFFB300ff, 0xFFA726ff, 0xFF9800ff, 0xFB8C00ff,
+            0xFF7043ff, 0xFF5722ff, 0xF4511Eff, 0xffffffff};
     public static final int[] shapePrices = new int[]{0, 600, 1500, 2500, 10000, 12000, 15000};
     public static final String[] shapePricesS = new String[]{"0", "600", "1500", "2500", "10000", "12000", "15000"};
     public static final String[] shapeNames = new String[]{"Rectangle", "Circle", "Hexagon", "Triangle", "Pentagon", "Shuriken", "Pentagram"};
@@ -105,18 +112,18 @@ public class Utility {
     }
 
 
-    public static String[] getBoughtShapes() {
-        return getString(BOUGHT_SHAPES).split(SEP);
+    public static String getBoughtShapes() {
+        return getString(BOUGHT_SHAPES);
     }
 
-    public static String[] getBoughtColors() {
-        return getString(BOUGHT_COLORS).split(SEP);
+    public static String getBoughtColors() {
+        return getString(BOUGHT_COLORS);
     }
 
     public static void equipColor(int index) {
         saveInt(EQUIPPED_COLOR, index);
-//        dispose(Game.shaderProgram);
-//        Game.shaderProgram = getCarShaderProgram(light[index], dark[index]);
+        dispose(Game.shaderProgram);
+        Game.shaderProgram = getCircleViewShaderProgram(colors[index]);
     }
 
     public static boolean contains(String[] array, String item) {
@@ -272,9 +279,9 @@ public class Utility {
                         + "void main() {\n"
                         + "  vec4 v_c = v_color * texture2D(u_texture, v_texCoords);\n"
                         + "  if (v_c.a > 0.95) { \n"
-                        + " if ((v_c.r + 0.3 > 0.0 && v_c.r - 0.3 < 0.0)"
-                        + "&& (v_c.g + 0.3 > 0.0 && v_c.g - 0.3 < 0.0)"
-                        + "&& (v_c.b + 0.3 > 0.0 && v_c.b - 0.3 < 0.0)){\n"
+                        + "  if ((v_c.r < 0.1)"
+                        + "    && (v_c.g <0.1)"
+                        + "    && (v_c.b <0.1)){\n"
                         + "           v_c.r = %f;\n"
                         + "           v_c.g = %f;\n"
                         + "           v_c.b = %f;\n"
@@ -294,6 +301,43 @@ public class Utility {
         }
         return p;
     }
+
+//    public static ShaderProgram getShapeShaderProgram(int color) {
+//        c.set(color);
+//        final String fragmentShader = String.format("#ifdef GL_ES\n"
+//                        + "#define LOWP lowp\n"
+//                        + "precision mediump float;\n"
+//                        + "#else\n"
+//                        + "#define LOWP \n"
+//                        + "#endif\n"
+//                        + "varying LOWP vec4 v_color;\n"
+//                        + "varying vec2 v_texCoords;\n"
+//                        + "uniform sampler2D u_texture;\n"
+//                        + "void main() {\n"
+//                        + "  vec4 v_c = v_color * texture2D(u_texture, v_texCoords);\n"
+//                        + "  if (v_c.a > 0.95) { \n"
+//                        + " if ((v_c.r + 0.3 > 0.0 && v_c.r - 0.3 < 0.0)"
+//                        + "&& (v_c.g + 0.3 > 0.0 && v_c.g - 0.3 < 0.0)"
+//                        + "&& (v_c.b + 0.3 > 0.0 && v_c.b - 0.3 < 0.0)){\n"
+//                        + "           v_c.r = %f;\n"
+//                        + "           v_c.g = %f;\n"
+//                        + "           v_c.b = %f;\n"
+//                        + "         } \n"
+//                        + "  } \n"
+//                        + "  gl_FragColor = v_c;\n"
+//                        + "}"
+//                //Todo all colors are argb instead of rgba, so this is special >> its equivalent to
+//                //todo : c.r, c.g, c.b, c2.r, c2.g, c2.b
+//                , c.r, c.g, c.b);
+//
+//        final ShaderProgram p = new ShaderProgram(vertexShader, fragmentShader);
+//        if (!p.isCompiled()) {
+//            Gdx.app.error("getCarShaderProgram failed", p.getLog());
+//            dispose(p);
+//            return null;
+//        }
+//        return p;
+//    }
 
     public static ShaderProgram getBuyButtonShaderProgram(int color) {
         c.set(color);
