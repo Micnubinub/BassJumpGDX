@@ -33,16 +33,16 @@ public class Particle {
     public void setup(int x, float y, boolean right) {
         this.x = x;
         this.y = y;
-        this.state = Particle.STATE_ALIVE;
-        this.width = Utility.randFloat(GameValues.SPLASH_MIN_SCALE, GameValues.SPLASH_MAX_SCALE);
-        this.height = this.width;
+        state = Particle.STATE_ALIVE;
+        width = Utility.randFloat(GameValues.SPLASH_MIN_SCALE, GameValues.SPLASH_MAX_SCALE);
+        height = width;
         setUpTime = System.currentTimeMillis();
-        this.age = 0;
-        this.xv = (Utility.randFloat(GameValues.SPEED_FACTOR / 2, GameValues.SPEED_FACTOR));
+        age = 0;
+        xv = (Utility.randFloat(GameValues.SPEED_FACTOR / 2, GameValues.SPEED_FACTOR));
         if (!right)
-            this.xv *= -1;
+            xv *= -1;
 
-        this.yv = (Utility.randInt(-GameValues.SPEED_FACTOR, GameValues.SPEED_FACTOR));
+        yv = (Utility.randInt(-GameValues.SPEED_FACTOR, (int) (GameValues.SPEED_FACTOR * 1.6f)));
         // smoothing out the diagonal speed
         xv *= 0.85;
         yv *= 0.85;
@@ -62,7 +62,8 @@ public class Particle {
                 }
             }
 
-            y += ((Game.h / 80f) * ((Game.delta / 17f) + (0.1 * a)));
+            yv -= GameValues.SPEED_FACTOR * 0.1f;
+            y -= yv;
             if ((System.currentTimeMillis() - setUpTime) >= DEFAULT_LIFETIME || y > Game.h) {
                 a = 0;
                 state = STATE_DEAD;
@@ -72,7 +73,7 @@ public class Particle {
 
     public void draw(SpriteBatch canvas) {
         if (state == STATE_ALIVE) {
-            canvas.draw(BitmapLoader.particle, x, Game.h - y, width, height);
+            canvas.draw(BitmapLoader.paintFlash, x, Game.h - y, width, height);
         }
     }
 }

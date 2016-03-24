@@ -15,7 +15,9 @@ import java.util.Random;
 
 import tbs.bassjump.animation.MovingText;
 import tbs.bassjump.levels.Level;
+import tbs.bassjump.levels.Platform;
 import tbs.bassjump.managers.BitmapLoader;
+import tbs.bassjump.objects.PaintParticle;
 import tbs.bassjump.objects.Particle;
 import tbs.bassjump.objects.Player;
 import tbs.bassjump.ui.BuyButton;
@@ -24,24 +26,7 @@ import tbs.bassjump.utility.GameObject;
 import tbs.bassjump.utility.ValueAnimator;
 
 public class Game extends ApplicationAdapter {
-    /* Todo 'security find-identity -v -p codesigning' for iosSignIdentity
 
-  robovm {
- Configure robovm
-iosSignIdentity = "LZU8BZAM9B.the.bigshots.lostplanet"
-iosProvisioningProfile = "path/to/profile"
-iosSkipSigning = false
-stdoutFifo = ""
-stderrFifo = ""
-}
- packaging for any platform navigate to the root
- packaging desktop version>> gradlew desktop:dist
- packaging android version>> gradlew android:assembleRelease
- linux/ios chmod 755 gradlew
- packaging ios version>> gradlew ios:createIPA
- packaging web version>> gradlew html:dist
- TextureAtlas.AtlasRegion region = new TextureAtlas.AtlasRegion(colorTexture, x, y, width, height)
- bring for the following classes > Screen, Utility*/
     //Todo make everything a texture >> walls > 1x1 opaque, 'rain particles' 1x1 translucent ** group with sprites.png
     //Todo make order of drawing 1) walls, player, rain particle 2)menu, text >> group textures
     // PAINTER:
@@ -65,7 +50,6 @@ stderrFifo = ""
     public static GameObject soundBtn;
     public static GameObject achievBtn;
     public static GameObject shareBtn;
-    public static String[] songs;
     // COLORS:
     public static int color; // CHANGE TO INT
     // STORE
@@ -78,10 +62,8 @@ stderrFifo = ""
     public static String scoreText;
     public static boolean drawTop;
     public static boolean drawBottom;
-    public static boolean prepared;
     // SOUND && VISUALIZER:
     public static Music ambientMusic;
-    public static int numberOfPlayNextSongRetries;
     public static float scoreTextMult;
     public static boolean showAds, disposeCalled = true;
     //    private static final ArrayList<ValueAnimator> animations = new ArrayList<ValueAnimator>(10);
@@ -89,33 +71,28 @@ stderrFifo = ""
     public static SpriteBatch spriteBatch;
     public static float delta, coinTextTop;
     public static Dialog shop;
-    public static ShaderProgram shaderProgram;
+    public static ShaderProgram shaderProgram, flash;
     public static OrthographicCamera camera;
     public static int coins;
-    private static String currSong;
     // MOVING TEXTS:
     private static ArrayList<MovingText> animatedTexts; // ANIMATED TEXT LIST
     private static int animatedTextIndex; // WHICH TEXT TO USE
     // INTERFACE:
     private static GameObject scoreDisplay;
     // GLOBAL PARTICLES:
-    private static int circleIndex;
-    private static ArrayList<ShaderProgram> shaderPrograms;
     private static ArrayList<ValueAnimator> animators = new ArrayList<ValueAnimator>();
-    // ANIMATION
-//    private static String songName;
     // INTRO
     private static int introDelay;
     private static int loadProg;
     private static int loadWidth;
     // RANKING:
-//    private static LeaderboardScore leaderboard;
+    // private static LeaderboardScore leaderboard;
     private static BitmapLoader bitmapLoader;
 
     public static void initDisposables() {
         if (!disposeCalled)
             return;
-        spriteBatch = new SpriteBatch();
+        spriteBatch = new SpriteBatch(1);
         bitmapLoader = new BitmapLoader();
         ambientMusic = Gdx.audio.newMusic(Gdx.files.internal("song1.mp3"));
         ambientMusic.setLooping(true);
@@ -378,11 +355,6 @@ stderrFifo = ""
         }
     }
 
-    public static void beginSpriteBatch() {
-
-        if (!spriteBatch.isDrawing())
-            spriteBatch.begin();
-    }
 
     private static void updateCamera(boolean yDown) {
         camera.setToOrtho(yDown);
@@ -430,7 +402,7 @@ stderrFifo = ""
 
         // M:
         if (alphaM > 0) {
-            alphaM -= 15;
+            alphaM -= 15 * (delta / 30f);
             if (alphaM < 0)
                 alphaM = 0;
         }
@@ -541,74 +513,34 @@ stderrFifo = ""
         updateCamera(true);
 
         // PLATFORMS:
-        for (int i = 0; i < level.platformsRight.size(); ++i) {
+        for (final Platform platform : level.platformsRight) {
             drawTop = true;
             drawBottom = true;
-            if (level.platformsRight.get(i).hasNext
-                    || state != GameState.Playing) {
+            if (platform.hasNext || state != GameState.Playing) {
                 drawTop = false;
             }
-            if (level.platformsRight.get(i).hasPrevious
-                    || state != GameState.Playing) {
+            if (platform.hasPrevious || state != GameState.Playing) {
                 drawBottom = false;
             }
 
-            rectangle(BitmapLoader.platform, level.platformsRight.get(i).xPos,
-                    level.platformsRight.get(i).yPos,
-                    GameValues.PLATFORM_WIDTH, GameValues.PLATFORM_HEIGHT,
+            rectangle(BitmapLoader.platform, platform.xPos,
+                    platform.yPos, GameValues.PLATFORM_WIDTH, GameValues.PLATFORM_HEIGHT,
                     false, true, drawTop, drawBottom);
-
-            if (player.goingRight && alphaM > 0) {
-                //Todo flash
-                c.a = alphaM / 255f;
-                rectangle(BitmapLoader.platformFlash, level.platformsRight.get(i).xPos,
-                        level.platformsRight.get(i).yPos,
-                        GameValues.PLATFORM_WIDTH, GameValues.PLATFORM_HEIGHT,
-                        false, true, drawTop, drawBottom);
-            }
         }
 
-        for (int i = 0; i < level.platformsLeft.size(); ++i) {
+        for (final Platform platform : level.platformsLeft) {
             drawTop = true;
             drawBottom = true;
-            if (level.platformsLeft.get(i).hasNext
-                    || state != GameState.Playing) {
+            if (platform.hasNext || state != GameState.Playing) {
                 drawTop = false;
             }
-            if (level.platformsLeft.get(i).hasPrevious
-                    || state != GameState.Playing) {
+            if (platform.hasPrevious || state != GameState.Playing) {
                 drawBottom = false;
             }
-            rectangle(BitmapLoader.platform, level.platformsLeft.get(i).xPos,
-                    level.platformsLeft.get(i).yPos, GameValues.PLATFORM_WIDTH,
-                    GameValues.PLATFORM_HEIGHT, true, false, drawTop,
-                    drawBottom);
-            if (!player.goingRight && alphaM > 0) {
-                //Todo flash
-                c.a = alphaM / 255f;
-                rectangle(BitmapLoader.platformFlash, level.platformsLeft.get(i).xPos,
-                        level.platformsLeft.get(i).yPos,
-                        GameValues.PLATFORM_WIDTH, GameValues.PLATFORM_HEIGHT,
-                        true, false, drawTop, drawBottom);
-            }
-        }
 
-        // PAINT
-        for (int i = 0; i < player.paintTrail.size(); ++i) {
-            spriteBatch.setShader(shaderProgram);
-            if (player.paintTrail.get(i).active) {
-                spriteBatch.draw(BitmapLoader.particle, player.paintTrail.get(i).xPos,
-                        player.paintTrail.get(i).yPos, GameValues.STROKE_WIDTH,
-                        player.paintTrail.get(i).height);
-            }
-
-            if (player.paintTrail.get(i).isRight() != player.goingRight && alphaM > 0) {
-                //Todo flash
-                c.a = alphaM / 255f;
-                spriteBatch.draw(BitmapLoader.paintFlash, player.paintTrail.get(i).xPos,
-                        player.paintTrail.get(i).yPos, GameValues.PAINT_THICKNESS,
-                        player.paintTrail.get(i).height);
-            }
+            rectangle(BitmapLoader.platform, platform.xPos, platform.yPos,
+                    GameValues.PLATFORM_WIDTH, GameValues.PLATFORM_HEIGHT,
+                    true, false, drawTop, drawBottom);
         }
 
         // SPEED PARTICLES
@@ -618,10 +550,27 @@ stderrFifo = ""
                     GameValues.SPEED_PARTICLE_HEIGHT);
         }
 
+        spriteBatch.flush();
+        final float alpha = (Game.alphaM / 255f);
+        Game.flash.begin();
+        Game.flash.setUniformf("u_alpha", alpha);
+        Game.flash.end();
+
+        // PAINT
+        for (final PaintParticle paintParticle : player.paintTrail) {
+            spriteBatch.setShader(shaderProgram);
+            if (paintParticle.active) {
+                spriteBatch.draw(BitmapLoader.particle, paintParticle.xPos, paintParticle.yPos, GameValues.STROKE_WIDTH, paintParticle.height);
+                if (((player.goingRight != paintParticle.goingRight) && (alphaM > 0))) {
+                    spriteBatch.setShader(flash);
+                    spriteBatch.draw(BitmapLoader.particle, paintParticle.xPos, paintParticle.yPos, GameValues.STROKE_WIDTH, paintParticle.height);
+                }
+            }
+
+        }
         updateCamera(false);
 
         // PLAYER:
-        beginSpriteBatch();
         player.draw(spriteBatch);
         for (int i = 0; i < animatedTexts.size(); ++i) {
             if (animatedTexts.get(i).active) {
@@ -631,9 +580,13 @@ stderrFifo = ""
             }
         }
 
+        spriteBatch.flush();
+
+        spriteBatch.setShader(null);
+
+
         if (state == GameState.Menu) {
             c.set(Color.WHITE);
-            beginSpriteBatch();
             spriteBatch.draw(BitmapLoader.leader, leaderBtn.xPos,
                     h - leaderBtn.yPos - leaderBtn.scale, leaderBtn.scale, leaderBtn.scale);
             spriteBatch.draw(BitmapLoader.achiv, rateBtn.xPos, h - rateBtn.yPos - rateBtn.scale, rateBtn.scale, rateBtn.scale);
@@ -731,7 +684,6 @@ stderrFifo = ""
             // RANK:
         } else if (state == GameState.Playing) {
             // SCORE
-            beginSpriteBatch();
             c.set(0xe5e4a0ff);
             final float scale = Utility.getScale((w / 4.1f) * scoreTextMult);
             float[] scoreTextSize = Utility.measureText("1", scale);
@@ -765,7 +717,6 @@ stderrFifo = ""
                     txt = ("NEW BEST!");
             }
 
-            txt = txt + " fps: " + Gdx.graphics.getFramesPerSecond();
             c.set(0xe5e4a0ff);
             Utility.drawCenteredText(spriteBatch, c, txt, (w / 2), h - scoreDisplay.yPos - scoreTextSize[1], Utility.getScale(w / 15.5f));
         }
@@ -774,7 +725,6 @@ stderrFifo = ""
         if (introShowing) {
             spriteBatch.draw(BitmapLoader.intro, 0, 0, w, h);
             c.set(0xe5e4a0ff);
-            beginSpriteBatch();
             Utility.drawCenteredText(spriteBatch, c, "The Big Shots", (w / 2),
                     h - (h / 2), Utility.getScale(w / 8));
             Utility.drawCenteredText(spriteBatch, c, "Thank you for Playing!", (w / 2),
@@ -797,11 +747,8 @@ stderrFifo = ""
         Utility.dispose(ambientMusic);
         Utility.dispose(spriteBatch);
         BuyButton.disposeShaders();
-        if (shaderPrograms != null) {
-            for (ShaderProgram shaderProgram : shaderPrograms) {
-                Utility.dispose(shaderProgram);
-            }
-        }
+        Utility.dispose(shaderProgram);
+        Utility.dispose(flash);
         Particle.particle = null;
         Utility.disposeFont();
         super.dispose();
@@ -810,7 +757,6 @@ stderrFifo = ""
     @Override
     public void resume() {
         super.resume();
-
         initDisposables();
     }
 

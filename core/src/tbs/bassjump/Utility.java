@@ -123,7 +123,9 @@ public class Utility {
     public static void equipColor(int index) {
         saveInt(EQUIPPED_COLOR, index);
         dispose(Game.shaderProgram);
+        dispose(Game.flash);
         Game.shaderProgram = getCircleViewShaderProgram(colors[index]);
+        Game.flash = getFlashhaderProgram(0xe5e475ff);
     }
 
     public static boolean contains(String[] array, String item) {
@@ -302,42 +304,45 @@ public class Utility {
         return p;
     }
 
-//    public static ShaderProgram getShapeShaderProgram(int color) {
-//        c.set(color);
-//        final String fragmentShader = String.format("#ifdef GL_ES\n"
-//                        + "#define LOWP lowp\n"
-//                        + "precision mediump float;\n"
-//                        + "#else\n"
-//                        + "#define LOWP \n"
-//                        + "#endif\n"
-//                        + "varying LOWP vec4 v_color;\n"
-//                        + "varying vec2 v_texCoords;\n"
-//                        + "uniform sampler2D u_texture;\n"
-//                        + "void main() {\n"
-//                        + "  vec4 v_c = v_color * texture2D(u_texture, v_texCoords);\n"
-//                        + "  if (v_c.a > 0.95) { \n"
-//                        + " if ((v_c.r + 0.3 > 0.0 && v_c.r - 0.3 < 0.0)"
-//                        + "&& (v_c.g + 0.3 > 0.0 && v_c.g - 0.3 < 0.0)"
-//                        + "&& (v_c.b + 0.3 > 0.0 && v_c.b - 0.3 < 0.0)){\n"
-//                        + "           v_c.r = %f;\n"
-//                        + "           v_c.g = %f;\n"
-//                        + "           v_c.b = %f;\n"
-//                        + "         } \n"
-//                        + "  } \n"
-//                        + "  gl_FragColor = v_c;\n"
-//                        + "}"
-//                //Todo all colors are argb instead of rgba, so this is special >> its equivalent to
-//                //todo : c.r, c.g, c.b, c2.r, c2.g, c2.b
-//                , c.r, c.g, c.b);
-//
-//        final ShaderProgram p = new ShaderProgram(vertexShader, fragmentShader);
-//        if (!p.isCompiled()) {
-//            Gdx.app.error("getCarShaderProgram failed", p.getLog());
-//            dispose(p);
-//            return null;
-//        }
-//        return p;
-//    }
+    public static ShaderProgram getFlashhaderProgram(int color) {
+        c.set(color);
+        final String fragmentShader = String.format("#ifdef GL_ES\n"
+                        + "#define LOWP lowp\n"
+                        + "precision mediump float;\n"
+                        + "#else\n"
+                        + "#define LOWP \n"
+                        + "#endif\n"
+                        + "varying LOWP vec4 v_color;\n"
+                        + "varying vec2 v_texCoords;\n"
+                        + "uniform sampler2D u_texture;\n"
+                        + "uniform float u_alpha;\n"
+                        + "void main() {\n"
+                        + "  vec4 v_c = v_color * texture2D(u_texture, v_texCoords);\n"
+                        + "  if (v_c.a > 0.95) { \n"
+                        + "  if ((v_c.r < 0.1)"
+                        + "    && (v_c.g <0.1)"
+                        + "    && (v_c.b <0.1)){\n"
+                        + "           v_c.r = %f;\n"
+                        + "           v_c.g = %f;\n"
+                        + "           v_c.b = %f;\n"
+                        + "           v_c.a = u_alpha;\n"
+                        + "         } \n"
+                        + "  } \n"
+                        + "  gl_FragColor = v_c;\n"
+                        + "}"
+                //Todo all colors are argb instead of rgba, so this is special >> its equivalent to
+                //todo : c.r, c.g, c.b, c2.r, c2.g, c2.b
+                , c.r, c.g, c.b);
+
+        final ShaderProgram p = new ShaderProgram(vertexShader, fragmentShader);
+        if (!p.isCompiled()) {
+            Gdx.app.error("getCarShaderProgram failed", p.getLog());
+            dispose(p);
+            return null;
+        }
+        return p;
+    }
+
 
     public static ShaderProgram getBuyButtonShaderProgram(int color) {
         c.set(color);

@@ -1,6 +1,5 @@
 package tbs.bassjump.objects;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
@@ -24,16 +23,15 @@ import tbs.bassjump.utility.GameObject;
 //Todo fix store click propagation
 
 public class Player extends GameObject {
-    private static final Color c = new Color(0xffbb00ff);
     // Color
     public static int paintIndex;
+    public static Platform currentPlatform;
     // OTHER:
     static int speed;
     private static int cx, cy;
     private static double playerJumpDistance, playerJumpPercentage;
     // TMP till final fix
     private static Sprite playerTexture;
-    private static String regionName = "4";
     // PARTICLES
     public final ArrayList<Particle> splashParticles1;
     public final ArrayList<Particle> splashParticles2;
@@ -105,7 +103,7 @@ public class Player extends GameObject {
         for (int i = 0; i < 8; ++i) {
             paintTrail.add(new PaintParticle());
         }
-        activatePaint(true);
+        activatePaint(true, goingRight);
 
         tmpCoins = 0;
 
@@ -160,7 +158,7 @@ public class Player extends GameObject {
                         speed *= 1.35f;
                     }
                     paintTrail.get(paintIndex).height += speed;
-                    paintTrail.get(paintIndex).yPos = (yPos + (scale / 11));
+                    paintTrail.get(paintIndex).yPos = (yPos - (scale / 2));
                 }
                 break;
             case DYING:
@@ -265,31 +263,35 @@ public class Player extends GameObject {
     public boolean isAlive(boolean j) {
         boolean fine = false;
         if (goingRight) {
-            for (Platform p : Game.level.platformsRight) {
+            for (final Platform p : Game.level.platformsRight) {
                 if (yPos + scale >= p.yPos
                         && yPos + scale <= p.yPos + GameValues.PLATFORM_HEIGHT
                         * 1.15f) {
                     fine = true;
                     p.landedOn = true;
+                    currentPlatform = p;
                 }
                 if (yPos >= p.yPos
                         && yPos <= p.yPos + GameValues.PLATFORM_HEIGHT * 1.15f) {
                     fine = true;
                     p.landedOn = true;
+                    currentPlatform = p;
                 }
             }
         } else {
-            for (Platform p : Game.level.platformsLeft) {
+            for (final Platform p : Game.level.platformsLeft) {
                 if (yPos + scale >= p.yPos
                         && yPos + scale <= p.yPos + GameValues.PLATFORM_HEIGHT
                         * 1.15f) {
                     fine = true;
                     p.landedOn = true;
+                    currentPlatform = p;
                 }
                 if (yPos >= p.yPos
                         && yPos <= p.yPos + GameValues.PLATFORM_HEIGHT * 1.15f) {
                     fine = true;
                     p.landedOn = true;
+                    currentPlatform = p;
                 }
             }
         }
@@ -319,26 +321,29 @@ public class Player extends GameObject {
             state = PlayerState.JUMPING;
         }
 
-        activatePaint(false);
+        activatePaint(false, goingRight);
     }
 
-    public void activatePaint(boolean start) {
+    public void activatePaint(boolean start, boolean goingRight) {
         // PAINT ACTIVATE:
+
         int moveIndex = 0;
         if (!(paintIndex == paintTrail.size() - 1)) {
             moveIndex = paintIndex + 1;
         }
-        paintTrail.get(moveIndex).active = true;
-        paintTrail.get(moveIndex).height = 0;
-        paintTrail.get(moveIndex).yPos = yPos;
+        final PaintParticle paintParticle = paintTrail.get(moveIndex);
+        paintParticle.active = true;
+        paintParticle.goingRight = goingRight;
+        paintParticle.height = 0;
+        paintParticle.yPos = yPos;
         if (!start) {
             if (!goingRight) {
-                paintTrail.get(moveIndex).xPos = GameValues.PLATFORM_WIDTH;
+                paintParticle.xPos = GameValues.PLATFORM_WIDTH;
             } else {
-                paintTrail.get(moveIndex).xPos = (Game.w - GameValues.PLATFORM_WIDTH);
+                paintParticle.xPos = (Game.w - GameValues.PLATFORM_WIDTH);
             }
         } else {
-            paintTrail.get(moveIndex).xPos = GameValues.PLATFORM_WIDTH;
+            paintParticle.xPos = GameValues.PLATFORM_WIDTH;
         }
         paintIndex = moveIndex;
     }
@@ -413,18 +418,17 @@ public class Player extends GameObject {
     public void draw(SpriteBatch canvas) {
         //Todo fix rotation
         final float rotation = (float) (playerJumpPercentage * 180);
+        canvas.setShader(Game.shaderProgram);
         playerTexture.setOriginCenter();
         playerTexture.setRotation(rotation);
         playerTexture.setSize(scale, scale);
         playerTexture.setPosition(xPos, Game.h - yPos);
         playerTexture.draw(canvas);
-        //todo DRAW GLOW:
-//        if (Game.alphaM > 0) {
-//            c.set(0xffe5e4a0);
-//            c.a = (Game.alphaM / 255f);
-//            playerTexture.setColor(c);
-//            playerTexture.draw(canvas);
-//        }
+
+        if ((Game.alphaM > 0)) {
+            canvas.setShader(Game.flash);
+            playerTexture.draw(canvas);
+        }
         // SPLASH
         for (int i = 0; i < splashParticles1.size(); i++) {
             splashParticles1.get(i).draw(Game.spriteBatch);
