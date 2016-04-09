@@ -3,8 +3,8 @@ package tbs.bassjump.objects;
 
 import tbs.bassjump.Game;
 import tbs.bassjump.GameValues;
-import tbs.bassjump.Utility;
 import tbs.bassjump.utility.GameObject;
+import tbs.bassjump.utility.Utility;
 
 public class SpeedParticle extends GameObject {
 

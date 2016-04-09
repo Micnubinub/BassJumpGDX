@@ -129,7 +129,7 @@ public class GameController {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        Utility.saveString("musicOn", "off");
+                        tbs.bassjump.utility.Utility.saveString("musicOn", "off");
                     } else {
                         // TURN ON
                         Game.isMusicEnabled = true;
@@ -138,14 +138,14 @@ public class GameController {
                         } catch (Exception r) {
                             r.printStackTrace();
                         }
-                        Utility.saveString("musicOn", "on");
+                        tbs.bassjump.utility.Utility.saveString("musicOn", "on");
                     }
                 } else if (x >= Game.rateBtn.xPos
                         && x <= Game.rateBtn.xPos + GameValues.BUTTON_SCALE
                         && y >= Game.rateBtn.yPos
                         && y <= Game.rateBtn.yPos + GameValues.BUTTON_SCALE) {
                     // FB PAGE:
-                    Utility.openLink("https://www.facebook.com/AndroidHackerApp");
+                    tbs.bassjump.utility.Utility.openLink("https://www.facebook.com/AndroidHackerApp");
 
 
                 } else if (x >= Game.modeBtn.xPos
@@ -156,20 +156,20 @@ public class GameController {
                     // STORE:
                     if (Game.mode == GameMode.Recruit) {
                         Game.mode = GameMode.Arcade;
-                        Utility.saveString("gMode", "arcade");
+                        tbs.bassjump.utility.Utility.saveString("gMode", "arcade");
                     } else if (Game.mode == GameMode.Arcade) {
                         Game.mode = GameMode.Ultra;
-                        Utility.saveString("gMode", "ultra");
+                        tbs.bassjump.utility.Utility.saveString("gMode", "ultra");
                     } else if (Game.mode == GameMode.Ultra) {
                         Game.mode = GameMode.Singularity;
-                        Utility.saveString("gMode", "singul");
+                        tbs.bassjump.utility.Utility.saveString("gMode", "singul");
                     } else if (Game.mode == GameMode.Singularity) {
                         Game.mode = GameMode.SpeedRunner;
                         GameValues.PLAYER_JUMP_SPEED_MULT = 8;
-                        Utility.saveString("gMode", "speed");
+                        tbs.bassjump.utility.Utility.saveString("gMode", "speed");
                     } else if (Game.mode == GameMode.SpeedRunner) {
                         Game.mode = GameMode.Recruit;
-                        Utility.saveString("gMode", "recruit");
+                        tbs.bassjump.utility.Utility.saveString("gMode", "recruit");
                         GameValues.PLAYER_JUMP_SPEED_MULT = 3;
                     }
                 } else if (x >= Game.shareBtn.xPos
@@ -178,8 +178,8 @@ public class GameController {
                         && y <= Game.shareBtn.yPos + GameValues.BUTTON_SCALE) {
 
                     // SHARE:
-                    Utility.openLink("http://thebigshots.net");
-                    // tbs.bassjump.Utility.showToast("Share Coming Soon!", tbs.bassjump.reference.);
+                    tbs.bassjump.utility.Utility.openLink("http://thebigshots.net");
+                    // tbs.bassjump.utility.Utility.showToast("Share Coming Soon!", tbs.bassjump.reference.);
                 } else if (x >= Game.storeBtn.xPos
                         && x <= Game.storeBtn.xPos + GameValues.BUTTON_SCALE
                         && y >= Game.storeBtn.yPos

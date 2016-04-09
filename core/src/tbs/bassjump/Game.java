@@ -23,6 +23,7 @@ import tbs.bassjump.objects.Player;
 import tbs.bassjump.ui.BuyButton;
 import tbs.bassjump.ui.Dialog;
 import tbs.bassjump.utility.GameObject;
+import tbs.bassjump.utility.Utility;
 import tbs.bassjump.utility.ValueAnimator;
 
 public class Game extends ApplicationAdapter {
@@ -431,65 +432,36 @@ public class Game extends ApplicationAdapter {
         // LOAD DATA:
         showAds = Utility.getString("nerUds") == null;
 
-        if (Utility.getString("hScore") != null) {
-            player.highScoreA = Utility.getInt("hScore");
-        } else {
-            player.highScoreA = 0;
-        }
-        if (Utility.getString("hScoreR") != null) {
-            player.highScoreR = Utility.getInt("hScoreR");
-        } else {
-            player.highScoreR = 0;
-        }
-        if (Utility.getString("hScoreU") != null) {
-            player.highScoreU = Utility.getInt("hScoreU");
-        } else {
-            player.highScoreR = 0;
-        }
-        if (Utility.getString("hScoreS") != null) {
-            player.highScoreS = Utility.getInt("hScoreS");
-        } else {
-            player.highScoreS = 0;
-        }
-        if (Utility.getString("hScoreS2") != null) {
-            player.highScoreS2 = Utility.getInt("hScoreS2");
-        } else {
-            player.highScoreS2 = 0;
-        }
 
-        if (Utility.getString("musicOn") != null) {
-            if (Utility.getString("musicOn").equals("off")) {
-                isMusicEnabled = false;
-                pauseMusic();
-            } else {
-                playMusic();
-                isMusicEnabled = true;
-            }
+        player.highScoreA = Utility.getInt("hScore");
+        player.highScoreR = Utility.getInt("hScoreR");
+        player.highScoreU = Utility.getInt("hScoreU");
+        player.highScoreS = Utility.getInt("hScoreS");
+        player.highScoreS2 = Utility.getInt("hScoreS2");
+
+        if (Utility.getString("musicOn").equals("off")) {
+            isMusicEnabled = false;
+            pauseMusic();
         } else {
+            playMusic();
             isMusicEnabled = true;
         }
 
         mode = GameMode.Arcade;
-        if (Utility.getString("gMode") != null) {
-            if (Utility.getString("gMode").equals("arcade")) {
-                mode = GameMode.Arcade;
-            } else if (Utility.getString("gMode").equals("recruit")) {
-                mode = GameMode.Recruit;
-            } else if (Utility.getString("gMode").equals("ultra")) {
-                mode = GameMode.Ultra;
-            } else if (Utility.getString("gMode").equals("singul")) {
-                mode = GameMode.Singularity;
-            } else if (Utility.getString("gMode").equals("speed")) {
-                mode = GameMode.SpeedRunner;
-                GameValues.PLAYER_JUMP_SPEED_MULT = 8;
-            }
+        if (Utility.getString("gMode").equals("recruit")) {
+            mode = GameMode.Recruit;
+        } else if (Utility.getString("gMode").equals("ultra")) {
+            mode = GameMode.Ultra;
+        } else if (Utility.getString("gMode").equals("singul")) {
+            mode = GameMode.Singularity;
+        } else if (Utility.getString("gMode").equals("speed")) {
+            mode = GameMode.SpeedRunner;
+            GameValues.PLAYER_JUMP_SPEED_MULT = 8;
+        } else {
+            mode = GameMode.Arcade;
         }
 
-        if (Utility.getString("gPlayed") != null) {
             player.gamesPlayed = Utility.getInt("gPlayed") + 1;
-        } else {
-            player.gamesPlayed = 0;
-        }
 
         introDelay = 150;
         loadProg = 0;
@@ -566,7 +538,6 @@ public class Game extends ApplicationAdapter {
                     spriteBatch.draw(BitmapLoader.particle, paintParticle.xPos, paintParticle.yPos, GameValues.STROKE_WIDTH, paintParticle.height);
                 }
             }
-
         }
         updateCamera(false);
 

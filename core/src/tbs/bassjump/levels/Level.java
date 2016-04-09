@@ -6,8 +6,8 @@ import tbs.bassjump.Game;
 import tbs.bassjump.GameMode;
 import tbs.bassjump.GameState;
 import tbs.bassjump.GameValues;
-import tbs.bassjump.Utility;
 import tbs.bassjump.objects.SpeedParticle;
+import tbs.bassjump.utility.Utility;
 
 public class Level {
 

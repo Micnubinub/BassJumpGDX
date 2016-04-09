@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import tbs.bassjump.Game;
 import tbs.bassjump.GameMode;
 import tbs.bassjump.GameValues;
-import tbs.bassjump.Utility;
 import tbs.bassjump.levels.Level;
 import tbs.bassjump.levels.Platform;
 import tbs.bassjump.managers.BitmapLoader;
 import tbs.bassjump.utility.GameObject;
+import tbs.bassjump.utility.Utility;
 //Todo fix rotation
 //Todo fix audio disabling
 //Todo fix store
@@ -240,11 +240,8 @@ public class Player extends GameObject {
         }
 
         // PLAYED AND DEATHS
-        if (Utility.getString("gPlayed") != null) {
-            gamesPlayed = Utility.getInt("gPlayed") + 1;
-        } else {
-            gamesPlayed = 0;
-        }
+
+        gamesPlayed = Utility.getInt("gPlayed") + 1;
         Utility.saveInt("gPlayed", gamesPlayed);
 
         if (score > 100 && Game.mode == GameMode.Arcade) {

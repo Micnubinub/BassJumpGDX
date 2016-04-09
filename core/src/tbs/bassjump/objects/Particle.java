@@ -6,8 +6,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import tbs.bassjump.Game;
 import tbs.bassjump.GameValues;
-import tbs.bassjump.Utility;
 import tbs.bassjump.managers.BitmapLoader;
+import tbs.bassjump.utility.Utility;
 
 public class Particle {
     public static final int STATE_ALIVE = 0; // particle is alive

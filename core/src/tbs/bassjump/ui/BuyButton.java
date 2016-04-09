@@ -5,8 +5,8 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
 import tbs.bassjump.Game;
 import tbs.bassjump.GameValues;
-import tbs.bassjump.Utility;
 import tbs.bassjump.managers.BitmapLoader;
+import tbs.bassjump.utility.Utility;
 
 /**
  * Created by mike on 3/7/16.

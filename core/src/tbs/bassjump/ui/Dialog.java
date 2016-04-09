@@ -4,8 +4,8 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 
 import tbs.bassjump.Game;
 import tbs.bassjump.GameValues;
-import tbs.bassjump.Utility;
 import tbs.bassjump.managers.BitmapLoader;
+import tbs.bassjump.utility.Utility;
 
 /**
  * Created by Michael on 3/8/2015.

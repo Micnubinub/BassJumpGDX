@@ -68,7 +68,7 @@ public class GameValues {
         PAINT_OUTER_GLOW_SCALE = PAINT_GLOW_SCALE * 3;
 
         // PLAYER:
-        PLAYER_SCALE = Game.h / 18;
+        PLAYER_SCALE = (int) (Game.h / 15f);
         PLAYER_POSITION = (int) (Game.h - (PLAYER_SCALE * 4.5f));
         PAINT_HEIGHT = PLAYER_SCALE;
 

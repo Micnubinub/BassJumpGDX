@@ -10,7 +10,8 @@ public class HtmlLauncher extends GwtApplication {
 
         @Override
         public GwtApplicationConfiguration getConfig () {
-                return new GwtApplicationConfiguration(540, 960);
+                final int h = (int) (com.google.gwt.user.client.Window.getClientHeight() * 0.92);
+                return new GwtApplicationConfiguration((h * 9) / 16, h);
         }
 
         @Override
